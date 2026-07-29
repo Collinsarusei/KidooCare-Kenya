@@ -1,0 +1,271 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  SCHOOL
+  PARENT
+}
+
+enum SchoolStatus {
+  PENDING_PROFILE
+  ACTIVE
+  SUSPENDED
+}
+
+enum ServiceBillingCycle {
+  MONTHLY
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  WAITLISTED
+  ENDED
+}
+
+enum WeeklyInstallmentStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+enum PaymentMethod {
+  MPESA
+  CASH
+  CARD
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum DisputeStatus {
+  OPEN
+  RESOLVED
+  REFUNDED
+}
+
+enum AIReportType {
+  EXEC_SUMMARY
+  PROFILE_DRAFT
+}
+
+enum SchoolDocumentType {
+  LICENSE
+  CERTIFICATION
+  OTHER
+}
+
+model User {
+  id                 String   @id @default(uuid())
+  email              String   @unique
+  phone              String
+  role               UserRole
+  passwordHash       String
+  mustChangePassword Boolean  @default(true)
+  refreshTokenHash   String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  school      School?
+  children    Child[]
+  reviews     Review[]
+  disputes    Dispute[]
+}
+
+model School {
+  id               String       @id @default(uuid())
+  userId           String       @unique
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String
+  about            String?
+  logoUrl          String?
+  coverImages      String[]     @default([])
+  location         String?
+  capacity         Int?
+  ageRange         String?
+  keyHighlights    String[]     @default([])
+  status           SchoolStatus @default(PENDING_PROFILE)
+  verifiedBadge    Boolean      @default(false)
+  createdByAdminId String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  credentials SchoolPaymentCredentials?
+  documents   SchoolDocument[]
+  services    Service[]
+  children    Child[]
+  reviews     Review[]
+  aiReports   AIReport[]
+}
+
+model SchoolPaymentCredentials {
+  id                          String   @id @default(uuid())
+  schoolId                    String   @unique
+  school                      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  mpesaConsumerKeyEncrypted   String?
+  mpesaConsumerSecretEncrypted String?
+  mpesaShortcode              String?
+  mpesaPasskeyEncrypted       String?
+  encryptionKeyVersion        Int      @default(1)
+  providedAt                  DateTime @default(now())
+  providedBy                  UserRole
+}
+
+model SchoolDocument {
+  id                 String             @id @default(uuid())
+  schoolId           String
+  school             School             @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  type               SchoolDocumentType
+  fileUrl            String
+  uploadedAt         DateTime           @default(now())
+  verifiedByAdminId  String?
+  verifiedAt         DateTime?
+}
+
+model Service {
+  id                    String              @id @default(uuid())
+  schoolId              String
+  school                School              @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name                  String
+  description           String?
+  price                 Float
+  billingCycle          ServiceBillingCycle @default(MONTHLY)
+  capacity              Int
+  currentEnrollmentCount Int                 @default(0)
+  lastUpdatedAt         DateTime            @updatedAt
+
+  enrollments Enrollment[]
+}
+
+model Child {
+  id        String   @id @default(uuid())
+  parentId  String
+  parent    User     @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  name      String
+  dob       DateTime
+  notes     String?
+  schoolId  String?
+  school    School?  @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  enrollments Enrollment[]
+}
+
+model Enrollment {
+  id                 String           @id @default(uuid())
+  childId            String
+  child              Child            @relation(fields: [childId], references: [id], onDelete: Cascade)
+  serviceId          String
+  service            Service          @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  startDate          DateTime
+  status             EnrollmentStatus @default(ACTIVE)
+  agreedMonthlyPrice Float
+  createdAt          DateTime         @default(now())
+
+  billingCycles BillingCycle[]
+  balance       Balance?
+}
+
+model BillingCycle {
+  id             String   @id @default(uuid())
+  enrollmentId   String
+  enrollment     Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  monthStart     DateTime
+  monthEnd       DateTime
+  totalAmountDue Float
+  weeksInMonth   Int
+  createdAt      DateTime @default(now())
+
+  weeklyInstallments WeeklyInstallment[]
+}
+
+model WeeklyInstallment {
+  id             String                  @id @default(uuid())
+  billingCycleId String
+  billingCycle   BillingCycle            @relation(fields: [billingCycleId], references: [id], onDelete: Cascade)
+  weekNumber     Int
+  weekStart      DateTime
+  weekEnd        DateTime
+  amountDue      Float
+  amountPaid     Float                   @default(0)
+  status         WeeklyInstallmentStatus @default(PENDING)
+  reminderSentAt DateTime?
+
+  payments Payment[]
+}
+
+model Payment {
+  id                     String            @id @default(uuid())
+  weeklyInstallmentId    String
+  weeklyInstallment      WeeklyInstallment @relation(fields: [weeklyInstallmentId], references: [id], onDelete: Cascade)
+  amount                 Float
+  method                 PaymentMethod     @default(MPESA)
+  mpesaCheckoutRequestId String?           @unique
+  mpesaReceiptNumber     String?
+  status                 PaymentStatus     @default(PENDING)
+  paidAt                 DateTime?
+  createdAt              DateTime          @default(now())
+
+  disputes Dispute[]
+}
+
+model Balance {
+  id               String     @id @default(uuid())
+  enrollmentId     String     @unique
+  enrollment       Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  totalArrears     Float      @default(0)
+  lastCalculatedAt DateTime   @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  entityType  String
+  entityId    String
+  action      String
+  actorId     String
+  beforeState Json?
+  afterState  Json?
+  createdAt   DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  parentId  String
+  parent    User     @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+}
+
+model Dispute {
+  id                String        @id @default(uuid())
+  paymentId         String
+  payment           Payment       @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  raisedByParentId  String
+  raisedByParent    User          @relation(fields: [raisedByParentId], references: [id], onDelete: Cascade)
+  reason            String
+  status            DisputeStatus @default(OPEN)
+  resolvedByAdminId String?
+  resolutionNote    String?
+  createdAt         DateTime      @default(now())
+}
+
+model AIReport {
+  id          String       @id @default(uuid())
+  schoolId    String
+  school      School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  type        AIReportType
+  generatedAt DateTime     @default(now())
+  content     Json
+}

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KiddoCare Kenya - Reviews</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#eaf1ff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-background": "#121c2a",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "primary-container": "#2563eb",
+                    "error": "#ba1a1a",
+                    "primary": "#004ac6",
+                    "on-secondary-container": "#00714d",
+                    "tertiary": "#784b00",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#00174b",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "tertiary-container": "#996100",
+                    "surface-container-high": "#dee9fc",
+                    "surface-container-highest": "#d9e3f6",
+                    "inverse-surface": "#27313f",
+                    "on-tertiary-container": "#ffeedd",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "surface-dim": "#d0dbed",
+                    "secondary-fixed-dim": "#4edea3",
+                    "inverse-primary": "#b4c5ff",
+                    "on-secondary-fixed": "#002113",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#6ffbbe",
+                    "surface-bright": "#f8f9ff",
+                    "on-primary": "#ffffff",
+                    "on-primary-container": "#eeefff",
+                    "secondary": "#006c49",
+                    "primary-fixed": "#dbe1ff",
+                    "tertiary-fixed": "#ffddb8",
+                    "outline": "#737686",
+                    "on-secondary-fixed-variant": "#005236",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "surface": "#f8f9ff",
+                    "on-surface-variant": "#434655",
+                    "outline-variant": "#c3c6d7",
+                    "surface-container": "#e6eeff",
+                    "on-secondary": "#ffffff",
+                    "surface-variant": "#d9e3f6",
+                    "secondary-container": "#6cf8bb",
+                    "surface-tint": "#0053db",
+                    "surface-container-low": "#eff4ff",
+                    "background": "#f8f9ff",
+                    "on-tertiary": "#ffffff",
+                    "on-surface": "#121c2a",
+                    "on-tertiary-fixed": "#2a1700",
+                    "on-error": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "lg": "24px",
+                    "sm": "8px",
+                    "xl": "48px",
+                    "container-max": "1280px",
+                    "base": "4px",
+                    "gutter": "16px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "h1-mobile": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "h3": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "h1": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "h2": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "h2-mobile": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "caption": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "h1-mobile": [
+                            "30px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "800"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "h3": [
+                            "20px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "h1": [
+                            "40px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "800"
+                            }
+                    ],
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "h2": [
+                            "30px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "h2-mobile": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "caption": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "fontWeight": "500"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background h-full font-body-md text-body-md antialiased flex flex-col md:flex-row">
+<!-- NavigationDrawer (Desktop) -->
+<nav class="hidden md:flex flex-col h-screen sticky top-0 w-72 rounded-r-xl bg-surface dark:bg-on-background border-r border-outline-variant shadow-md z-40">
+<div class="p-lg flex flex-col items-start gap-sm border-b border-outline-variant">
+<img class="w-xl h-xl rounded-full object-cover shadow-sm" data-alt="A professional headshot of a smiling school administrator, an African woman in her late 30s wearing warm, approachable business casual attire. The background is softly blurred showing a bright, colorful daycare classroom with natural light. The mood is trustworthy and welcoming, fitting for KiddoCare Kenya." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5gH1VYf2A6vVYik0U8Tn40yeoVBlzgGoa3n4QFtYL5mxfqPwpTI7TodoojL1TthBoAzwZ8NoToyGWvvCg_-1Vs3iGEv2eHBLY0-FBhm19iYynJj74flXBM8taz_rjj5IFeW5eE7ZAr65adMfeWw2F9-x4RxCBckU3vGxaoRvm9BAzQ_RFvmHcXMjUf-_kRR005MMDD0dSFGwU9rmEeAe6EHv2AEDQYpgDg1vue6a9b6CAC-0Mlu40h2GsoJKnKmXWri2ZgSnDYdMM"/>
+<div>
+<h2 class="font-h3 text-h3 text-primary">Sunshine Daycare</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">School Admin</p>
+<p class="font-caption text-caption text-on-surface-variant flex items-center gap-xs mt-xs">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                    Nairobi, KE
+                </p>
+</div>
+</div>
+<ul class="flex-1 py-md overflow-y-auto">
+<li>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container font-bold rounded-lg m-2 p-3 opacity-80" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">school</span>
+<span class="font-label-md text-label-md">My Schools</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Payments</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Staff Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</li>
+</ul>
+</nav>
+<div class="flex-1 flex flex-col min-w-0 pb-[80px] md:pb-0">
+<!-- TopAppBar -->
+<header class="docked full-width top-0 sticky z-50 bg-surface dark:bg-on-background shadow-sm">
+<div class="flex justify-between items-center px-md md:px-lg h-16 md:h-20 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-sm">
+<img class="w-10 h-10 rounded-full md:hidden" data-alt="A small, friendly circular logo icon representing child care, perhaps abstract shapes resembling a child and adult holding hands, rendered in warm blues and greens suitable for a Kenyan daycare platform. Clean, flat design style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCF1xMhv8tSZkDoB8CYQ4tEqkbppsmB9HlnfBQg4QCKIDRpXKUbsjikUVJ2P4hAh01gX3r5mmtjDO5RbC7ZvOMwT7TdUDmoAJqVMTZA2e7BQbpafM4bs6SIRcrUFyfEhmu5UamJ3LKxc7RYlxa4hVNQA2ZZY7S39dJOcP9VatAbf8yqIlM6CpgYKcDhQ2ZBuqVsUTtnCm-lsi481NCiW8yztoF7cAghJWhM6zoAP4Kk2Vc0TwfA3aKXzbpQFDWFRWEY_9v3phI_Q_9"/>
+<h1 class="font-h1 text-h1-mobile md:text-h1 text-primary dark:text-primary-fixed-dim tracking-tight">KiddoCare Kenya</h1>
+</div>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto px-md md:px-lg py-lg w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-sm mb-lg">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h2 class="font-h2 text-h2-mobile md:text-h2 text-on-surface">Reviews for Sunshine Daycare</h2>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Review Submission Section -->
+<section class="lg:col-span-5 flex flex-col gap-lg">
+<div class="bg-surface-container-lowest rounded-xl p-md md:p-lg border border-outline-variant/30 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-[0px_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
+<h3 class="font-h3 text-h3 text-on-surface mb-sm">Write a Review</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg">Share your experience with the KiddoCare community.</p>
+<form class="flex flex-col gap-lg">
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs">Rating</label>
+<div class="flex items-center gap-xs" id="star-rating-container">
+<button class="text-tertiary-fixed-dim hover:scale-110 transition-transform" type="button">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button class="text-tertiary-fixed-dim hover:scale-110 transition-transform" type="button">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button class="text-tertiary-fixed-dim hover:scale-110 transition-transform" type="button">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button class="text-tertiary-fixed-dim hover:scale-110 transition-transform" type="button">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button class="text-outline-variant hover:scale-110 transition-transform hover:text-tertiary-fixed-dim" type="button">
+<span class="material-symbols-outlined text-[32px]">star</span>
+</button>
+<span class="ml-sm font-label-md text-label-md text-on-surface-variant">4 out of 5</span>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs" for="review-comment">Your Comment</label>
+<textarea class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface font-body-md text-body-md px-md py-sm focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none resize-y" id="review-comment" placeholder="What did you love about this school? What could be better?" rows="4"></textarea>
+</div>
+<button class="bg-primary-container text-on-primary font-label-md text-label-md py-3 px-6 rounded-full hover:bg-primary-container/90 active:scale-95 transition-all shadow-sm self-start" type="button">
+                                Submit Review
+                            </button>
+</form>
+</div>
+<!-- Summary Stats Card -->
+<div class="bg-surface-container-lowest rounded-xl p-md md:p-lg border border-outline-variant/30 shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex items-center gap-md">
+<div class="flex flex-col items-center justify-center bg-primary-fixed w-24 h-24 rounded-full">
+<span class="font-h1 text-h1 text-primary">4.8</span>
+<div class="flex text-tertiary-fixed-dim mt-1">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<div class="flex-1">
+<h4 class="font-h3 text-h3 text-on-surface">Overall Rating</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Based on 124 reviews</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent Reviews List -->
+<section class="lg:col-span-7 flex flex-col gap-sm">
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">Recent Reviews</h3>
+<!-- Review Item 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-md border border-outline-variant/30 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-[0px_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="flex justify-between items-start mb-sm">
+<div class="flex items-center gap-sm">
+<img class="w-12 h-12 rounded-full object-cover bg-surface-container" data-alt="A portrait of a smiling Kenyan mother in her 30s, wearing bright yellow and blue patterned clothing. She has short natural hair and looks genuinely happy. The background is a soft, out-of-focus park setting. The image feels warm, authentic, and community-focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtdVHkSL_Q6iF6ptS0_CEwx8C-0N4r74UQG5Hr-Y6mFnw0NcNLLPlwyk0LX7_LEWELVUBMCywY9qERTP8cKfqEXEeIOIeiWLZLSZxqp_IxjYAwGzZUQUEI7ze-TVEgUYoBP4FH-epXPHaw2YlA-1T_52ga4EBHb427iyXD2UGh83TGp8e20J7TuCC0C69lps9tBsaTHkIfSmsLRvdJ5eU1MZUZGRpYqLt4D7a5KMNveWM6p7fwcak10uC61JK1ao96w24kl5cG9XlQ"/>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Amina M.</p>
+<p class="font-caption text-caption text-on-surface-variant">2 days ago</p>
+</div>
+</div>
+<div class="flex text-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface">"Sunshine Daycare has been wonderful for my son. The teachers are so caring, and the facilities are always spotless. I appreciate the daily updates they send through the app."</p>
+</div>
+<!-- Review Item 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-md border border-outline-variant/30 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-[0px_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="flex justify-between items-start mb-sm">
+<div class="flex items-center gap-sm">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-h3 text-h3">
+                                    DK
+                                </div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">David K.</p>
+<p class="font-caption text-caption text-on-surface-variant">1 week ago</p>
+</div>
+</div>
+<div class="flex text-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px] text-outline-variant">star</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface">"Great environment overall. The kids seem really engaged. Drop-off and pick-up can get a bit chaotic in the mornings, but the staff handles it as best as they can."</p>
+</div>
+<!-- Review Item 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-md border border-outline-variant/30 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-[0px_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="flex justify-between items-start mb-sm">
+<div class="flex items-center gap-sm">
+<img class="w-12 h-12 rounded-full object-cover bg-surface-container" data-alt="A portrait of a young Kenyan father in his late 20s, smiling softly. He is wearing a crisp white polo shirt. The background is a sunny outdoor setting with hints of greenery. The image is warm, approachable, and high-quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPJdFgbvCMDxYYgyFlcfypTRbsfOvBzLqXiwSGWp8iHhM2nooocce8BnvYe9W72UUmhFRa5FTH3bTBRhzOsWuwcoFGHHqI_ktULdT1hp0efvFg0ICB_8KFDyGHKhud58gRxtHW-cf71O1QqUhF3uScMHwe1cJEMI7UIBt5ech69yJ50xNUsQ4Ux_ED0TJg7dYbnkNcI2BMKBju6hFN8PU-nE-uXqDW17TXoitm156oY6yc_hE29nIfwQH8M7j5x6_YfKsqBYdpR_dO"/>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Kevin O.</p>
+<p class="font-caption text-caption text-on-surface-variant">2 weeks ago</p>
+</div>
+</div>
+<div class="flex text-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface">"Absolutely fantastic. The meals provided are nutritious and diverse. My daughter comes home singing new songs every week. Highly recommended to any parent in the area!"</p>
+</div>
+<button class="text-primary font-label-md text-label-md py-sm hover:underline mt-sm self-center">
+                        Load More Reviews
+                    </button>
+</section>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-4 bg-surface dark:bg-inverse-surface shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest transition-transform duration-150 p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-label-md text-caption mt-1">Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
+<span class="font-label-md text-caption mt-1 font-bold">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest transition-transform duration-150 p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="font-label-md text-caption mt-1">Messages</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest transition-transform duration-150 p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-caption mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple interactive star rating logic
+        const starContainer = document.getElementById('star-rating-container');
+        const stars = starContainer.querySelectorAll('button');
+        const ratingText = starContainer.querySelector('span:last-child');
+        
+        stars.forEach((starBtn, index) => {
+            starBtn.addEventListener('click', () => {
+                const rating = index + 1;
+                ratingText.textContent = `${rating} out of 5`;
+                
+                stars.forEach((btn, i) => {
+                    const icon = btn.querySelector('span');
+                    if (i < rating) {
+                        btn.className = 'text-tertiary-fixed-dim hover:scale-110 transition-transform';
+                        icon.style.fontVariationSettings = "'FILL' 1";
+                    } else {
+                        btn.className = 'text-outline-variant hover:scale-110 transition-transform hover:text-tertiary-fixed-dim';
+                        icon.style.fontVariationSettings = "'FILL' 0";
+                    }
+                });
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>School Dashboard - KiddoCare Kenya</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-on-surface": "#eaf1ff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-background": "#121c2a",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "primary-container": "#2563eb",
+                      "error": "#ba1a1a",
+                      "primary": "#004ac6",
+                      "on-secondary-container": "#00714d",
+                      "tertiary": "#784b00",
+                      "error-container": "#ffdad6",
+                      "on-primary-fixed": "#00174b",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "tertiary-container": "#996100",
+                      "surface-container-high": "#dee9fc",
+                      "surface-container-highest": "#d9e3f6",
+                      "inverse-surface": "#27313f",
+                      "on-tertiary-container": "#ffeedd",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "surface-dim": "#d0dbed",
+                      "secondary-fixed-dim": "#4edea3",
+                      "inverse-primary": "#b4c5ff",
+                      "on-secondary-fixed": "#002113",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed": "#6ffbbe",
+                      "surface-bright": "#f8f9ff",
+                      "on-primary": "#ffffff",
+                      "on-primary-container": "#eeefff",
+                      "secondary": "#006c49",
+                      "primary-fixed": "#dbe1ff",
+                      "tertiary-fixed": "#ffddb8",
+                      "outline": "#737686",
+                      "on-secondary-fixed-variant": "#005236",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "surface": "#f8f9ff",
+                      "on-surface-variant": "#434655",
+                      "outline-variant": "#c3c6d7",
+                      "surface-container": "#e6eeff",
+                      "on-secondary": "#ffffff",
+                      "surface-variant": "#d9e3f6",
+                      "secondary-container": "#6cf8bb",
+                      "surface-tint": "#0053db",
+                      "surface-container-low": "#eff4ff",
+                      "background": "#f8f9ff",
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#121c2a",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-error": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "4px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "xl": "48px",
+                      "container-max": "1280px",
+                      "base": "4px",
+                      "gutter": "16px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "h1-mobile": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "h3": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "h1": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "h2": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "h2-mobile": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "caption": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "h1-mobile": [
+                              "30px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h3": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h1": [
+                              "40px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h2": [
+                              "30px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "h2-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "caption": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+          .chart-line {
+              stroke-dasharray: 1000;
+              stroke-dashoffset: 1000;
+              animation: drawLine 2s ease-out forwards;
+          }
+          @keyframes drawLine {
+              to {
+                  stroke-dashoffset: 0;
+              }
+          }
+          .bar-rise {
+              transform-origin: bottom;
+              transform: scaleY(0);
+              animation: riseUp 1s ease-out forwards;
+          }
+          @keyframes riseUp {
+              to {
+                  transform: scaleY(1);
+              }
+          }
+      </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col md:flex-row">
+<!-- Navigation Drawer (Desktop) -->
+<aside class="hidden lg:flex flex-col h-screen sticky top-0 bg-surface dark:bg-on-background text-primary dark:text-primary-fixed-dim h-full w-72 rounded-r-xl bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant shadow-md">
+<!-- Header Profile -->
+<div class="p-lg border-b border-outline-variant">
+<div class="flex items-center gap-sm">
+<img alt="School administrator profile" class="w-12 h-12 rounded-full object-cover border-2 border-primary-container" data-alt="A smiling school administrator, professional headshot, soft natural lighting, modern friendly environment, warm tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKjLS1B6KJQuq8TBPzrn1tNuG19guhyy7ahCHAs-N7efWoUfYwWOaMRace19xwFwETdGD_XWapoip1STGtLhsiMvMLuxOkV_L5lL3lf6FGwuwNwZiWumPTLqYuu94NpitFpjdoYn8Yh1f0hfT03NxR6Q961jkdRgOVsZXvSlQkZDBTB50cojwBrqzguPOBjffnW4ZHDbz3y1L4SX1UocjqUlPzuFmoT1sXFM9ruwbmLGB5tKzIxIOrFFUygP2P6Lz8mEz124M5kRFH"/>
+<div class="flex flex-col left_align">
+<span class="font-h3 text-h3 text-on-surface">Sunshine Daycare</span>
+<span class="font-label-md text-label-md text-on-surface-variant">School Admin</span>
+<span class="font-caption text-caption text-outline">Nairobi, KE</span>
+</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 overflow-y-auto py-sm">
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container font-bold rounded-lg m-2 p-3 opacity-80" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">school</span>
+<span>My Schools</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Payments</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Staff Management</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-on-background text-primary dark:text-primary-fixed-dim font-h2 text-h2-mobile md:text-h2 docked full-width top-0 sticky z-50 bg-surface dark:bg-on-background border-b border-outline-variant shadow-sm flex justify-between items-center px-md md:px-lg h-16 md:h-20 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-sm">
+<!-- Mobile Menu Button -->
+<button class="md:hidden p-2 text-on-surface hover:bg-surface-container-high transition-all duration-200 rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="hidden md:block">
+<img alt="User profile avatar" class="w-10 h-10 rounded-full object-cover" data-alt="User profile avatar, friendly face, soft lighting, modern corporate portrait." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFg7d29i7TomFPPkzitJjPSycVfCtXttd4gwlsiN1PH8p1MyxHftTsbLerqgagIpw9Rf7YHI0l1gDVB7CY_ASjoeNFxwf20C8jTF_564xmtZYfwMtQxkZKq4eLYpaIKF-4AE6_D-2nf4VhMD-Ht2t1uLvPLVB4bbchjYuMY9oEcoq1pERHTJYVRbklrU9Ki_xVtJO68As8BCNyBSarZHH67ML1S0l31esBmcCskRERlRxtTwz-t8io8i9tUOE4_GMuji2DpgI2fW9G"/>
+</div>
+<h1 class="font-h1 text-h1-mobile md:text-h1 text-primary dark:text-primary-fixed-dim tracking-tight">KiddoCare Kenya</h1>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-2 text-on-surface hover:bg-surface-container-high transition-all duration-200 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 p-md md:p-lg overflow-y-auto w-full max-w-container-max mx-auto">
+<!-- Page Header & Action -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-lg gap-sm">
+<div>
+<h2 class="font-h2 text-h2-mobile md:text-h2 text-on-surface">Overview</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Here is what's happening today.</p>
+</div>
+<button class="bg-primary-container text-on-primary font-label-md text-label-md px-lg py-3 rounded-full flex items-center gap-xs hover:shadow-lg transition-shadow active:scale-95">
+<span class="material-symbols-outlined text-[18px]">summarize</span>
+                    Generate Executive Summary
+                </button>
+</div>
+<!-- Analytics Cards (Bento Grid Style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md mb-lg">
+<!-- Total Enrolled (Green) -->
+<div class="bg-surface-container-lowest p-md md:p-lg rounded-xl border border-[#F3F4F6] shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-secondary-container opacity-20 rounded-full blur-2xl"></div>
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-md text-label-md text-on-surface-variant">Total Enrolled</span>
+<div class="p-2 bg-secondary-container rounded-full text-on-secondary-container">
+<span class="material-symbols-outlined">child_care</span>
+</div>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-h1 text-h1-mobile md:text-h1 text-on-surface">142</span>
+<span class="font-caption text-caption text-secondary flex items-center">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +12%
+                        </span>
+</div>
+</div>
+<!-- Revenue this Month (Blue) -->
+<div class="bg-surface-container-lowest p-md md:p-lg rounded-xl border border-[#F3F4F6] shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-primary-container opacity-10 rounded-full blur-2xl"></div>
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-md text-label-md text-on-surface-variant">Revenue this Month</span>
+<div class="p-2 bg-surface-container-high rounded-full text-primary">
+<span class="material-symbols-outlined">payments</span>
+</div>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-h1 text-h1-mobile md:text-h1 text-on-surface">KES 450K</span>
+<span class="font-caption text-caption text-secondary flex items-center">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +5%
+                        </span>
+</div>
+</div>
+<!-- Total Arrears (Orange) -->
+<div class="bg-surface-container-lowest p-md md:p-lg rounded-xl border border-[#F3F4F6] shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-tertiary-container opacity-10 rounded-full blur-2xl"></div>
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-md text-label-md text-on-surface-variant">Total Arrears</span>
+<div class="p-2 bg-[#FEF3C7] rounded-full text-[#92400E]">
+<span class="material-symbols-outlined">error</span>
+</div>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-h1 text-h1-mobile md:text-h1 text-on-surface">KES 35K</span>
+<span class="font-caption text-caption text-error flex items-center">
+<span class="material-symbols-outlined text-[14px]">trending_down</span> Action needed
+                        </span>
+</div>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-md">
+<!-- Revenue Trend Chart -->
+<div class="bg-surface-container-lowest p-md md:p-lg rounded-xl border border-[#F3F4F6] shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+<h3 class="font-h3 text-h3 text-on-surface mb-md">Revenue Trends</h3>
+<div class="relative h-64 w-full">
+<!-- Simple Line Chart SVG -->
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 400 200">
+<path class="chart-line" d="M 0,180 C 50,170 100,100 150,110 C 200,120 250,50 300,60 C 350,70 400,20 400,20" fill="none" stroke="#2563eb" stroke-linecap="round" stroke-width="4"></path>
+<!-- Gradient Area under line -->
+<lineargradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#2563eb;stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:#2563eb;stop-opacity:0"></stop>
+</lineargradient>
+<path d="M 0,180 C 50,170 100,100 150,110 C 200,120 250,50 300,60 C 350,70 400,20 400,20 L 400,200 L 0,200 Z" fill="url(#grad1)"></path>
+</svg>
+<!-- Grid lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+</div>
+</div>
+<!-- X Axis Labels -->
+<div class="flex justify-between mt-sm font-caption text-caption text-outline">
+<span>Jan</span>
+<span>Feb</span>
+<span>Mar</span>
+<span>Apr</span>
+<span>May</span>
+</div>
+</div>
+<!-- Enrollment Trend Chart -->
+<div class="bg-surface-container-lowest p-md md:p-lg rounded-xl border border-[#F3F4F6] shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+<h3 class="font-h3 text-h3 text-on-surface mb-md">Enrollment Growth</h3>
+<div class="relative h-64 w-full flex items-end justify-between gap-2 md:gap-4 px-xs">
+<!-- Bars -->
+<div class="w-full bg-secondary-container rounded-t-sm bar-rise" style="height: 40%; animation-delay: 0.1s;"></div>
+<div class="w-full bg-secondary-container rounded-t-sm bar-rise" style="height: 55%; animation-delay: 0.2s;"></div>
+<div class="w-full bg-secondary-container rounded-t-sm bar-rise" style="height: 50%; animation-delay: 0.3s;"></div>
+<div class="w-full bg-secondary-container rounded-t-sm bar-rise" style="height: 70%; animation-delay: 0.4s;"></div>
+<div class="w-full bg-[#00714d] rounded-t-sm bar-rise shadow-lg" style="height: 90%; animation-delay: 0.5s;"></div>
+<!-- Grid lines (behind bars) -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20 -z-10">
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+</div>
+</div>
+<!-- X Axis Labels -->
+<div class="flex justify-between mt-sm font-caption text-caption text-outline">
+<span>Term 1</span>
+<span>Term 2</span>
+<span>Term 3</span>
+<span>Term 1</span>
+<span class="font-bold text-on-surface">Term 2 (Current)</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="bg-surface dark:bg-inverse-surface text-primary dark:text-primary-fixed-dim font-label-md text-caption fixed bottom-0 w-full z-50 md:hidden bg-surface dark:bg-inverse-surface border-t border-outline-variant shadow-lg fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-4">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high transition-all duration-200 p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined">search</span>
+<span>Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-90 transition-transform duration-150 shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high transition-all duration-200 p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span>Messages</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high transition-all duration-200 p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined">person</span>
+<span>Profile</span>
+</a>
+</nav>
+</div>
+</body></html>

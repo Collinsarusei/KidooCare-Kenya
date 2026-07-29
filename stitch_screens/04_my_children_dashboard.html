@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Parent Dashboard - KiddoCare Kenya</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#121c2a",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary-container": "#2563eb",
+                        "error": "#ba1a1a",
+                        "primary": "#004ac6",
+                        "on-secondary-container": "#00714d",
+                        "tertiary": "#784b00",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "tertiary-container": "#996100",
+                        "surface-container-high": "#dee9fc",
+                        "surface-container-highest": "#d9e3f6",
+                        "inverse-surface": "#27313f",
+                        "on-tertiary-container": "#ffeedd",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-dim": "#d0dbed",
+                        "secondary-fixed-dim": "#4edea3",
+                        "inverse-primary": "#b4c5ff",
+                        "on-secondary-fixed": "#002113",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#eeefff",
+                        "secondary": "#006c49",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary-fixed": "#ffddb8",
+                        "outline": "#737686",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "surface": "#f8f9ff",
+                        "on-surface-variant": "#434655",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container": "#e6eeff",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#d9e3f6",
+                        "secondary-container": "#6cf8bb",
+                        "surface-tint": "#0053db",
+                        "surface-container-low": "#eff4ff",
+                        "background": "#f8f9ff",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#121c2a",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "xl": "48px",
+                        "container-max": "1280px",
+                        "base": "4px",
+                        "gutter": "16px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "h1-mobile": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "h3": ["Plus Jakarta Sans"],
+                        "h1": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "h2": ["Plus Jakarta Sans"],
+                        "h2-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "caption": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h1-mobile": ["30px", { "lineHeight": "1.2", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "h1": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "h2": ["30px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "h2-mobile": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "caption": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .font-h1, .font-h2, .font-h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 24px;
+        }
+        .bento-card-large { grid-column: span 12; }
+        @media (min-width: 768px) {
+            .bento-card-large { grid-column: span 8; }
+            .bento-card-small { grid-column: span 4; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row">
+<!-- Navigation Drawer (Desktop) -->
+<nav class="hidden lg:flex flex-col h-screen sticky top-0 h-full w-72 rounded-r-xl bg-surface dark:bg-on-background bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant shadow-md z-40">
+<div class="p-lg">
+<div class="flex items-center gap-sm mb-xl">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant flex-shrink-0">
+<img alt="School administrator profile" class="w-full h-full object-cover" data-alt="A smiling, warm portrait of a school administrator in a brightly lit modern office setting. The lighting is soft and inviting, emphasizing approachability and professionalism. The background features subtle educational elements out of focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkgm-FU5oDKOQb8h692kSQQu5fxAZFfX9h3DNhdeZDVwaeiP4F6ODxROLEnThYac0Bu52k315eNFIcU2zHETY-lZNX72LAMKBzjS0_6Qkv06Ftnxl881AdCUb9-wjGR-oBPiJuGMIpGAQqrrKtUWnxl9HoP4_RMjDMiZ2oFbCm58yP3mqt2WikJkfpKoj3LhoiyaS_R-5eZapQSqbN-wSi6QShzrFZcNIW5OvCrwAOdSSLPFcMnvxGwlO-8i0NB0mfovaF5OtZ8lqS"/>
+</div>
+<div>
+<h2 class="font-h2 text-h2-mobile md:text-h2 text-primary dark:text-primary-fixed-dim line-clamp-1">Sunshine Daycare</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">School Admin</p>
+<p class="font-caption text-caption text-outline">Nairobi, KE</p>
+</div>
+</div>
+<ul class="flex flex-col gap-sm">
+<li>
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container font-bold rounded-lg m-2 p-3 hover:translate-x-1 transition-transform duration-200 active:opacity-80" href="#">
+<span class="material-symbols-outlined icon-filled">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-md text-label-md">My Schools</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Payments</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Staff Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<div class="flex-1 flex flex-col min-w-0">
+<!-- TopAppBar -->
+<header class="docked full-width top-0 sticky z-50 bg-surface dark:bg-on-background border-b border-outline-variant shadow-sm flex justify-between items-center px-md md:px-lg h-16 md:h-20 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-sm">
+<div class="lg:hidden w-10 h-10 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant mr-2 flex-shrink-0">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A small circular avatar of a user profile in a clean, brightly lit environment. Soft shadows give it a slightly raised feel. The subject is friendly and modern." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOAkQWyAdygSxfQmQBPzA-bBbNMuQG-vepovQbHRKpKPjD8W7w3Ojf5WF6Bz9duFSfm8F1bH2yPVdt1s-9qB7F1XzYjxNsrsC3mQi3zotBWCIgZ7665OzD6LR_Dif5LDV1srQHxBvdRx3xIS6H0o30isx0zzp-vakcN0H47oPKIpMDz2s_zl4AXvlV-PtkrT1SEQFKkkpiAV5FMzsVZrkDGRM1dEad5TfNtCRvlrsTGuZVjsRCtwXHnkWkW14mN50UwaSy9QBdMxvY"/>
+</div>
+<h1 class="font-h1 text-h1-mobile md:text-h1 text-primary dark:text-primary-fixed-dim tracking-tight">KiddoCare Kenya</h1>
+</div>
+<button aria-label="notifications" class="text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high transition-all duration-200 p-2 rounded-full active:scale-95 transition-transform">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 p-md md:p-lg lg:p-xl overflow-y-auto w-full max-w-container-max mx-auto pb-24 md:pb-lg">
+<div class="mb-lg">
+<h2 class="font-h2 text-h2-mobile md:text-h2 text-on-background mb-xs">Welcome back, Sarah</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Here is an overview of your children's enrollment and payments.</p>
+</div>
+<div class="bento-grid">
+<!-- Upcoming Payment Reminder -->
+<div class="bento-card-large bg-[#FEF3C7] rounded-xl p-lg shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-md border border-[#FDE68A] transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-[#F59E0B] flex items-center justify-center text-white shrink-0">
+<span class="material-symbols-outlined">event_note</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-[#92400E]">Upcoming Payment Reminder</h3>
+<p class="font-body-md text-body-md text-[#B45309]">Next term fees for Amani are due on Oct 15th.</p>
+</div>
+</div>
+<button class="bg-[#F59E0B] text-white font-label-md text-label-md py-3 px-6 rounded-full hover:bg-[#D97706] transition-colors whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-2">
+                        Pay Now <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<!-- Children Enrolled Section (Glassmorphism inspired cards) -->
+<div class="bento-card-large flex flex-col gap-md">
+<h3 class="font-h3 text-h3 text-on-background">Enrolled Children</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+<!-- Child Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-md border border-outline-variant shadow-sm hover:shadow-md transition-shadow hover:-translate-y-1 duration-300 flex flex-col h-full relative overflow-hidden group cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-fixed to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+<div class="flex justify-between items-start mb-md z-10">
+<div class="flex items-center gap-sm">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-surface bg-surface-container">
+<img alt="Amani" class="w-full h-full object-cover" data-alt="A portrait of a young African boy smiling brightly, wearing a clean light blue school uniform. The lighting is soft natural daylight, conveying a warm, optimistic, and trustworthy mood. Modern light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC11g3OkuJGFG94gM2Izku7mx5-nfEiN7Np4RShWmPPfkn-Gs77u_WhD-4PSBZJEEi9LVyf4TYTJ6U-5xc5H0almqRSo2ZomZJuTjsfOBdzEGUcA9SrYAsdV66L2nDC1Ol5kmmhNS2Y5fbmxvbG68OMQDFbmf80_3eANiOUWRmkbvk9T4_vKnVPhEeIHE3eTwX8WHisYVEut2PFGAk9PIkFH3fWpXOoRDVABZDwejG3jURDm6b-UGEpLDcciKT2vmtcRnt3cvb1oBWN"/>
+</div>
+<div>
+<h4 class="font-h3 text-h3 text-on-background">Amani Mutua</h4>
+<p class="font-caption text-caption text-on-surface-variant">Sunshine Daycare • Grade 1</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<div class="mt-auto flex justify-between items-end z-10 border-t border-surface-container-high pt-sm">
+<div class="flex flex-col gap-xs">
+<span class="font-caption text-caption text-outline">Payment Status</span>
+<span class="inline-flex items-center gap-1 bg-[#D1FAE5] text-[#065F46] font-label-md text-label-md px-3 py-1 rounded-full w-fit">
+<span class="material-symbols-outlined text-[16px]">check_circle</span> Fully Paid
+                                    </span>
+</div>
+</div>
+</div>
+<!-- Child Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-md border border-outline-variant shadow-sm hover:shadow-md transition-shadow hover:-translate-y-1 duration-300 flex flex-col h-full relative overflow-hidden group cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-fixed to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+<div class="flex justify-between items-start mb-md z-10">
+<div class="flex items-center gap-sm">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-surface bg-surface-container">
+<img alt="Nala" class="w-full h-full object-cover" data-alt="A portrait of a young African girl with braided hair, smiling playfully, wearing a clean light blue school uniform. The lighting is soft natural daylight, conveying a warm, optimistic, and trustworthy mood. Modern light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDd-pMPNjb_H1UED2R2wqdAaNEDnxdf7yQHtvn6lD1wulq0qBeL1XORXadGzUKsXwHI3Zhq_OrxV8kz0ydzej9vFXVoPy4qphLw_3HysnLW010eZr3rK1FWtOSjqcwFCqUE-OCXrPJKYn94KNJDVdqPLw7O8KIsqksHkkKhMFIuZwSjXV6ALH17JmgZRL6XnmnZI3cWfkfdoe2dcs1n4NmDt3VPQwJbrL0mVcStq2WGYiaU4NUiKVtHmweY6Mf6OYmr1Cl2rFToiUbv"/>
+</div>
+<div>
+<h4 class="font-h3 text-h3 text-on-background">Nala Mutua</h4>
+<p class="font-caption text-caption text-on-surface-variant">Sunshine Daycare • Preschool</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<div class="mt-auto flex justify-between items-end z-10 border-t border-surface-container-high pt-sm">
+<div class="flex flex-col gap-xs">
+<span class="font-caption text-caption text-outline">Payment Status</span>
+<span class="inline-flex items-center gap-1 bg-[#FEF3C7] text-[#92400E] font-label-md text-label-md px-3 py-1 rounded-full w-fit">
+<span class="material-symbols-outlined text-[16px]">warning</span> Arrears: KSh 2,500
+                                    </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Receipts / Activity -->
+<div class="bento-card-small bg-surface-container-lowest rounded-xl p-md border border-outline-variant shadow-sm flex flex-col">
+<div class="flex justify-between items-center mb-md pb-xs border-b border-surface-container-high">
+<h3 class="font-h3 text-h3 text-on-background">Recent Receipts</h3>
+<button class="text-primary font-label-md text-label-md hover:underline">View All</button>
+</div>
+<ul class="flex flex-col gap-sm overflow-y-auto max-h-[300px] pr-2">
+<li class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-low transition-colors group cursor-pointer border border-transparent hover:border-outline-variant">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-background">Term 3 Tuition - Amani</p>
+<p class="font-caption text-caption text-on-surface-variant">Sep 01, 2023 • KSh 15,000</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container-highest">
+<span class="material-symbols-outlined">download</span>
+</button>
+</li>
+<li class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-low transition-colors group cursor-pointer border border-transparent hover:border-outline-variant">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-background">Bus Fee - Nala</p>
+<p class="font-caption text-caption text-on-surface-variant">Aug 28, 2023 • KSh 3,000</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container-highest">
+<span class="material-symbols-outlined">download</span>
+</button>
+</li>
+<li class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-low transition-colors group cursor-pointer border border-transparent hover:border-outline-variant">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-background">Term 2 Arrears</p>
+<p class="font-caption text-caption text-on-surface-variant">Jul 15, 2023 • KSh 5,000</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container-highest">
+<span class="material-symbols-outlined">download</span>
+</button>
+</li>
+</ul>
+</div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 w-full z-50 md:hidden bg-surface dark:bg-inverse-surface border-t border-outline-variant shadow-lg fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-4">
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-label-md text-caption mt-1">Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-label-md text-caption mt-1">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="font-label-md text-caption mt-1">Messages</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined icon-filled">person</span>
+<span class="font-label-md text-caption mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

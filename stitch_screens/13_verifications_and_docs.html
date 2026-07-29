@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KiddoCare Kenya - Document Upload</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-on-surface": "#eaf1ff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-background": "#121c2a",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "primary-container": "#2563eb",
+                      "error": "#ba1a1a",
+                      "primary": "#004ac6",
+                      "on-secondary-container": "#00714d",
+                      "tertiary": "#784b00",
+                      "error-container": "#ffdad6",
+                      "on-primary-fixed": "#00174b",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "tertiary-container": "#996100",
+                      "surface-container-high": "#dee9fc",
+                      "surface-container-highest": "#d9e3f6",
+                      "inverse-surface": "#27313f",
+                      "on-tertiary-container": "#ffeedd",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "surface-dim": "#d0dbed",
+                      "secondary-fixed-dim": "#4edea3",
+                      "inverse-primary": "#b4c5ff",
+                      "on-secondary-fixed": "#002113",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed": "#6ffbbe",
+                      "surface-bright": "#f8f9ff",
+                      "on-primary": "#ffffff",
+                      "on-primary-container": "#eeefff",
+                      "secondary": "#006c49",
+                      "primary-fixed": "#dbe1ff",
+                      "tertiary-fixed": "#ffddb8",
+                      "outline": "#737686",
+                      "on-secondary-fixed-variant": "#005236",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "surface": "#f8f9ff",
+                      "on-surface-variant": "#434655",
+                      "outline-variant": "#c3c6d7",
+                      "surface-container": "#e6eeff",
+                      "on-secondary": "#ffffff",
+                      "surface-variant": "#d9e3f6",
+                      "secondary-container": "#6cf8bb",
+                      "surface-tint": "#0053db",
+                      "surface-container-low": "#eff4ff",
+                      "background": "#f8f9ff",
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#121c2a",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-error": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "4px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "xl": "48px",
+                      "container-max": "1280px",
+                      "base": "4px",
+                      "gutter": "16px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "h1-mobile": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "h3": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "h1": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "h2": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "h2-mobile": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "caption": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "h1-mobile": [
+                              "30px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h3": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h1": [
+                              "40px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h2": [
+                              "30px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "h2-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "caption": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col md:flex-row font-body-md">
+<!-- Navigation Drawer (Desktop) -->
+<nav class="hidden lg:flex flex-col h-screen sticky top-0 bg-surface dark:bg-on-background border-r border-outline-variant shadow-md h-full w-72 rounded-r-xl z-40">
+<div class="p-lg border-b border-outline-variant flex items-center space-x-md">
+<img alt="School administrator profile" class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Profile picture of a confident African woman, early 30s, wearing professional attire, representing a daycare administrator. The lighting is soft and warm, typical of an inviting office environment. The background is slightly blurred but suggests a well-organized, bright educational setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB85ax79b7jZbeAv_qUnxRqTIRJQyzprciSFHXVXM5XLFzDRWtEi62OPZ3biB2K0Js0OHHrY5cMpgeQ9aALxSXaNkdb_hhgOVGmEfCIoqvGrhtU06H-lSHlcmD9ZlH0sQCy-RS6JFbXaC7x1Q2AmROZ3wjxWyuICSAtUKX24h69uVNRob_t1Dewv4fQkP_1IQOsaIHvzPvv4wpFZDIy1WVMC7ryjy-w2cEn4VOp5cA27uUZdAMCyyDsrMXSLtmMENh7_zCmYLLOXzHG"/>
+<div>
+<h2 class="font-h3 text-h3 text-on-surface">Sunshine Daycare</h2>
+<p class="font-caption text-caption text-on-surface-variant">School Admin</p>
+<p class="font-caption text-caption text-on-surface-variant mt-xs">Nairobi, KE</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto py-sm">
+<a class="flex items-center space-x-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center space-x-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-md text-label-md">My Schools</span>
+</a>
+<a class="flex items-center space-x-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Payments</span>
+</a>
+<a class="flex items-center space-x-md text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Staff Management</span>
+</a>
+<a class="flex items-center space-x-md bg-secondary-container text-on-secondary-container font-bold rounded-lg m-2 p-3 opacity-80" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-on-background border-b border-outline-variant shadow-sm docked full-width top-0 sticky z-50 flex justify-between items-center px-md md:px-lg h-16 md:h-20 w-full max-w-container-max mx-auto">
+<div class="flex items-center space-x-md">
+<!-- Mobile Menu Button -->
+<button class="lg:hidden text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 p-2 rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="lg:hidden">
+<img alt="User profile avatar" class="w-8 h-8 rounded-full object-cover shadow-sm" data-alt="Small profile picture of a confident African woman, early 30s, wearing professional attire, representing a daycare administrator." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvdHSxtr1Go29iGPPt64_9NpwXBbinwY1JcQLimCG1C4yxlTrucctFVx1R4Jw17nlc2ESMOO2Hq7rTaW2AEdCMH7Ebm7vN86N876z8Fv2zOiGMyd0x9MoZ4WcJdoPooMVcz3XajuWQ2v3Aah0OlD0yCI0OFOTfsxflRuKV8Fiwtr0K0Rp3VsmxB_jFAsC31n-STptEHzzcAJQOAil2e9UH-fXv36f6mek6mJrVvtL6UBsnOP3w8DpfkxonSG5k0Yvv_jQlG4hD7ulT"/>
+</div>
+<h1 class="font-h1 text-h1-mobile md:text-h1 text-primary tracking-tight">KiddoCare Kenya</h1>
+</div>
+<div class="flex items-center space-x-sm md:space-x-md">
+<!-- Desktop Navigation Links -->
+<div class="hidden md:flex space-x-lg mr-lg">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md py-4 hover:bg-surface-container-high transition-all duration-200 px-2 rounded" href="#">General</a>
+<a class="text-primary font-bold border-b-2 border-primary font-label-md text-label-md py-4 px-2 scale-95 transition-transform" href="#">Documents</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md py-4 hover:bg-surface-container-high transition-all duration-200 px-2 rounded" href="#">Security</a>
+</div>
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 p-2 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<!-- Page Content -->
+<div class="flex-1 overflow-y-auto p-md md:p-lg lg:p-xl max-w-container-max mx-auto w-full pb-32 md:pb-lg">
+<div class="mb-lg">
+<h2 class="font-h2 text-h2-mobile md:text-h2 text-on-surface mb-xs">Document Verification</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Upload your licensing and certification documents to complete your school's verification process. A verified badge builds trust with parents.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Left Column: Upload Area & List -->
+<div class="lg:col-span-2 space-y-lg">
+<!-- Upload Card (Bento Style) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-300">
+<div class="flex items-center justify-between mb-md">
+<h3 class="font-h3 text-h3 text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">upload_file</span>
+                                Upload New Document
+                            </h3>
+</div>
+<!-- Drag & Drop Zone -->
+<div class="border-2 border-dashed border-outline-variant rounded-lg p-xl flex flex-col items-center justify-center bg-surface hover:border-primary hover:bg-surface-container-low transition-colors duration-200 cursor-pointer group">
+<div class="w-16 h-16 bg-surface-container-highest rounded-full flex items-center justify-center mb-md group-hover:bg-primary-container transition-colors duration-200">
+<span class="material-symbols-outlined text-3xl text-on-surface-variant group-hover:text-on-primary-container">cloud_upload</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface text-center mb-xs">Drag and drop your file here, or <span class="text-primary font-medium">browse</span></p>
+<p class="font-caption text-caption text-on-surface-variant text-center">Supports PDF, JPG, PNG (Max 5MB)</p>
+</div>
+<!-- Quick Select Document Type -->
+<div class="mt-md">
+<label class="font-label-md text-label-md text-on-surface block mb-sm">Document Type</label>
+<div class="flex flex-wrap gap-sm">
+<button class="px-4 py-2 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-colors focus:ring-2 focus:ring-primary focus:border-primary">Ministry of Education License</button>
+<button class="px-4 py-2 rounded-full border border-primary bg-primary-fixed-dim text-on-primary-fixed font-label-md text-label-md">Public Health Certificate</button>
+<button class="px-4 py-2 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-colors focus:ring-2 focus:ring-primary focus:border-primary">Fire Safety Certificate</button>
+</div>
+</div>
+<div class="mt-lg flex justify-end">
+<button class="bg-primary text-on-primary px-6 py-3 rounded-full font-label-md text-label-md shadow-sm hover:bg-surface-tint hover:shadow-md transition-all duration-200 flex items-center gap-2">
+                                 Submit Document
+                                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Status List -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+<h3 class="font-h3 text-h3 text-on-surface mb-md">Uploaded Documents</h3>
+<div class="space-y-sm">
+<!-- Document Item: Verified -->
+<div class="flex items-center justify-between p-4 border border-outline-variant rounded-lg bg-surface hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 bg-secondary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Ministry of Education License</p>
+<p class="font-caption text-caption text-on-surface-variant">Uploaded on Oct 12, 2023 • 1.2 MB</p>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="bg-[#D1FAE5] text-[#065F46] px-3 py-1 rounded-full font-caption text-caption whitespace-nowrap">Approved</span>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<!-- Document Item: Pending -->
+<div class="flex items-center justify-between p-4 border border-outline-variant rounded-lg bg-surface hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">hourglass_empty</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Public Health Certificate</p>
+<p class="font-caption text-caption text-on-surface-variant">Uploaded on Oct 24, 2023 • 2.4 MB</p>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="bg-[#FEF3C7] text-[#92400E] px-3 py-1 rounded-full font-caption text-caption whitespace-nowrap">In Review</span>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<!-- Document Item: Action Required -->
+<div class="flex items-center justify-between p-4 border border-error-container rounded-lg bg-[#fff8f7] hover:bg-[#fff0ef] transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 bg-error-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">error</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Fire Safety Certificate</p>
+<p class="font-caption text-caption text-error">Document expired. Please upload renewed version.</p>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-primary font-label-md text-label-md hover:underline whitespace-nowrap">Update</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Preview & Info -->
+<div class="space-y-lg">
+<!-- Trust Badge Preview Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg shadow-[0_4px_20px_rgba(0,0,0,0.04)] relative overflow-hidden group">
+<!-- Decorative Background Blob -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-fixed-dim rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
+<h3 class="font-h3 text-h3 text-on-surface mb-sm relative z-10">Verification Status</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md relative z-10">Achieve 'Verified' status to stand out in the marketplace.</p>
+<!-- The Badge Preview -->
+<div class="bg-surface-bright border border-outline-variant rounded-lg p-md flex flex-col items-center text-center relative z-10">
+<div class="relative mb-sm">
+<img alt="Daycare Logo" class="w-16 h-16 rounded-full border border-outline-variant object-cover shadow-sm" data-alt="Small, rounded logo placeholder for Sunshine Daycare, showing a stylized sun icon on a clean white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdDNm1ExjekGycYQRpxK7-dHfMbKYbXavKQ7BgL0LE8ytNx1NOugUJyJA27TBR66GBswFFFlkVOrNIM7pm3KxnhZk4V2yhTjGDRCjQoah3h0SEDfkE1orwFKenpZNBYQJS-zXHOdWuoJDCYhNrTRKwyrPHbeAVATjNOLJk_0IpN5Ai89D-gNX9dwc2jiZRZzz4SnLHNu01_pAAKDllR_nXyA7MjBOnKRoK6BzwEEkuYAF9JsVKlFFKHXRF82NXkEhCyg_yESvhaMtX"/>
+<!-- Verified Badge overlay -->
+<div class="absolute -bottom-1 -right-1 bg-surface-container-lowest rounded-full p-0.5 shadow-sm">
+<div class="bg-secondary-container rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-on-secondary-container text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+</div>
+<p class="font-label-md text-label-md text-on-surface">Sunshine Daycare</p>
+<p class="font-caption text-caption text-primary flex items-center justify-center gap-1 mt-1">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                Verified Provider
+                            </p>
+<div class="w-full bg-surface-container-highest rounded-full h-2 mt-md overflow-hidden">
+<div class="bg-primary h-2 rounded-full" style="width: 66%"></div>
+</div>
+<p class="font-caption text-caption text-on-surface-variant mt-xs text-left w-full">2 of 3 documents approved</p>
+</div>
+</div>
+<!-- Help Card -->
+<div class="bg-inverse-surface text-inverse-on-surface rounded-xl p-md md:p-lg shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+<h4 class="font-h3 text-h3 mb-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-inverse-primary">help</span>
+                            Need Help?
+                        </h4>
+<p class="font-body-md text-body-md mb-md text-sm">Having trouble uploading your documents or not sure which ones are required? Our support team is here to guide you.</p>
+<button class="bg-inverse-primary text-on-primary-fixed w-full py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">Contact Support</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-4 bg-surface dark:bg-inverse-surface border-t border-outline-variant shadow-lg md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest font-label-md text-caption" href="#">
+<span class="material-symbols-outlined">search</span>
+<span>Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest font-label-md text-caption" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span>Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-highest font-label-md text-caption" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span>Messages</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:bg-surface-container-highest scale-90 transition-transform duration-150 font-label-md text-caption" href="#">
+<span class="material-symbols-outlined">person</span>
+<span>Profile</span>
+</a>
+</nav>
+</body></html>

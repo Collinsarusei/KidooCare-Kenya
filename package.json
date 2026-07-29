@@ -1,0 +1,22 @@
+{
+  "name": "daycare-platform",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "npm@10.8.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=1024 turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "prisma:generate": "turbo run prisma:generate",
+    "prisma:push": "npm --prefix apps/api run prisma:push",
+    "prisma:seed": "npm --prefix apps/api run prisma:seed"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.0",
+    "typescript": "^5.4.5"
+  }
+}

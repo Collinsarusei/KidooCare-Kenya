@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KiddoCare Kenya - Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#121c2a",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary-container": "#2563eb",
+                        "error": "#ba1a1a",
+                        "primary": "#004ac6",
+                        "on-secondary-container": "#00714d",
+                        "tertiary": "#784b00",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "tertiary-container": "#996100",
+                        "surface-container-high": "#dee9fc",
+                        "surface-container-highest": "#d9e3f6",
+                        "inverse-surface": "#27313f",
+                        "on-tertiary-container": "#ffeedd",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-dim": "#d0dbed",
+                        "secondary-fixed-dim": "#4edea3",
+                        "inverse-primary": "#b4c5ff",
+                        "on-secondary-fixed": "#002113",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#eeefff",
+                        "secondary": "#006c49",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary-fixed": "#ffddb8",
+                        "outline": "#737686",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "surface": "#f8f9ff",
+                        "on-surface-variant": "#434655",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container": "#e6eeff",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#d9e3f6",
+                        "secondary-container": "#6cf8bb",
+                        "surface-tint": "#0053db",
+                        "surface-container-low": "#eff4ff",
+                        "background": "#f8f9ff",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#121c2a",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "xl": "48px",
+                        "container-max": "1280px",
+                        "base": "4px",
+                        "gutter": "16px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "h1-mobile": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "h3": ["Plus Jakarta Sans"],
+                        "h1": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "h2": ["Plus Jakarta Sans"],
+                        "h2-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "caption": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h1-mobile": ["30px", { "lineHeight": "1.2", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "h1": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "h2": ["30px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "h2-mobile": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "caption": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen font-body-md text-body-md flex flex-col md:flex-row">
+<!-- Navigation Drawer (Desktop) -->
+<aside class="hidden lg:flex flex-col h-screen sticky top-0 h-full w-72 rounded-r-xl bg-surface dark:bg-on-background border-r border-outline-variant shadow-md bg-surface-container-low dark:bg-inverse-surface z-40">
+<div class="p-lg border-b border-outline-variant">
+<div class="flex items-center gap-sm">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="A small, professional headshot of an African school administrator wearing a business casual outfit, smiling warmly against a soft white background. The lighting is bright and inviting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRxhWFwIZAdHsByT0tQowoVBPFnN9gUUq5Lp_dt-t8C87J2wRnI5tKDvlfUzGtBQNvrShgd5vTsoLvbDbduS9IP13rouIHfduwNrs5fUTVKzHpJcT4cjijvTCtGjJI6xfwFRQADIVAnxWIGCn5NzyGtXfxICAxhnisr8fK9VV14Ay8xcxIk3HiV7f3xU9dRaPL2txcSr7At9TYWOtlfzyzR95xCciJFOZvsNqdiYKJpIXbRyr-5lnPLvhfCz1GQP0GiYlpSWm4N3ZB"/>
+<div>
+<h2 class="font-h3 text-h3 text-primary">Sunshine Daycare</h2>
+<p class="font-caption text-caption text-on-surface-variant">School Admin • Nairobi, KE</p>
+</div>
+</div>
+<div class="mt-sm">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-tertiary-container text-on-tertiary-container font-label-md text-caption">Platform Admin</span>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto py-md">
+<ul class="space-y-sm px-sm">
+<li>
+<a class="flex items-center gap-sm bg-secondary-container text-on-secondary-container font-bold rounded-lg m-2 p-3 opacity-80" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">school</span>
+<span>My Schools</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Payments</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Staff Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high m-2 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</li>
+</ul>
+</nav>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-on-background border-b border-outline-variant shadow-sm docked full-width top-0 sticky z-50 flex justify-between items-center px-md md:px-lg h-16 md:h-20 w-full max-w-container-max mx-auto hover:bg-surface-container-high transition-all duration-200">
+<div class="flex items-center gap-sm">
+<img class="w-8 h-8 rounded-full md:hidden" data-alt="A professional profile avatar icon, representing a user logged into a childcare management system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBu2MEMOzeufw0wchGNhcOlve1ThqGW-pJ4PicVVxq8_ylJyBwKX2MbYQQi_U9lsEbkz6EFfDGjg6dvjSJuxJpnSDd2ASFBcvHEbxCpzmO2HJG5lSlFKFzn0OD_4rYoqT5faaEY9oX-1U9gYx-ScY5JN-cr9VV6DGXHbrUks70OgXygx1UIvpT5Ut2tuYA_oQKpA0ZyTdkAED729ctpcINmvAiKfzw3EMf98c87KqZndLOL67UVmQ1qwOaZxFmqupOIKvfTSxySzcbT"/>
+<h1 class="font-h1 text-h1-mobile md:text-h1 text-primary dark:text-primary-fixed-dim tracking-tight">KiddoCare Kenya</h1>
+</div>
+<nav class="hidden md:flex gap-lg h-full items-end">
+<!-- Desktop nav items suppressed as NavigationDrawer is active -->
+</nav>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-sm rounded-full hover:bg-surface-container-highest">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<main class="flex-1 p-md md:p-lg lg:p-24 max-w-container-max mx-auto w-full pb-32 md:pb-lg">
+<!-- Dashboard Header -->
+<div class="mb-lg flex flex-col md:flex-row justify-between items-start md:items-end gap-sm">
+<div>
+<h2 class="font-h2 text-h2-mobile md:text-h2 text-on-background mb-xs">Platform Overview</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Real-time metrics for all childcare providers across Kenya.</p>
+</div>
+<button class="bg-primary-container text-on-primary-container font-label-md text-label-md px-lg py-3 rounded-full hover:shadow-md transition-all">
+                    Generate Report
+                </button>
+</div>
+<!-- Stats Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md mb-xl">
+<!-- Stat Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-sm bg-primary-fixed rounded-lg text-on-primary-fixed">
+<span class="material-symbols-outlined">group</span>
+</div>
+<span class="font-caption text-caption text-secondary flex items-center"><span class="material-symbols-outlined text-[16px] mr-1">trending_up</span> +12%</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-xs">Total Users</p>
+<p class="font-h1 text-h1-mobile md:text-h1 text-on-background">14,205</p>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-sm bg-tertiary-fixed rounded-lg text-on-tertiary-fixed">
+<span class="material-symbols-outlined">school</span>
+</div>
+<span class="font-caption text-caption text-secondary flex items-center"><span class="material-symbols-outlined text-[16px] mr-1">trending_up</span> +5%</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-xs">Total Schools</p>
+<p class="font-h1 text-h1-mobile md:text-h1 text-on-background">342</p>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-sm bg-secondary-container rounded-lg text-on-secondary-container">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="font-caption text-caption text-secondary flex items-center"><span class="material-symbols-outlined text-[16px] mr-1">trending_up</span> +24%</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-xs">Total Transactions (KES)</p>
+<p class="font-h1 text-h1-mobile md:text-h1 text-on-background">8.4M</p>
+</div>
+</div>
+<!-- Schools List Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="p-md md:p-lg border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+<h3 class="font-h3 text-h3 text-on-background">Recent School Registrations</h3>
+<button class="text-primary font-label-md text-label-md hover:underline">View All</button>
+</div>
+<div class="divide-y divide-outline-variant">
+<!-- List Item 1 -->
+<div class="p-md flex flex-col md:flex-row justify-between items-start md:items-center gap-sm hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-lg bg-surface-variant flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">crib</span>
+</div>
+<div>
+<h4 class="font-label-md text-body-md text-on-background font-semibold">Little Angels Academy</h4>
+<p class="font-caption text-caption text-on-surface-variant">Nairobi Central • Registered 2 hours ago</p>
+</div>
+</div>
+<div class="flex items-center gap-sm md:w-48 justify-end w-full">
+<span class="px-3 py-1 rounded-full bg-[#DBEAFE] text-primary font-caption text-caption">Active</span>
+<button class="text-on-surface-variant p-2 rounded-full hover:bg-surface-variant"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="p-md flex flex-col md:flex-row justify-between items-start md:items-center gap-sm hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-lg bg-surface-variant flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">child_care</span>
+</div>
+<div>
+<h4 class="font-label-md text-body-md text-on-background font-semibold">Bright Beginnings</h4>
+<p class="font-caption text-caption text-on-surface-variant">Mombasa • Registered 5 hours ago</p>
+</div>
+</div>
+<div class="flex items-center gap-sm md:w-48 justify-end w-full">
+<span class="px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] font-caption text-caption">Pending</span>
+<button class="text-on-surface-variant p-2 rounded-full hover:bg-surface-variant"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<!-- List Item 3 -->
+<div class="p-md flex flex-col md:flex-row justify-between items-start md:items-center gap-sm hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-lg bg-surface-variant flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">toys</span>
+</div>
+<div>
+<h4 class="font-label-md text-body-md text-on-background font-semibold">Happy Tots Daycare</h4>
+<p class="font-caption text-caption text-on-surface-variant">Kisumu • Registered 1 day ago</p>
+</div>
+</div>
+<div class="flex items-center gap-sm md:w-48 justify-end w-full">
+<span class="px-3 py-1 rounded-full bg-surface-variant text-on-surface-variant font-caption text-caption">Suspended</span>
+<button class="text-on-surface-variant p-2 rounded-full hover:bg-surface-variant"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
