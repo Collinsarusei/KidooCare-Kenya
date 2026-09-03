@@ -5,15 +5,17 @@ interface SchoolRosterTabProps {
   schoolRoster: EnrollmentDto[];
   onPromoteWaitlist: (enrollmentId: string) => void;
   onEndEnrollment: (enrollmentId: string) => void;
+  onWalkinEnrollmentClick: () => void;
 }
 
 export const SchoolRosterTab: React.FC<SchoolRosterTabProps> = ({
   schoolRoster,
   onPromoteWaitlist,
   onEndEnrollment,
+  onWalkinEnrollmentClick,
 }) => {
   return (
-    <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+    <div className="bg-white border border-[#e6eeff] rounded-3xl p-4 md:p-5 shadow-sm space-y-4">
       <div className="flex justify-between items-center border-b border-[#e6eeff] pb-4">
         <div>
           <h3 className="text-xl font-bold text-[#004ac6] font-display flex items-center gap-2">
@@ -22,10 +24,13 @@ export const SchoolRosterTab: React.FC<SchoolRosterTabProps> = ({
           </h3>
           <p className="text-xs text-[#737686]">Manage student enrollment statuses & waitlists</p>
         </div>
-        <span className="badge badge-blue">
-          <span className="material-symbols-outlined text-xs">how_to_reg</span>
-          Active Placement
-        </span>
+        <button 
+          onClick={onWalkinEnrollmentClick}
+          className="btn btn-primary text-xs px-4 py-2 rounded-xl flex items-center gap-1 shadow-md"
+        >
+          <span className="material-symbols-outlined text-[16px]">person_add</span>
+          Walk-in Enrollment
+        </button>
       </div>
 
       <div className="space-y-3">

@@ -14,7 +14,7 @@ interface StkPushModalProps {
   stkPhone: string;
   stkResult: any;
   setStkPhone: (phone: string) => void;
-  onInitiate: (e: React.FormEvent) => void;
+  onInitiate: (phone: string, amount: number) => void;
   onSimulateCallback: () => void;
   onClose: () => void;
 }
@@ -28,6 +28,8 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
   onSimulateCallback,
   onClose,
 }) => {
+  const [customAmount, setCustomAmount] = React.useState<number>(stkInstallment.amount);
+
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 120, padding: '20px' }}>
       <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', width: '500px', maxWidth: '100%', padding: '32px' }}>
@@ -55,7 +57,7 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
             </button>
           </div>
         ) : (
-          <form onSubmit={onInitiate} style={{ display: 'grid', gap: '16px' }}>
+          <form onSubmit={(e) => { e.preventDefault(); onInitiate(stkPhone, customAmount); }} style={{ display: 'grid', gap: '16px' }}>
             <div>
               <label style={{ display: 'block', fontWeight: 600, marginBottom: '6px' }}>M-Pesa Phone Number *</label>
               <input
@@ -68,10 +70,25 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
               />
             </div>
 
+            <div>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '6px' }}>Amount to Pay (KES) *</label>
+              <input
+                type="number"
+                required
+                min={1}
+                value={customAmount}
+                onChange={(e) => setCustomAmount(Number(e.target.value))}
+                style={{ width: '100%', padding: '10px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-gray-200)' }}
+              />
+              <p style={{ fontSize: '0.8rem', color: 'var(--color-gray-500)', marginTop: '4px' }}>
+                You can pay the full arrears or a custom amount.
+              </p>
+            </div>
+
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '8px' }}>
               <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
               <button type="submit" className="btn btn-primary" style={{ background: 'var(--color-green-success)' }}>
-                Send STK Push (KES {stkInstallment.amount.toLocaleString()})
+                Send STK Push (KES {customAmount.toLocaleString()})
               </button>
             </div>
           </form>

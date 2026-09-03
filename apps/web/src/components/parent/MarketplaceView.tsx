@@ -127,23 +127,29 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
             onClick={() => setSelectedSchool(school)}
             className="bg-white rounded-3xl border border-[#e6eeff] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-200 cursor-pointer flex flex-col group"
           >
-            <div className="bg-gradient-to-r from-[#eff4ff] to-[#e6eeff] p-5 border-b border-[#e6eeff] flex justify-between items-start">
-              <div>
-                <h4 className="text-lg font-bold text-[#004ac6] group-hover:text-[#2563eb] transition-colors font-display">
+            <div className="relative h-32 bg-slate-200">
+              <img 
+                src={(school as any).coverImages?.[0] || 'https://images.unsplash.com/photo-1576495199011-eb94736d05d6?auto=format&fit=crop&w=800&q=80'}
+                alt={school.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
+                <h4 className="text-lg font-bold text-white group-hover:text-[#6cf8bb] transition-colors font-display">
                   {school.name}
                 </h4>
-                <p className="text-xs text-[#737686] flex items-center gap-1 mt-1">
-                  <span className="material-symbols-outlined text-sm text-[#004ac6]">location_on</span>
+                <p className="text-xs text-white/80 flex items-center gap-1 mt-0.5">
+                  <span className="material-symbols-outlined text-[14px]">location_on</span>
                   {school.location || 'Location not specified'}
                 </p>
               </div>
               {school.verifiedBadge && (
-                <span className="badge badge-green shadow-sm">
+                <div className="absolute top-3 right-3 badge badge-green shadow-sm">
                   <span className="material-symbols-outlined text-xs">verified</span>
                   Verified
-                </span>
+                </div>
               )}
             </div>
+
 
             <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
               <p className="text-xs text-[#434655] line-clamp-2 leading-relaxed">
@@ -168,7 +174,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
         ))}
       </div>
 
-      {/* School Profile Detail Modal (Mockup Match) */}
+      {/* Daycare Profile Detail Modal (Mockup Match) */}
       {selectedSchool && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-0 md:p-4 animate-fadeIn">
           <div className="bg-[#f8f9ff] w-full md:w-[450px] h-full md:h-[90vh] md:rounded-3xl overflow-y-auto shadow-2xl relative flex flex-col">
@@ -176,7 +182,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
             {/* Banner Section */}
             <div className="relative h-64 shrink-0 bg-slate-300">
               <img 
-                src={selectedSchool.coverImages?.[0] || 'https://images.unsplash.com/photo-1576495199011-eb94736d05d6?auto=format&fit=crop&w=800&q=80'} 
+                src={(selectedSchool as any).coverImages?.[0] || 'https://images.unsplash.com/photo-1576495199011-eb94736d05d6?auto=format&fit=crop&w=800&q=80'} 
                 alt={selectedSchool.name}
                 className="w-full h-full object-cover"
               />

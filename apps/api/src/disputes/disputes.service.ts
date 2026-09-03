@@ -199,4 +199,37 @@ export class DisputesService {
 
     return updated;
   }
+
+  async escalateDispute(disputeId: string, parentId: string) {
+    const dispute = await this.prisma.dispute.findUnique({
+      where: { id: disputeId },
+    });
+    if (!dispute) {
+      throw new NotFoundException(`Dispute with ID '${disputeId}' not found`);
+    }
+
+    if (dispute.raisedByParentId !== parentId) {
+      throw new ForbiddenException('You can only escalate your own disputes');
+    }
+
+    const updated = await this.prisma.dispute.update({
+      where: { id: disputeId },
+      data: {
+        isEscalatedToAdmin: true,
+      },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        entityType: 'Dispute',
+        entityId: disputeId,
+        action: 'ESCALATE_DISPUTE',
+        actorId: parentId,
+        beforeState: { isEscalatedToAdmin: false },
+        afterState: { isEscalatedToAdmin: true },
+      },
+    });
+
+    return updated;
+  }
 }

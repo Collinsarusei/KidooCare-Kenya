@@ -25,13 +25,13 @@ export const SchoolOverviewTab: React.FC<SchoolOverviewTabProps> = ({
     : 'KES 35K';
 
   return (
-    <div className="w-full mx-auto space-y-6 font-sans pb-20 animate-fadeIn">
+    <div className="w-full mx-auto space-y-4 font-sans pb-20 animate-fadeIn">
 
       {/* Overview Top Header (Mockup 2 Match) */}
       <div className="space-y-4">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-[#121c2a] font-display tracking-tight">
+            <h1 className="text-xl md:text-2xl font-extrabold text-[#121c2a] font-display tracking-tight">
               Overview
             </h1>
             <p className="text-xs text-[#737686] mt-0.5">
@@ -66,11 +66,11 @@ export const SchoolOverviewTab: React.FC<SchoolOverviewTabProps> = ({
       {/* STAT CARDS ROW */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Stat Card 1: Total Enrolled */}
-        <div className="bg-[#f4fbf7] border border-[#d1fae5] rounded-3xl p-5 shadow-xs flex items-center justify-between">
+        <div className="bg-[#f4fbf7] border border-[#d1fae5] rounded-3xl p-4 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-xs font-bold text-[#434655]">Total Enrolled</p>
             <div className="flex items-baseline gap-2 mt-1">
-              <h2 className="text-3xl font-extrabold text-[#121c2a] font-display">{totalEnrolled}</h2>
+              <h2 className="text-2xl font-extrabold text-[#121c2a] font-display">{totalEnrolled}</h2>
               <span className="text-xs font-bold text-[#00714d] flex items-center gap-0.5">
                 <span className="material-symbols-outlined text-sm">trending_up</span>
                 +12%
@@ -83,11 +83,11 @@ export const SchoolOverviewTab: React.FC<SchoolOverviewTabProps> = ({
         </div>
 
         {/* Stat Card 2: Revenue this Month */}
-        <div className="bg-[#f0f5ff] border border-[#dbeafe] rounded-3xl p-5 shadow-xs flex items-center justify-between">
+        <div className="bg-[#f0f5ff] border border-[#dbeafe] rounded-3xl p-4 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-xs font-bold text-[#434655]">Revenue this Month</p>
             <div className="flex items-baseline gap-2 mt-1">
-              <h2 className="text-3xl font-extrabold text-[#121c2a] font-display">{monthlyRevenue}</h2>
+              <h2 className="text-2xl font-extrabold text-[#121c2a] font-display">{monthlyRevenue}</h2>
               <span className="text-xs font-bold text-[#004ac6] flex items-center gap-0.5">
                 <span className="material-symbols-outlined text-sm">trending_up</span>
                 +5%
@@ -100,11 +100,11 @@ export const SchoolOverviewTab: React.FC<SchoolOverviewTabProps> = ({
         </div>
 
         {/* Stat Card 3: Total Arrears */}
-        <div className="bg-[#fffbeb] border border-[#fef3c7] rounded-3xl p-5 shadow-xs flex items-center justify-between">
+        <div className="bg-[#fffbeb] border border-[#fef3c7] rounded-3xl p-4 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-xs font-bold text-[#434655]">Total Arrears</p>
             <div className="flex items-baseline gap-2 mt-1">
-              <h2 className="text-3xl font-extrabold text-[#121c2a] font-display">{totalArrears}</h2>
+              <h2 className="text-2xl font-extrabold text-[#121c2a] font-display">{totalArrears}</h2>
               <span className="text-xs font-bold text-[#c2410c] flex items-center gap-0.5">
                 <span className="material-symbols-outlined text-sm">error</span>
                 Action needed
@@ -118,7 +118,7 @@ export const SchoolOverviewTab: React.FC<SchoolOverviewTabProps> = ({
       </div>
 
       {/* SECTION 1: REVENUE TRENDS CHART (Mockup 2 Match) */}
-      <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm space-y-4">
+      <div className="bg-white border border-[#e6eeff] rounded-3xl p-4 shadow-sm space-y-3">
         <h3 className="text-lg font-extrabold text-[#121c2a] font-display">Revenue Trends</h3>
         
         {/* SVG Smooth Curve Line Chart */}

@@ -71,7 +71,7 @@ export class PaymentsService {
     const payment = await this.prisma.payment.create({
       data: {
         weeklyInstallmentId: installment.id,
-        amount: installment.amountDue - installment.amountPaid,
+        amount: dto.amount && dto.amount > 0 ? dto.amount : (installment.amountDue - installment.amountPaid),
         method: PaymentMethod.MPESA,
         mpesaCheckoutRequestId: checkoutRequestId,
         status: PaymentStatus.PENDING,
@@ -160,21 +160,51 @@ export class PaymentsService {
           },
         });
 
-        // 2. Update WeeklyInstallment status
-        const installment = payment.weeklyInstallment;
-        const newAmountPaid = installment.amountPaid + payment.amount;
-        const isFullyPaid = newAmountPaid >= installment.amountDue;
+        // 2. Distribute payment across installments ("Good Maths")
+        const enrollmentId = payment.weeklyInstallment.billingCycle.enrollmentId;
+        let remainingAmountToDistribute = payment.amount;
 
-        await tx.weeklyInstallment.update({
-          where: { id: installment.id },
-          data: {
-            amountPaid: newAmountPaid,
-            status: isFullyPaid ? WeeklyInstallmentStatus.PAID : WeeklyInstallmentStatus.PENDING,
+        // Fetch all pending/overdue installments sorted by weekStart ASC
+        const pendingInstallments = await tx.weeklyInstallment.findMany({
+          where: {
+            billingCycle: { enrollmentId },
+            status: { in: [WeeklyInstallmentStatus.PENDING, WeeklyInstallmentStatus.OVERDUE] },
           },
+          orderBy: { weekStart: 'asc' },
         });
 
+        for (const inst of pendingInstallments) {
+          if (remainingAmountToDistribute <= 0) break;
+          
+          const amountNeeded = inst.amountDue - inst.amountPaid;
+          const amountToApply = Math.min(amountNeeded, remainingAmountToDistribute);
+          
+          if (amountToApply > 0) {
+            const newPaid = inst.amountPaid + amountToApply;
+            const isFullyPaid = newPaid >= inst.amountDue;
+            await tx.weeklyInstallment.update({
+              where: { id: inst.id },
+              data: {
+                amountPaid: newPaid,
+                status: isFullyPaid ? WeeklyInstallmentStatus.PAID : inst.status,
+              },
+            });
+            remainingAmountToDistribute -= amountToApply;
+          }
+        }
+
+        // If there's STILL remaining amount (advance payment), apply it to the original installment as overpayment
+        if (remainingAmountToDistribute > 0) {
+          const originalInst = await tx.weeklyInstallment.findUnique({ where: { id: payment.weeklyInstallmentId } });
+          if (originalInst) {
+            await tx.weeklyInstallment.update({
+              where: { id: originalInst.id },
+              data: { amountPaid: originalInst.amountPaid + remainingAmountToDistribute },
+            });
+          }
+        }
+
         // 3. Recalculate Balance arrears for enrollment
-        const enrollmentId = installment.billingCycle.enrollmentId;
         const unpaidInstallments = await tx.weeklyInstallment.findMany({
           where: {
             billingCycle: { enrollmentId },
@@ -182,7 +212,10 @@ export class PaymentsService {
           },
         });
 
-        const totalArrears = unpaidInstallments.reduce((sum, inst) => sum + (inst.amountDue - inst.amountPaid), 0);
+        const totalArrears = unpaidInstallments.reduce((sum, inst) => {
+          const unpaid = inst.amountDue - inst.amountPaid;
+          return sum + (unpaid > 0 ? unpaid : 0); // Don't subtract overpayments from other weeks' positive arrears unless we distribute them (we do distribute them above)
+        }, 0);
 
         await tx.balance.upsert({
           where: { enrollmentId },
@@ -208,7 +241,7 @@ export class PaymentsService {
               checkoutRequestId,
               receiptNumber,
               amount: payment.amount,
-              installmentStatus: isFullyPaid ? 'PAID' : 'PARTIAL',
+              installmentStatus: remainingAmountToDistribute <= 0 ? 'PAID/CASCADED' : 'OVERPAID',
               remainingArrears: totalArrears,
             },
           },

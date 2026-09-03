@@ -72,7 +72,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
           <div className="relative mx-auto w-full max-w-md lg:max-w-none">
             <div className="relative aspect-[4/3] sm:aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
               <img
-                src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=800&q=80"
+                src="/hero_image.jpg"
                 alt="Kenyan children smiling at daycare"
                 className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
               />

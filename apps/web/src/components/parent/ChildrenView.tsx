@@ -1,27 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ChildDto } from '@daycare/shared-types';
 
 interface ChildrenViewProps {
   myChildren: ChildDto[];
-  onRegisterChild: (name: string, dob: string, notes: string) => void;
+  onAddChildClick: () => void;
+  onEditChildClick: (child: ChildDto) => void;
+  onDeleteChildClick: (childId: string) => void;
 }
 
-export const ChildrenView: React.FC<ChildrenViewProps> = ({ myChildren, onRegisterChild }) => {
-  const [childName, setChildName] = useState('');
-  const [childDob, setChildDob] = useState('2023-05-10');
-  const [childNotes, setChildNotes] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onRegisterChild(childName, childDob, childNotes);
-    setChildName('');
-    setChildNotes('');
-  };
-
+export const ChildrenView: React.FC<ChildrenViewProps> = ({ 
+  myChildren, 
+  onAddChildClick,
+  onEditChildClick,
+  onDeleteChildClick
+}) => {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Registered Children List (Screen 04) */}
-      <div className="lg:col-span-2 space-y-6">
+    <div className="grid grid-cols-1 gap-8">
+      {/* Registered Children List */}
+      <div className="space-y-6">
         <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
           <div className="flex items-center justify-between border-b border-[#e6eeff] pb-4">
             <div>
@@ -31,10 +27,13 @@ export const ChildrenView: React.FC<ChildrenViewProps> = ({ myChildren, onRegist
               </h3>
               <p className="text-xs text-[#737686]">Managed children profiles for daycare enrollments</p>
             </div>
-            <span className="badge badge-blue">
-              <span className="material-symbols-outlined text-xs">verified_user</span>
-              Parent Account
-            </span>
+            <button 
+              onClick={onAddChildClick}
+              className="btn btn-primary text-xs py-2 px-4 rounded-xl shadow-xs flex items-center gap-1.5"
+            >
+              <span className="material-symbols-outlined text-base">person_add</span>
+              Add Child
+            </button>
           </div>
 
           {myChildren.length === 0 ? (
@@ -65,6 +64,22 @@ export const ChildrenView: React.FC<ChildrenViewProps> = ({ myChildren, onRegist
                       </p>
                     </div>
                   </div>
+                  <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={() => onEditChildClick(child)}
+                      className="w-8 h-8 rounded-full bg-[#f8f9ff] text-[#004ac6] border border-[#e6eeff] hover:bg-[#e6eeff] flex items-center justify-center transition-colors shadow-xs"
+                      title="Edit Child"
+                    >
+                      <span className="material-symbols-outlined text-sm">edit</span>
+                    </button>
+                    <button 
+                      onClick={() => onDeleteChildClick(child.id)}
+                      className="w-8 h-8 rounded-full bg-[#fff5f5] text-[#dc2626] border border-[#ffe6e6] hover:bg-[#ffe6e6] flex items-center justify-center transition-colors shadow-xs"
+                      title="Delete Child"
+                    >
+                      <span className="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                  </div>
 
                   {child.notes && (
                     <div className="bg-[#fff7ed] border border-[#fdba74] p-3 rounded-xl text-xs space-y-0.5">
@@ -79,67 +94,6 @@ export const ChildrenView: React.FC<ChildrenViewProps> = ({ myChildren, onRegist
             </div>
           )}
         </div>
-      </div>
-
-      {/* Child Intake Form Card */}
-      <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-md space-y-5 h-fit">
-        <div className="border-b border-[#e6eeff] pb-4">
-          <h4 className="text-lg font-bold text-[#004ac6] font-display flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#006c49]">person_add</span>
-            Child Intake Form
-          </h4>
-          <p className="text-xs text-[#737686]">Add child profile for instant daycare booking</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
-              Child Full Name *
-            </label>
-            <input 
-              type="text" 
-              required 
-              placeholder="e.g. Liam Mwangi" 
-              value={childName} 
-              onChange={(e) => setChildName(e.target.value)} 
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
-              Date of Birth *
-            </label>
-            <input 
-              type="date" 
-              required 
-              value={childDob} 
-              onChange={(e) => setChildDob(e.target.value)} 
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
-              Medical / Dietary / Care Notes
-            </label>
-            <textarea 
-              rows={3} 
-              placeholder="Allergies, emergency contacts, special care needs..." 
-              value={childNotes} 
-              onChange={(e) => setChildNotes(e.target.value)} 
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
-            />
-          </div>
-
-          <button 
-            type="submit" 
-            className="w-full btn btn-primary py-3 rounded-xl shadow-md flex items-center justify-center gap-2"
-          >
-            <span className="material-symbols-outlined text-base">check_circle</span>
-            Register Child Profile
-          </button>
-        </form>
       </div>
     </div>
   );

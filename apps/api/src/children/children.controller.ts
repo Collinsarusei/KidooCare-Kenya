@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Put, Delete, Body, Param } from '@nestjs/common';
 import { ChildrenService } from './children.service';
 import { CreateChildDto } from './dto/create-child.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -18,5 +18,22 @@ export class ChildrenController {
   @Get()
   async getMyChildren(@CurrentUser('id') parentId: string) {
     return this.childrenService.getChildrenByParent(parentId);
+  }
+
+  @Put(':id')
+  async updateChild(
+    @Param('id') childId: string,
+    @CurrentUser('id') parentId: string,
+    @Body() dto: CreateChildDto,
+  ) {
+    return this.childrenService.updateChild(childId, parentId, dto);
+  }
+
+  @Delete(':id')
+  async deleteChild(
+    @Param('id') childId: string,
+    @CurrentUser('id') parentId: string,
+  ) {
+    return this.childrenService.deleteChild(childId, parentId);
   }
 }

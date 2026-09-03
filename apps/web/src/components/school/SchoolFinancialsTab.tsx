@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { SchoolFinancialSummaryDto, ExecutiveSummaryReportDto } from '@daycare/shared-types';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
+  BarChart, Bar, PieChart, Pie, Cell, Legend, AreaChart, Area
+} from 'recharts';
 
 interface SchoolFinancialsTabProps {
   schoolFinancials: SchoolFinancialSummaryDto | null;
@@ -21,6 +25,38 @@ export const SchoolFinancialsTab: React.FC<SchoolFinancialsTabProps> = ({
   const totalArrears = schoolFinancials?.totalOutstandingArrears
     ? `KES ${(schoolFinancials.totalOutstandingArrears / 1000).toFixed(0)}K`
     : 'KES 35K';
+
+  // --- RECHARTS DATA PREPARATION ---
+  
+  // 1. Mock Time Series Data for Revenue Area Chart
+  const revenueTrendData = [
+    { name: 'Jan', revenue: 200000 },
+    { name: 'Feb', revenue: 250000 },
+    { name: 'Mar', revenue: 220000 },
+    { name: 'Apr', revenue: 300000 },
+    { name: 'May', revenue: schoolFinancials?.totalRevenueCollected || 450000 },
+  ];
+
+  // 2. Program Revenue Data (Computed from Ledger)
+  const programRevenueData = useMemo(() => {
+    if (!schoolFinancials?.studentRosterLedger) return [];
+    const grouped = schoolFinancials.studentRosterLedger.reduce((acc, curr) => {
+      acc[curr.serviceName] = (acc[curr.serviceName] || 0) + (curr.agreedMonthlyPrice * curr.paidWeeksCount);
+      return acc;
+    }, {} as Record<string, number>);
+    
+    return Object.entries(grouped).map(([name, value]) => ({
+      name,
+      value
+    }));
+  }, [schoolFinancials]);
+
+  // 3. Payment Status Pie Chart Data
+  const pieData = [
+    { name: 'Fully Paid', value: schoolFinancials?.fullyPaidEnrollmentsCount || 10 },
+    { name: 'In Arrears', value: schoolFinancials?.enrollmentsInArrearsCount || 2 },
+  ];
+  const COLORS = ['#16a34a', '#c2410c'];
 
   return (
     <div className="w-full mx-auto space-y-6 font-sans">
@@ -158,70 +194,95 @@ export const SchoolFinancialsTab: React.FC<SchoolFinancialsTabProps> = ({
         </div>
       )}
 
-      {/* CHARTS CONTAINER (Screenshot 2 Match) */}
-      <div className="space-y-6">
+      {/* CHARTS CONTAINER */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        {/* Revenue Trends Chart Card */}
-        <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-7 shadow-sm space-y-4">
-          <h3 className="text-lg md:text-xl font-extrabold text-[#121c2a] font-display">
+        {/* Revenue Trends Area Chart */}
+        <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm flex flex-col">
+          <h3 className="text-lg font-extrabold text-[#121c2a] font-display mb-4">
             Revenue Trends
           </h3>
-
-          {/* SVG Smooth Area Chart Representation */}
-          <div className="pt-4">
-            <div className="h-44 w-full relative">
-              <svg className="w-full h-full overflow-visible" viewBox="0 0 500 150" preserveAspectRatio="none">
+          <div className="flex-1 min-h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={revenueTrendData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#2563eb" stopOpacity="0.25" />
-                    <stop offset="100%" stopColor="#2563eb" stopOpacity="0.0" />
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-
-                {/* Area Fill */}
-                <path
-                  d="M 0,130 C 100,100 200,90 300,50 C 400,60 450,20 500,10 L 500,150 L 0,150 Z"
-                  fill="url(#revenueGrad)"
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#737686' }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#737686' }} tickFormatter={(val) => `KES ${val / 1000}k`} />
+                <RechartsTooltip 
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  formatter={(value: any) => [`KES ${Number(value).toLocaleString()}`, 'Revenue']}
                 />
-
-                {/* Smooth Curve Line */}
-                <path
-                  d="M 0,130 C 100,100 200,90 300,50 C 400,60 450,20 500,10"
-                  fill="none"
-                  stroke="#2563eb"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-
-            {/* X-Axis Labels */}
-            <div className="flex justify-between text-xs font-semibold text-[#737686] pt-3 px-2 border-t border-[#f1f5f9]">
-              <span>Jan</span>
-              <span>Feb</span>
-              <span>Mar</span>
-              <span>Apr</span>
-              <span>May</span>
-            </div>
+                <CartesianGrid vertical={false} stroke="#e6eeff" />
+                <Area type="monotone" dataKey="revenue" stroke="#2563eb" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Enrollment Growth Bar Chart Card */}
-        <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-7 shadow-sm space-y-4">
-          <h3 className="text-lg md:text-xl font-extrabold text-[#121c2a] font-display">
-            Enrollment Growth
+        {/* Enrollment Status Pie Chart */}
+        <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm flex flex-col">
+          <h3 className="text-lg font-extrabold text-[#121c2a] font-display mb-4">
+            Payment Status
           </h3>
-
-          {/* Bar Chart Representation */}
-          <div className="pt-6 flex items-end justify-between gap-4 h-48 px-4">
-            <div className="w-full bg-[#6cf8bb]/40 rounded-t-xl h-[40%] transition-all hover:bg-[#6cf8bb]" />
-            <div className="w-full bg-[#6cf8bb]/50 rounded-t-xl h-[55%] transition-all hover:bg-[#6cf8bb]" />
-            <div className="w-full bg-[#6cf8bb]/60 rounded-t-xl h-[50%] transition-all hover:bg-[#6cf8bb]" />
-            <div className="w-full bg-[#6cf8bb]/80 rounded-t-xl h-[75%] transition-all hover:bg-[#6cf8bb]" />
-            <div className="w-full bg-[#006c49] rounded-t-xl h-[95%] transition-all hover:bg-[#005236]" />
+          <div className="flex-1 min-h-[250px] flex items-center justify-center">
+            {totalEnrolled === 0 ? (
+               <p className="text-[#737686] text-sm">No enrollments yet.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  />
+                  <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
+        {/* Program Revenue Bar Chart */}
+        <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm lg:col-span-2 flex flex-col">
+          <h3 className="text-lg font-extrabold text-[#121c2a] font-display mb-4">
+            Revenue by Program
+          </h3>
+          <div className="flex-1 min-h-[300px]">
+            {programRevenueData.length === 0 ? (
+               <p className="text-[#737686] text-sm text-center pt-10">No revenue data available.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={programRevenueData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <CartesianGrid vertical={false} stroke="#e6eeff" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#737686' }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#737686' }} tickFormatter={(val) => `KES ${val / 1000}k`} />
+                  <RechartsTooltip 
+                    cursor={{ fill: '#f8f9ff' }}
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                    formatter={(value: any) => [`KES ${Number(value).toLocaleString()}`, 'Revenue']}
+                  />
+                  <Bar dataKey="value" fill="#6cf8bb" radius={[6, 6, 0, 0]} barSize={40} activeBar={{ fill: '#006c49' }} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Student Roster Financial Table */}

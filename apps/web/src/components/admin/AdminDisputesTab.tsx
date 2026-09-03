@@ -46,6 +46,12 @@ export const AdminDisputesTab: React.FC<AdminDisputesTabProps> = ({
                   <h4 className="text-sm font-bold text-[#004ac6] font-display flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-base">receipt_long</span>
                     Dispute ID: {d.id.slice(0, 8)}
+                    {d.isEscalatedToAdmin && (
+                      <span className="badge badge-orange ml-2 text-[10px] animate-pulse">
+                        <span className="material-symbols-outlined text-[10px]">emergency</span>
+                        ESCALATED
+                      </span>
+                    )}
                   </h4>
                   <p className="text-xs text-[#737686]">
                     Parent: <span className="font-semibold text-[#121c2a]">{d.raisedByParent?.email}</span> ({d.raisedByParent?.phone})

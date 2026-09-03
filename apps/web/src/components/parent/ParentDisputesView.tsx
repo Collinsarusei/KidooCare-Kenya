@@ -3,9 +3,10 @@ import { DisputeDto } from '@daycare/shared-types';
 
 interface ParentDisputesViewProps {
   parentDisputes: DisputeDto[];
+  onEscalateDispute: (id: string) => void;
 }
 
-export const ParentDisputesView: React.FC<ParentDisputesViewProps> = ({ parentDisputes }) => {
+export const ParentDisputesView: React.FC<ParentDisputesViewProps> = ({ parentDisputes, onEscalateDispute }) => {
   return (
     <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
       <div className="flex justify-between items-center border-b border-[#e6eeff] pb-4">
@@ -54,6 +55,26 @@ export const ParentDisputesView: React.FC<ParentDisputesViewProps> = ({ parentDi
                 <div className="bg-[#e6f7ef] border border-[#6cf8bb] p-3 rounded-xl text-xs text-[#00714d] flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-base">task_alt</span>
                   <span><strong>Admin Resolution:</strong> {d.resolutionNote}</span>
+                </div>
+              )}
+
+              {d.status === 'OPEN' && !d.isEscalatedToAdmin && (
+                <div className="pt-3 border-t border-[#e6eeff] flex justify-end">
+                  <button 
+                    onClick={() => onEscalateDispute(d.id)}
+                    className="btn btn-secondary text-xs px-4 py-1.5 rounded-xl border-[#c2410c] text-[#c2410c] hover:bg-[#fff7ed] flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">admin_panel_settings</span>
+                    Escalate to Platform Admin
+                  </button>
+                </div>
+              )}
+              {d.isEscalatedToAdmin && (
+                <div className="pt-3 border-t border-[#e6eeff]">
+                  <p className="text-xs text-[#c2410c] font-bold flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px]">admin_panel_settings</span>
+                    Escalated to Platform Admin
+                  </p>
                 </div>
               )}
             </div>

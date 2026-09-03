@@ -11,6 +11,7 @@ enum UserRole {
   ADMIN
   SCHOOL
   PARENT
+  TUTOR
 }
 
 enum SchoolStatus {
@@ -24,6 +25,7 @@ enum ServiceBillingCycle {
 }
 
 enum EnrollmentStatus {
+  PENDING_PAYMENT
   ACTIVE
   WAITLISTED
   ENDED
@@ -64,6 +66,14 @@ enum SchoolDocumentType {
   OTHER
 }
 
+enum DailyLogMood {
+  HAPPY
+  SAD
+  TIRED
+  ENERGETIC
+  CRANKY
+}
+
 model User {
   id                 String   @id @default(uuid())
   email              String   @unique
@@ -75,16 +85,20 @@ model User {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  school      School?
-  children    Child[]
-  reviews     Review[]
-  disputes    Dispute[]
+  school         School?  @relation("SchoolOwner")
+  employedAtSchoolId String?
+  employedAtSchool   School? @relation("SchoolEmployees", fields: [employedAtSchoolId], references: [id])
+  
+  children       Child[]
+  reviews        Review[]
+  disputes       Dispute[]
+  tutorDailyLogs DailyLog[]
 }
 
 model School {
   id               String       @id @default(uuid())
   userId           String       @unique
-  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User         @relation("SchoolOwner", fields: [userId], references: [id], onDelete: Cascade)
   name             String
   about            String?
   logoUrl          String?
@@ -105,6 +119,7 @@ model School {
   children    Child[]
   reviews     Review[]
   aiReports   AIReport[]
+  employees   User[]       @relation("SchoolEmployees")
 }
 
 model SchoolPaymentCredentials {
@@ -158,6 +173,7 @@ model Child {
   createdAt DateTime @default(now())
 
   enrollments Enrollment[]
+  dailyLogs   DailyLog[]
 }
 
 model Enrollment {
@@ -258,6 +274,7 @@ model Dispute {
   status            DisputeStatus @default(OPEN)
   resolvedByAdminId String?
   resolutionNote    String?
+  isEscalatedToAdmin Boolean      @default(false)
   createdAt         DateTime      @default(now())
 }
 
@@ -268,4 +285,19 @@ model AIReport {
   type        AIReportType
   generatedAt DateTime     @default(now())
   content     Json
+}
+
+model DailyLog {
+  id               String       @id @default(uuid())
+  childId          String
+  child            Child        @relation(fields: [childId], references: [id], onDelete: Cascade)
+  tutorId          String
+  tutor            User         @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  isPresent        Boolean      @default(true)
+  mood             DailyLogMood
+  achievements     String[]     @default([])
+  milestones       String[]     @default([])
+  allergiesSpotted String?
+  assignments      String?
+  createdAt        DateTime     @default(now())
 }

@@ -2,6 +2,7 @@ export enum UserRole {
   ADMIN = 'ADMIN',
   SCHOOL = 'SCHOOL',
   PARENT = 'PARENT',
+  TUTOR = 'TUTOR',
 }
 
 export enum SchoolStatus {
@@ -15,6 +16,7 @@ export enum ServiceBillingCycle {
 }
 
 export enum EnrollmentStatus {
+  PENDING_PAYMENT = 'PENDING_PAYMENT',
   ACTIVE = 'ACTIVE',
   WAITLISTED = 'WAITLISTED',
   ENDED = 'ENDED',
@@ -55,12 +57,21 @@ export enum SchoolDocumentType {
   OTHER = 'OTHER',
 }
 
+export enum DailyLogMood {
+  HAPPY = 'HAPPY',
+  SAD = 'SAD',
+  TIRED = 'TIRED',
+  ENERGETIC = 'ENERGETIC',
+  CRANKY = 'CRANKY',
+}
+
 export interface UserDto {
   id: string;
   email: string;
   phone: string;
   role: UserRole;
   mustChangePassword?: boolean;
+  employedAtSchoolId?: string | null;
   createdAt: string | Date;
 }
 
@@ -264,7 +275,9 @@ export const DAYCARE_SERVICE_PRESETS: DaycarePresetService[] = [
 ];
 
 export interface StkPushRequestDto {
-  weeklyInstallmentId: string;
+  weeklyInstallmentId?: string;
+  enrollmentId?: string;
+  amount?: number;
   phone: string;
 }
 
@@ -438,6 +451,7 @@ export interface DisputeDto {
   status: DisputeStatus;
   resolvedByAdminId?: string | null;
   resolutionNote?: string | null;
+  isEscalatedToAdmin: boolean;
   createdAt: string | Date;
   payment?: PaymentDto & {
     weeklyInstallment?: WeeklyInstallmentDto & {
@@ -466,3 +480,15 @@ export interface AIReportDto {
   content: ExecutiveSummaryReportDto | DraftProfileResponseDto | any;
 }
 
+export interface DailyLogDto {
+  id: string;
+  childId: string;
+  tutorId: string;
+  isPresent: boolean;
+  mood: DailyLogMood;
+  achievements: string[];
+  milestones: string[];
+  allergiesSpotted: string | null;
+  assignments: string | null;
+  createdAt: string | Date;
+}

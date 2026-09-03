@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Param, Body, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Put, Post, Param, Body, ForbiddenException } from '@nestjs/common';
 import { SchoolsService } from './schools.service';
 import { UpdateCredentialsDto } from './dto/update-credentials.dto';
 import { Public } from '../auth/decorators/public.decorator';
@@ -6,9 +6,14 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '@prisma/client';
 
+import { AiService } from '../ai/ai.service';
+
 @Controller('schools')
 export class SchoolsController {
-  constructor(private readonly schoolsService: SchoolsService) {}
+  constructor(
+    private readonly schoolsService: SchoolsService,
+    private readonly aiService: AiService
+  ) {}
 
   @Public()
   @Get(':id')
@@ -48,5 +53,23 @@ export class SchoolsController {
       }
     }
     return this.schoolsService.updateSchoolProfile(schoolId, dto, user.id);
+  }
+
+  @Roles(UserRole.SCHOOL)
+  @Post(':id/generate-profile')
+  async generateProfile(
+    @Param('id') schoolId: string,
+    @Body() dto: { name: string; rawDetails: string; facilities: string },
+    @CurrentUser() user: any,
+  ) {
+    const school = await this.schoolsService.getSchoolById(schoolId);
+    if (school.userId !== user.id) {
+      throw new ForbiddenException('You can only generate profiles for your own school');
+    }
+    
+    const profileMarkdown = await this.aiService.generateSchoolProfile(dto);
+    
+    // Automatically save it
+    return this.schoolsService.updateSchoolProfile(schoolId, { about: profileMarkdown }, user.id);
   }
 }

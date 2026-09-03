@@ -86,12 +86,12 @@ export const SchoolServicesTab: React.FC<SchoolServicesTabProps> = ({
   };
 
   return (
-    <div className="w-full mx-auto space-y-6 font-sans pb-20 animate-fadeIn">
+    <div className="w-full mx-auto space-y-4 font-sans pb-20 animate-fadeIn">
 
       {/* Page Title & Add Button (Mockup 1 Match) */}
       <div className="flex justify-between items-start">
         <div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-[#121c2a] font-display tracking-tight">
+          <h2 className="text-xl md:text-2xl font-extrabold text-[#121c2a] font-display tracking-tight">
             Manage Services
           </h2>
           <p className="text-xs text-[#737686] mt-0.5">
@@ -131,7 +131,7 @@ export const SchoolServicesTab: React.FC<SchoolServicesTabProps> = ({
           return (
             <div
               key={svc.id}
-              className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm space-y-4 hover:border-[#b4c5ff] transition-all"
+              className="bg-white border border-[#e6eeff] rounded-3xl p-4 md:p-5 shadow-sm space-y-4 hover:border-[#b4c5ff] transition-all"
             >
               {/* Card Header & Edit Icon */}
               <div className="flex justify-between items-start">

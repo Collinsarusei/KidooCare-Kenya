@@ -246,7 +246,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 </div>
               </div>
 
-              {/* Total Schools (Dynamic count from backend array) */}
+              {/* Total Daycare Centres (Dynamic count from backend array) */}
               <div className="bg-white border border-[#e6eeff] rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-[#b4c5ff] transition-all">
                 <div className="flex justify-between items-start">
                   <div className="w-12 h-12 rounded-xl bg-[#ffedd5] text-[#d97706] flex items-center justify-center font-bold">
@@ -258,7 +258,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   </span>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-[#737686]">Total Schools</p>
+                  <p className="text-xs font-semibold text-[#737686]">Total Daycare Centres</p>
                   <p className="text-2xl md:text-3xl font-extrabold text-[#121c2a] font-display mt-0.5">
                     {totalSchools}
                   </p>
@@ -386,7 +386,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                               className="w-full text-left px-4 py-2 hover:bg-[#eff4ff] hover:text-[#004ac6] flex items-center gap-2"
                             >
                               <span className="material-symbols-outlined text-base">edit</span>
-                              Edit School Profile
+                              Edit Daycare Profile
                             </button>
                             {onToggleSchoolStatus && (
                               <button
@@ -475,7 +475,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
-                  School Name <span className="text-red-500">*</span>
+                  Daycare Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"

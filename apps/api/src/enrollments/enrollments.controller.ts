@@ -21,7 +21,7 @@ export class EnrollmentsController {
     return this.enrollmentsService.getParentEnrollments(parentId);
   }
 
-  @Roles(UserRole.ADMIN, UserRole.SCHOOL)
+  @Roles(UserRole.ADMIN, UserRole.SCHOOL, UserRole.TUTOR)
   @Get('schools/:schoolId/enrollments')
   async getSchoolEnrollments(@Param('schoolId') schoolId: string, @CurrentUser() user: any) {
     return this.enrollmentsService.getSchoolEnrollments(schoolId, user.id, user.role);
@@ -37,6 +37,16 @@ export class EnrollmentsController {
   @Post('enrollments/:id/end')
   async endEnrollment(@Param('id') id: string, @CurrentUser() user: any) {
     return this.enrollmentsService.endEnrollment(id, user.id, user.role);
+  }
+
+  @Roles(UserRole.SCHOOL, UserRole.TUTOR)
+  @Post('schools/:schoolId/walk-in')
+  async createWalkInEnrollment(
+    @Param('schoolId') schoolId: string,
+    @Body() dto: { childName: string; childDob: string; parentName?: string; parentEmail?: string; parentPhone?: string; serviceId: string },
+    @CurrentUser() user: any
+  ) {
+    return this.enrollmentsService.createWalkInEnrollment(schoolId, user.id, user.role, dto);
   }
 }
 

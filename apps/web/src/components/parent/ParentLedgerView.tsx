@@ -64,9 +64,31 @@ export const ParentLedgerView: React.FC<ParentLedgerViewProps> = ({
                     {childLedger.serviceName} @ <span className="font-semibold text-[#121c2a]">{childLedger.schoolName}</span>
                   </p>
                 </div>
-                <span className={`badge ${childLedger.isAllWeeksPaid ? 'badge-green' : 'badge-orange'}`}>
-                  {childLedger.isAllWeeksPaid ? '✓ ALL WEEKS PAID' : `ARREARS: KES ${childLedger.totalArrears.toLocaleString()}`}
-                </span>
+                <div className="flex flex-col items-end gap-2">
+                  <span className={`badge ${childLedger.isAllWeeksPaid ? 'badge-green' : 'badge-orange'}`}>
+                    {childLedger.isAllWeeksPaid ? '✓ ALL WEEKS PAID' : `ARREARS: KES ${childLedger.totalArrears.toLocaleString()}`}
+                  </span>
+                  {!childLedger.isAllWeeksPaid && childLedger.weeklyInstallments.some(w => w.status !== 'PAID') && (
+                    <button
+                      className="btn btn-primary text-xs py-1.5 px-3 rounded-lg flex items-center gap-1"
+                      onClick={() => {
+                        const oldestUnpaid = childLedger.weeklyInstallments.find(w => w.status !== 'PAID');
+                        if (oldestUnpaid) {
+                          onPayClick({
+                            id: oldestUnpaid.id,
+                            weekNumber: oldestUnpaid.weekNumber,
+                            amount: childLedger.totalArrears, // Auto-fill with total arrears
+                            childName: childLedger.childName,
+                            schoolName: childLedger.schoolName,
+                          });
+                        }
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-sm">account_balance_wallet</span>
+                      Clear Full Arrears (KES {childLedger.totalArrears.toLocaleString()})
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Weekly Payment Action Grid (Screen 05) */}

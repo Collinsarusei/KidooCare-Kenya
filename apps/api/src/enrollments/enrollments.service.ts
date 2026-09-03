@@ -41,7 +41,7 @@ export class EnrollmentsService {
     }
 
     const isFull = service.currentEnrollmentCount >= service.capacity;
-    const initialStatus = isFull ? EnrollmentStatus.WAITLISTED : EnrollmentStatus.ACTIVE;
+    const initialStatus: EnrollmentStatus = isFull ? EnrollmentStatus.WAITLISTED : EnrollmentStatus.PENDING_PAYMENT;
     const startDate = dto.startDate ? new Date(dto.startDate) : new Date();
 
     const enrollment = await this.prisma.$transaction(async (tx) => {
@@ -55,7 +55,7 @@ export class EnrollmentsService {
         },
       });
 
-      if (initialStatus === EnrollmentStatus.ACTIVE) {
+      if (initialStatus !== EnrollmentStatus.WAITLISTED) {
         await tx.service.update({
           where: { id: service.id },
           data: { currentEnrollmentCount: { increment: 1 } },
@@ -93,8 +93,8 @@ export class EnrollmentsService {
       return newEnrollment;
     });
 
-    if (initialStatus === EnrollmentStatus.ACTIVE) {
-      await this.billingService.generateBillingCycleForEnrollment(enrollment.id);
+    if (initialStatus !== EnrollmentStatus.WAITLISTED) {
+        await this.billingService.generateBillingCycleForEnrollment(enrollment.id);
     }
 
     return this.getEnrollmentById(enrollment.id);
@@ -133,6 +133,11 @@ export class EnrollmentsService {
       const school = await this.prisma.school.findUnique({ where: { id: schoolId } });
       if (!school || school.userId !== actorId) {
         throw new ForbiddenException('You can only view enrollments for your own school');
+      }
+    } else if (actorRole === UserRole.TUTOR) {
+      const tutor = await this.prisma.user.findUnique({ where: { id: actorId } });
+      if (!tutor || tutor.employedAtSchoolId !== schoolId) {
+        throw new ForbiddenException('You can only view enrollments for your assigned school');
       }
     }
 
@@ -294,6 +299,79 @@ export class EnrollmentsService {
     });
 
     return this.getEnrollmentById(enrollmentId);
+  }
+  async createWalkInEnrollment(
+    schoolId: string,
+    actorId: string,
+    actorRole: UserRole,
+    dto: {
+      childName: string;
+      childDob: string;
+      parentName?: string;
+      parentEmail?: string;
+      parentPhone?: string;
+      serviceId: string;
+    },
+  ) {
+    if (actorRole === UserRole.SCHOOL) {
+      const school = await this.prisma.school.findUnique({ where: { id: schoolId } });
+      if (!school || school.userId !== actorId) {
+        throw new ForbiddenException('You can only add walk-ins to your own school');
+      }
+    } else if (actorRole === UserRole.TUTOR) {
+      const tutor = await this.prisma.user.findUnique({ where: { id: actorId } });
+      if (!tutor || tutor.employedAtSchoolId !== schoolId) {
+        throw new ForbiddenException('You can only add walk-ins to your employed school');
+      }
+    }
+
+    const service = await this.prisma.service.findUnique({ where: { id: dto.serviceId } });
+    if (!service || service.schoolId !== schoolId) {
+      throw new BadRequestException('Invalid service for this school');
+    }
+
+    let parentId = '';
+    
+    if (dto.parentEmail) {
+      let parentUser = await this.prisma.user.findUnique({ where: { email: dto.parentEmail } });
+      if (!parentUser) {
+        const passwordHash = await require('bcrypt').hash('Walkin@123', 10);
+        parentUser = await this.prisma.user.create({
+          data: {
+            email: dto.parentEmail,
+            phone: dto.parentPhone || '0000000000',
+            role: UserRole.PARENT,
+            passwordHash,
+            mustChangePassword: true,
+          }
+        });
+      }
+      parentId = parentUser.id;
+    } else {
+      const stubEmail = `stub-${Date.now()}@kiddocare.local`;
+      const passwordHash = await require('bcrypt').hash('Walkin@123', 10);
+      const parentUser = await this.prisma.user.create({
+        data: {
+          email: stubEmail,
+          phone: dto.parentPhone || '0000000000',
+          role: UserRole.PARENT,
+          passwordHash,
+          mustChangePassword: true,
+        }
+      });
+      parentId = parentUser.id;
+    }
+
+    const child = await this.prisma.child.create({
+      data: {
+        parentId,
+        name: dto.childName,
+        dob: new Date(dto.childDob),
+        schoolId,
+      }
+    });
+
+    return this.createEnrollment(parentId, { childId: child.id, serviceId: dto.serviceId });
   }
 }
 

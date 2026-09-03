@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@daycare/shared-types": "*",
+    "@genkit-ai/googleai": "^1.28.0",
     "@nestjs/common": "^10.3.8",
     "@nestjs/config": "^3.2.2",
     "@nestjs/core": "^10.3.8",
@@ -28,12 +29,14 @@
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "genkit": "^1.42.0",
     "nestjs-pino": "^4.1.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pino": "^9.1.0",
     "pino-http": "^10.1.0",
     "reflect-metadata": "^0.2.2",
+    "resend": "^6.26.0",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {

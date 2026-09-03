@@ -378,4 +378,119 @@ export class SchoolsService {
 
     return this.getSchoolById(updated.id);
   }
+
+  async addTutor(schoolId: string, dto: { name: string; email: string; phone: string }) {
+    const existing = await this.prisma.user.findUnique({
+      where: { email: dto.email.toLowerCase().trim() },
+    });
+    if (existing) {
+      throw new ConflictException('User with this email already exists');
+    }
+
+    const school = await this.prisma.school.findUnique({ where: { id: schoolId } });
+    if (!school) throw new NotFoundException('School not found');
+
+    const tempPassword = Math.random().toString(36).slice(-8) + 'T!';
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(tempPassword, saltRounds);
+
+    const tutor = await this.prisma.user.create({
+      data: {
+        email: dto.email.toLowerCase().trim(),
+        phone: dto.phone,
+        role: UserRole.TUTOR,
+        passwordHash,
+        mustChangePassword: true,
+        employedAtSchoolId: schoolId,
+      },
+    });
+
+    await this.emailService.sendTutorCredentialsEmail(
+      school.name,
+      tutor.email,
+      tempPassword,
+    );
+
+    return tutor;
+  }
+
+  async updateTutor(schoolId: string, tutorId: string, dto: { email?: string; phone?: string }) {
+    const tutor = await this.prisma.user.findUnique({
+      where: { id: tutorId },
+    });
+    if (!tutor || tutor.employedAtSchoolId !== schoolId) {
+      throw new NotFoundException('Tutor not found');
+    }
+
+    const dataToUpdate: any = {};
+    if (dto.email) {
+      const existing = await this.prisma.user.findUnique({
+        where: { email: dto.email.toLowerCase().trim() },
+      });
+      if (existing && existing.id !== tutorId) {
+        throw new ConflictException('Email is already in use by another account');
+      }
+      dataToUpdate.email = dto.email.toLowerCase().trim();
+    }
+    if (dto.phone) {
+      dataToUpdate.phone = dto.phone;
+    }
+
+    return this.prisma.user.update({
+      where: { id: tutorId },
+      data: dataToUpdate,
+      select: {
+        id: true,
+        email: true,
+        phone: true,
+        createdAt: true,
+      }
+    });
+  }
+
+  async resendTutorInvite(schoolId: string, tutorId: string) {
+    const tutor = await this.prisma.user.findUnique({
+      where: { id: tutorId },
+    });
+    if (!tutor || tutor.employedAtSchoolId !== schoolId) {
+      throw new NotFoundException('Tutor not found');
+    }
+
+    const school = await this.prisma.school.findUnique({ where: { id: schoolId } });
+    
+    const tempPassword = Math.random().toString(36).slice(-8) + 'T!';
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(tempPassword, saltRounds);
+
+    await this.prisma.user.update({
+      where: { id: tutorId },
+      data: {
+        passwordHash,
+        mustChangePassword: true,
+      }
+    });
+
+    await this.emailService.sendTutorCredentialsEmail(
+      school!.name,
+      tutor.email,
+      tempPassword,
+    );
+
+    return { message: 'Invite resent successfully' };
+  }
+
+  async getTutorsBySchoolId(schoolId: string) {
+    return this.prisma.user.findMany({
+      where: {
+        employedAtSchoolId: schoolId,
+        role: UserRole.TUTOR,
+      },
+      select: {
+        id: true,
+        email: true,
+        phone: true,
+        createdAt: true,
+      }
+    });
+  }
 }

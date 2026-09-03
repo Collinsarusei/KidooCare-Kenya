@@ -15,6 +15,7 @@ import { BalancesModule } from './balances/balances.module';
 import { RemindersModule } from './reminders/reminders.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { GenkitModule } from './genkit/genkit.module';
+import { AiModule } from './ai/ai.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { SchoolDocumentsModule } from './school-documents/school-documents.module';
 import { DisputesModule } from './disputes/disputes.module';
@@ -57,6 +58,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
     RemindersModule,
     AuditLogsModule,
     GenkitModule,
+    AiModule,
     ReviewsModule,
     SchoolDocumentsModule,
     DisputesModule,

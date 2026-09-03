@@ -55,4 +55,46 @@ export class ChildrenService {
     }
     return child;
   }
+
+  async updateChild(childId: string, parentId: string, dto: CreateChildDto) {
+    await this.getChildById(childId, parentId); // verify access
+
+    const updated = await this.prisma.child.update({
+      where: { id: childId },
+      data: {
+        name: dto.name,
+        dob: new Date(dto.dob),
+        notes: dto.notes,
+      },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        entityType: 'Child',
+        entityId: updated.id,
+        action: 'UPDATE_CHILD',
+        actorId: parentId,
+        afterState: { name: updated.name, dob: updated.dob },
+      },
+    });
+
+    return updated;
+  }
+
+  async deleteChild(childId: string, parentId: string) {
+    await this.getChildById(childId, parentId); // verify access
+
+    await this.prisma.auditLog.create({
+      data: {
+        entityType: 'Child',
+        entityId: childId,
+        action: 'DELETE_CHILD',
+        actorId: parentId,
+      },
+    });
+
+    return this.prisma.child.delete({
+      where: { id: childId },
+    });
+  }
 }

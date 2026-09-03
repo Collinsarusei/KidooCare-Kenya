@@ -42,4 +42,13 @@ export class DisputesController {
   ) {
     return this.disputesService.resolveDispute(disputeId, req.user.id, dto);
   }
+
+  @Roles(UserRole.PARENT)
+  @Patch(':id/escalate')
+  async escalateDispute(
+    @Param('id') disputeId: string,
+    @Req() req: any,
+  ) {
+    return this.disputesService.escalateDispute(disputeId, req.user.id);
+  }
 }

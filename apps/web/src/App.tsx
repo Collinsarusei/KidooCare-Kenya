@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import {
   UserRole,
   SchoolDetailDto,
   ServiceDto,
   PublicSchoolListingDto,
+  UserDto,
   ChildDto,
   EnrollmentDto,
   ParentLedgerSummaryDto,
@@ -28,6 +30,8 @@ import { ChildrenView } from './components/parent/ChildrenView';
 import { ParentEnrollmentsView } from './components/parent/ParentEnrollmentsView';
 import { ParentLedgerView } from './components/parent/ParentLedgerView';
 import { ParentDisputesView } from './components/parent/ParentDisputesView';
+import { ParentDailyLogsView } from './components/parent/ParentDailyLogsView';
+import { ChildModal } from './components/parent/ChildModal';
 
 import { SchoolServicesTab } from './components/school/SchoolServicesTab';
 import { SchoolRosterTab } from './components/school/SchoolRosterTab';
@@ -37,7 +41,11 @@ import { SchoolProfileTab } from './components/school/SchoolProfileTab';
 import { SchoolProfileWizard } from './components/school/SchoolProfileWizard';
 import { SchoolOverviewTab } from './components/school/SchoolOverviewTab';
 import { SchoolDisputesTab } from './components/school/SchoolDisputesTab';
+import { SchoolTutorsTab } from './components/school/SchoolTutorsTab';
+import { WalkinEnrollmentModal } from './components/school/WalkinEnrollmentModal';
 import { ChangePasswordModal } from './components/auth/ChangePasswordModal';
+
+import { TutorDashboard } from './components/tutor/TutorDashboard';
 
 import { AdminDirectoryTab } from './components/admin/AdminDirectoryTab';
 import { DocumentVerifyTab } from './components/admin/DocumentVerifyTab';
@@ -69,6 +77,7 @@ export default function App() {
   // Modals State
   const [enrollingService, setEnrollingService] = useState<EnrollingService | null>(null);
   const [selectedChildId, setSelectedChildId] = useState<string>('');
+  const [isWalkinModalOpen, setIsWalkinModalOpen] = useState(false);
   const [stkInstallment, setStkInstallment] = useState<StkInstallment | null>(null);
   const [stkPhone, setStkPhone] = useState('');
   const [stkResult, setStkResult] = useState<any>(null);
@@ -78,6 +87,10 @@ export default function App() {
   const [disputeModalPayment, setDisputeModalPayment] = useState<{ id: string; amount: number; weekNumber: number; childName: string } | null>(null);
   const [disputeReason, setDisputeReason] = useState('');
   const [submittingDispute, setSubmittingDispute] = useState(false);
+
+  // Child Modal State
+  const [isChildModalOpen, setIsChildModalOpen] = useState(false);
+  const [editingChild, setEditingChild] = useState<ChildDto | undefined>(undefined);
 
   // Admin Dashboard State
   const [adminSchools, setAdminSchools] = useState<SchoolDetailDto[]>([]);
@@ -91,12 +104,16 @@ export default function App() {
   const [myServices, setMyServices] = useState<ServiceDto[]>([]);
   const [schoolRoster, setSchoolRoster] = useState<EnrollmentDto[]>([]);
   const [schoolFinancials, setSchoolFinancials] = useState<SchoolFinancialSummaryDto | null>(null);
-  const [schoolTab, setSchoolTab] = useState<'overview' | 'services' | 'roster' | 'documents' | 'financials' | 'disputes' | 'profile'>('overview');
+  const [schoolTab, setSchoolTab] = useState<'overview' | 'services' | 'roster' | 'documents' | 'financials' | 'disputes' | 'profile' | 'tutors'>('overview');
   const [aiReport, setAiReport] = useState<ExecutiveSummaryReportDto | null>(null);
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
   const [schoolDocuments, setSchoolDocuments] = useState<SchoolDocumentDto[]>([]);
-  const [schoolDisputes, setSchoolDisputes] = useState<DisputeDto[]>([]);
+  const [schoolDisputes, setSchoolDisputes] = useState<any[]>([]);
+  const [schoolTutors, setSchoolTutors] = useState<UserDto[]>([]);
   const [submittingDoc, setSubmittingDoc] = useState(false);
+
+  // Tutor State
+  const [submittingLog, setSubmittingLog] = useState(false);
 
   useEffect(() => {
     fetchPublicMarketplace();
@@ -123,6 +140,8 @@ export default function App() {
         fetchMyEnrollments();
         fetchParentLedger();
         fetchParentDisputes();
+      } else if (currentUser.role === UserRole.TUTOR && currentUser.employedAtSchoolId) {
+        fetchSchoolRoster(currentUser.employedAtSchoolId);
       }
     }
   }, [currentUser]);
@@ -246,6 +265,20 @@ export default function App() {
       });
       const data = await res.json();
       if (res.ok) setSchoolRoster(data);
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  const fetchSchoolTutors = async (schoolId: string) => {
+    const savedToken = localStorage.getItem('token');
+    if (!savedToken) return;
+    try {
+      const res = await fetch(`/api/schools/${schoolId}/tutors`, {
+        headers: { Authorization: `Bearer ${savedToken}` },
+      });
+      const data = await res.json();
+      if (res.ok) setSchoolTutors(data);
     } catch (e) {
       // ignore
     }
@@ -375,27 +408,67 @@ export default function App() {
     }
   };
 
-  const handleCreateChild = async (name: string, dob: string, notes: string) => {
-    setError(null);
-    setSuccessMsg(null);
-
+  const handleSaveChild = async (data: { id?: string; name: string; dob: string; notes?: string }) => {
     try {
-      const res = await fetch('/api/children', {
+      const url = data.id ? `/api/children/${data.id}` : '/api/children';
+      const method = data.id ? 'PUT' : 'POST';
+      
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.message || 'Failed to save child');
+      
+      toast.success(`Child profile ${data.id ? 'updated' : 'created'} successfully!`);
+      fetchMyChildren();
+      setIsChildModalOpen(false);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleDeleteChild = async (childId: string) => {
+    if (!window.confirm("Are you sure you want to delete this child profile?")) return;
+    try {
+      const res = await fetch(`/api/children/${childId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Failed to delete child');
+      }
+      toast.success('Child profile deleted successfully!');
+      fetchMyChildren();
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleWalkinEnrollment = async (data: { childName: string; childDob: string; parentName?: string; parentEmail?: string; parentPhone?: string; serviceId: string }) => {
+    if (!mySchool) return;
+    try {
+      const res = await fetch(`/api/schools/${mySchool.id}/walkin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, dob, notes }),
+        body: JSON.stringify(data),
       });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to register child');
-
-      setSuccessMsg(`Child '${data.name}' registered successfully!`);
-      fetchMyChildren();
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.message || 'Failed to process walk-in enrollment');
+      
+      toast.success('Walk-in enrollment added successfully!');
+      fetchSchoolRoster(mySchool.id);
+      setIsWalkinModalOpen(false);
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -435,8 +508,7 @@ export default function App() {
     }
   };
 
-  const handleInitiateStkPush = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleInitiateStkPush = async (phone: string, amount: number) => {
     if (!stkInstallment) return;
     setError(null);
     setSuccessMsg(null);
@@ -450,7 +522,8 @@ export default function App() {
         },
         body: JSON.stringify({
           weeklyInstallmentId: stkInstallment.id,
-          phone: stkPhone,
+          phone: phone,
+          amount: amount,
         }),
       });
 
@@ -470,20 +543,11 @@ export default function App() {
     setError(null);
 
     try {
-      const res = await fetch('/api/payments/callback', {
+      const res = await fetch('/api/payments/simulate-callback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          Body: {
-            stkCallback: {
-              CheckoutRequestID: stkResult.checkoutRequestId,
-              ResultCode: 0,
-              ResultDesc: 'The service request is processed successfully.',
-              CallbackMetadata: {
-                Item: [{ Name: 'MpesaReceiptNumber', Value: `RCK${Date.now().toString().slice(-6)}` }],
-              },
-            },
-          },
+          checkoutRequestId: stkResult.checkoutRequestId,
         }),
       });
 
@@ -740,6 +804,97 @@ export default function App() {
 
       setSuccessMsg(`Program '${data.name}' updated!`);
       fetchSchoolServices(mySchool.id);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleAddTutor = async (data: { name: string; email: string; phone: string }) => {
+    if (!mySchool) return;
+    setError(null);
+    setSuccessMsg(null);
+
+    try {
+      const res = await fetch(`/api/schools/${mySchool.id}/tutors`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.message || 'Failed to add tutor');
+
+      setSuccessMsg(`Tutor '${resData.email}' added successfully!`);
+      fetchSchoolTutors(mySchool.id);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleUpdateTutor = async (tutorId: string, data: { name: string; email: string; phone: string }) => {
+    if (!mySchool) return;
+    setError(null);
+    setSuccessMsg(null);
+
+    try {
+      const res = await fetch(`/api/schools/${mySchool.id}/tutors/${tutorId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.message || 'Failed to update tutor');
+
+      setSuccessMsg(`Tutor updated successfully!`);
+      fetchSchoolTutors(mySchool.id);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleResendTutorInvite = async (tutorId: string) => {
+    if (!mySchool) return;
+    setError(null);
+    setSuccessMsg(null);
+
+    try {
+      const res = await fetch(`/api/schools/${mySchool.id}/tutors/${tutorId}/resend`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.message || 'Failed to resend invite');
+
+      setSuccessMsg(`Invite resent successfully to the tutor!`);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleRemoveTutor = async (tutorId: string) => {
+    if (!mySchool) return;
+    setError(null);
+    setSuccessMsg(null);
+
+    try {
+      const res = await fetch(`/api/schools/${mySchool.id}/tutors/${tutorId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.message || 'Failed to remove tutor');
+
+      setSuccessMsg(`Tutor removed successfully.`);
+      fetchSchoolTutors(mySchool.id);
     } catch (err: any) {
       setError(err.message);
     }
@@ -1046,6 +1201,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#f8f9ff]">
+      <Toaster position="top-center" />
+
       {/* Global Header Bar */}
       {(!currentUser || currentUser.role !== UserRole.SCHOOL) && (
         <Header 
@@ -1111,6 +1268,16 @@ export default function App() {
               >
                 <span className="material-symbols-outlined text-base">groups</span>
                 <span className="hidden lg:inline">Roster ({schoolRoster.length})</span>
+              </button>
+
+              <button 
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  schoolTab === 'tutors' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
+                }`}
+                onClick={() => { setSchoolTab('tutors'); if (mySchool) fetchSchoolTutors(mySchool.id); }}
+              >
+                <span className="material-symbols-outlined text-base">co_present</span>
+                <span className="hidden lg:inline">Tutors ({schoolTutors.length})</span>
               </button>
 
               <button 
@@ -1294,7 +1461,12 @@ export default function App() {
           )}
 
           {parentTab === 'children' && (
-            <ChildrenView myChildren={myChildren} onRegisterChild={handleCreateChild} />
+            <ChildrenView 
+              myChildren={myChildren} 
+              onAddChildClick={() => { setEditingChild(undefined); setIsChildModalOpen(true); }}
+              onEditChildClick={(child) => { setEditingChild(child); setIsChildModalOpen(true); }}
+              onDeleteChildClick={handleDeleteChild}
+            />
           )}
 
           {parentTab === 'enrollments' && (
@@ -1311,7 +1483,19 @@ export default function App() {
           )}
 
           {parentTab === 'disputes' && (
-            <ParentDisputesView parentDisputes={parentDisputes} />
+            <ParentDisputesView 
+              parentDisputes={parentDisputes} 
+              onEscalateDispute={async (id) => {
+                try {
+                  const res = await fetch(`/api/disputes/${id}/escalate`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+                  if (!res.ok) throw new Error('Failed to escalate');
+                  toast.success('Dispute escalated to admin');
+                  fetchParentDisputes();
+                } catch (err: any) {
+                  toast.error(err.message);
+                }
+              }}
+            />
           )}
         </div>
       )}
@@ -1364,7 +1548,23 @@ export default function App() {
               onUpdateService={handleUpdateService}
             />
           )}
-          {schoolTab === 'roster' && <SchoolRosterTab schoolRoster={schoolRoster} onPromoteWaitlist={handlePromoteWaitlist} onEndEnrollment={handleEndEnrollment} />}
+          {schoolTab === 'roster' && (
+            <SchoolRosterTab 
+              schoolRoster={schoolRoster} 
+              onPromoteWaitlist={handlePromoteWaitlist} 
+              onEndEnrollment={handleEndEnrollment} 
+              onWalkinEnrollmentClick={() => setIsWalkinModalOpen(true)}
+            />
+          )}
+          {schoolTab === 'tutors' && (
+            <SchoolTutorsTab
+              tutors={schoolTutors}
+              onAddTutor={handleAddTutor}
+              onUpdateTutor={handleUpdateTutor}
+              onRemoveTutor={handleRemoveTutor}
+              onResendInvite={handleResendTutorInvite}
+            />
+          )}
           {schoolTab === 'documents' && <SchoolDocumentsTab schoolDocuments={schoolDocuments} onUploadDocument={handleUploadDocument} submittingDoc={submittingDoc} />}
           {schoolTab === 'financials' && <SchoolFinancialsTab schoolFinancials={schoolFinancials} aiReport={aiReport} isGeneratingAi={isGeneratingAi} onGenerateAiReport={handleGenerateExecutiveSummary} />}
           {schoolTab === 'disputes' && <SchoolDisputesTab disputes={schoolDisputes} onResolveDispute={handleResolveDispute} />}
@@ -1379,6 +1579,38 @@ export default function App() {
           )}
             </>
           )}
+        </div>
+      )}
+
+      {/* TUTOR DASHBOARD */}
+      {currentUser && currentUser.role === UserRole.TUTOR && (
+        <div className="space-y-6">
+          <TutorDashboard 
+            schoolRoster={schoolRoster} 
+            submittingLog={submittingLog}
+            onLogActivity={async (data) => {
+              setSubmittingLog(true);
+              try {
+                const res = await fetch(`/api/daily-logs/child/${data.childId}`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                  },
+                  body: JSON.stringify(data)
+                });
+                if (!res.ok) {
+                  const errorData = await res.json();
+                  throw new Error(errorData.message || 'Failed to submit log');
+                }
+                toast.success('Activity logged successfully!');
+              } catch (err: any) {
+                toast.error(err.message);
+              } finally {
+                setSubmittingLog(false);
+              }
+            }}
+          />
         </div>
       )}
 
@@ -1467,6 +1699,24 @@ export default function App() {
           setSelectedChildId={setSelectedChildId}
           onConfirm={handleConfirmEnrollment}
           onClose={() => setEnrollingService(null)}
+          onAddChildClick={() => { setEditingChild(undefined); setIsChildModalOpen(true); }}
+        />
+      )}
+
+      {isChildModalOpen && (
+        <ChildModal
+          initialData={editingChild}
+          onSave={handleSaveChild}
+          onClose={() => setIsChildModalOpen(false)}
+        />
+      )}
+
+      {isWalkinModalOpen && mySchool && (
+        <WalkinEnrollmentModal
+          schoolId={mySchool.id}
+          services={myServices}
+          onClose={() => setIsWalkinModalOpen(false)}
+          onConfirm={handleWalkinEnrollment}
         />
       )}
 

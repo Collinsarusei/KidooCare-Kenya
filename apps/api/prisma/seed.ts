@@ -112,7 +112,31 @@ async function main() {
     });
   }
 
-  console.log('✅ Daycare Schools & Service Presets seeded cleanly!');
+  // 4. Create Parent & Child
+  const parent = await prisma.user.upsert({
+    where: { email: 'parent@daycare.com' },
+    update: {},
+    create: {
+      email: 'parent@daycare.com',
+      phone: '+254700000000',
+      role: UserRole.PARENT,
+      passwordHash,
+    },
+  });
+
+  await prisma.child.upsert({
+    where: { id: 'seed-child-1' },
+    update: {},
+    create: {
+      id: 'seed-child-1',
+      parentId: parent.id,
+      name: 'Joy Wanjiku',
+      dob: new Date('2022-05-15'),
+      notes: 'Allergic to Peanuts',
+    },
+  });
+
+  console.log('✅ Daycare Schools, Services, and Parent seeded cleanly!');
 }
 
 main()

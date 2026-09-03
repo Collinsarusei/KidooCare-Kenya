@@ -16,6 +16,7 @@ export const AuthBox: React.FC<AuthBoxProps> = ({
   const [isRegistering, setIsRegistering] = useState<boolean>(initialRegistering);
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [showDaycareInfo, setShowDaycareInfo] = useState(false);
 
@@ -37,7 +38,7 @@ export const AuthBox: React.FC<AuthBoxProps> = ({
         <div className="hidden md:flex flex-col justify-center h-full">
           <div className="relative w-full aspect-[4/5] rounded-3xl overflow-hidden shadow-xl group border border-[#c3c6d7]/30">
             <img 
-              src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=800&q=80" 
+              src="/hero_image.jpg" 
               alt="Kenyan toddler playing at daycare" 
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
@@ -152,13 +153,22 @@ export const AuthBox: React.FC<AuthBoxProps> = ({
                     <span className="material-symbols-outlined text-lg">lock</span>
                   </div>
                   <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     required
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
+                    className="w-full pl-10 pr-10 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#737686] hover:text-[#121c2a] transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-lg">
+                      {showPassword ? 'visibility_off' : 'visibility'}
+                    </span>
+                  </button>
                 </div>
               </div>
 
