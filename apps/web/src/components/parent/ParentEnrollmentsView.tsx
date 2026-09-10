@@ -3,9 +3,15 @@ import { EnrollmentDto } from '@daycare/shared-types';
 
 interface ParentEnrollmentsViewProps {
   myEnrollments: EnrollmentDto[];
+  onEndEnrollment: (id: string) => void;
+  onNavigateToMarketplace: () => void;
 }
 
-export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({ myEnrollments }) => {
+export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({ 
+  myEnrollments, 
+  onEndEnrollment, 
+  onNavigateToMarketplace 
+}) => {
   return (
     <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
       <div className="flex justify-between items-center border-b border-[#e6eeff] pb-4">
@@ -16,10 +22,19 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({ my
           </h3>
           <p className="text-xs text-[#737686]">Daycare placements & weekly billing schedules</p>
         </div>
-        <span className="badge badge-green">
-          <span className="material-symbols-outlined text-xs">verified</span>
-          Lipa Mdogo Mdogo
-        </span>
+        <div className="flex items-center gap-4">
+          <span className="badge badge-green hidden md:inline-flex">
+            <span className="material-symbols-outlined text-xs">verified</span>
+            Lipa Mdogo Mdogo
+          </span>
+          <button 
+            onClick={onNavigateToMarketplace}
+            className="btn btn-primary text-sm px-4 py-2 flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined text-sm">add_circle</span>
+            Enroll New Child
+          </button>
+        </div>
       </div>
 
       {myEnrollments.length === 0 ? (
@@ -29,6 +44,11 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({ my
           <p className="text-xs text-[#737686]">
             Browse available daycare centers on the marketplace to enroll your child.
           </p>
+          <div className="pt-2">
+            <button onClick={onNavigateToMarketplace} className="btn btn-outline text-sm">
+              Go to Marketplace
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-6">
@@ -70,6 +90,21 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({ my
                   <div className="text-base font-extrabold text-[#006c49]">
                     KES {enr.agreedMonthlyPrice.toLocaleString()} / mo
                   </div>
+                  {(enr.status === 'ACTIVE' || enr.status === 'PENDING_PAYMENT' || enr.status === 'WAITLISTED') && (
+                    <button 
+                      onClick={() => onEndEnrollment(enr.id)}
+                      disabled={enr.status === 'ACTIVE' && (enr.balance?.totalArrears || 0) > 0}
+                      title={enr.status === 'ACTIVE' && (enr.balance?.totalArrears || 0) > 0 ? "Clear your arrears to cancel" : ""}
+                      className={`mt-2 text-xs font-bold flex items-center justify-end gap-1 ml-auto ${
+                        enr.status === 'ACTIVE' && (enr.balance?.totalArrears || 0) > 0
+                        ? 'text-[#c3c6d7] cursor-not-allowed'
+                        : 'text-red-500 hover:text-red-700'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-sm">cancel</span>
+                      End Enrollment
+                    </button>
+                  )}
                 </div>
               </div>
 

@@ -176,8 +176,16 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
 
       {/* Daycare Profile Detail Modal (Mockup Match) */}
       {selectedSchool && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-0 md:p-4 animate-fadeIn">
-          <div className="bg-[#f8f9ff] w-full md:w-[450px] h-full md:h-[90vh] md:rounded-3xl overflow-y-auto shadow-2xl relative flex flex-col">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-0 md:p-6 animate-fadeIn">
+          {/* Floating Close Button */}
+          <button 
+            className="fixed top-4 right-4 md:top-8 md:right-8 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-[#121c2a] shadow-xl hover:bg-white hover:text-red-600 transition-all z-[60]"
+            onClick={() => setSelectedSchool(null)}
+          >
+            <span className="material-symbols-outlined text-xl">close</span>
+          </button>
+
+          <div className="bg-[#f8f9ff] w-full md:w-[600px] lg:w-[800px] h-full md:h-[90vh] md:rounded-3xl overflow-y-auto shadow-2xl relative flex flex-col">
             
             {/* Banner Section */}
             <div className="relative h-64 shrink-0 bg-slate-300">
@@ -187,13 +195,6 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              
-              <button 
-                className="absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-[#121c2a] shadow-md hover:bg-white transition-all"
-                onClick={() => setSelectedSchool(null)}
-              >
-                <span className="material-symbols-outlined">arrow_back</span>
-              </button>
 
               <div className="absolute bottom-4 left-4 right-4 text-white">
                 <h2 className="text-2xl font-extrabold font-display mb-1">{selectedSchool.name}</h2>

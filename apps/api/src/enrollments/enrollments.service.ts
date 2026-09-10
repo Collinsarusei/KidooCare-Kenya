@@ -22,10 +22,14 @@ export class EnrollmentsService {
 
     const service = await this.prisma.service.findUnique({
       where: { id: dto.serviceId },
-      include: { school: true },
+      include: { school: { include: { credentials: true } } },
     });
     if (!service) {
       throw new NotFoundException(`Service with ID '${dto.serviceId}' not found`);
+    }
+
+    if (!service.school.credentials || !service.school.credentials.mpesaShortcode) {
+      throw new BadRequestException('This daycare has not configured payment details yet. You cannot enroll at this time.');
     }
 
     // Check existing active enrollment for this child in this service
@@ -271,6 +275,13 @@ export class EnrollmentsService {
       }
     }
 
+    if (actorRole === UserRole.PARENT && enrollment.status === EnrollmentStatus.ACTIVE) {
+      const balance = await this.prisma.balance.findUnique({ where: { enrollmentId } });
+      if (balance && balance.totalArrears > 0) {
+        throw new BadRequestException('You cannot cancel an active enrollment while you have outstanding arrears. Please clear your balance first.');
+      }
+    }
+
     const wasActive = enrollment.status === EnrollmentStatus.ACTIVE;
 
     await this.prisma.$transaction(async (tx) => {
@@ -325,9 +336,16 @@ export class EnrollmentsService {
       }
     }
 
-    const service = await this.prisma.service.findUnique({ where: { id: dto.serviceId } });
+    const service = await this.prisma.service.findUnique({ 
+      where: { id: dto.serviceId },
+      include: { school: { include: { credentials: true } } }
+    });
     if (!service || service.schoolId !== schoolId) {
       throw new BadRequestException('Invalid service for this school');
+    }
+
+    if (!service.school.credentials || !service.school.credentials.mpesaShortcode) {
+      throw new BadRequestException('This daycare has not configured payment details yet. You cannot enroll walk-ins at this time.');
     }
 
     let parentId = '';

@@ -230,6 +230,7 @@ export interface EnrollmentDto {
   child?: ChildDto;
   service?: ServiceDto & { school?: { name: string; location: string | null } };
   billingCycles?: BillingCycleDto[];
+  balance?: { totalArrears: number };
 }
 
 export interface WeeklyInstallmentDto {

@@ -120,46 +120,86 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
 
       <div className="space-y-3">
         {tutors.length === 0 ? (
-          <div className="text-center py-10 bg-[#f8f9ff] rounded-2xl border border-dashed border-[#c3c6d7] space-y-2">
-            <span className="material-symbols-outlined text-4xl text-[#737686]">group_off</span>
-            <p className="text-sm font-semibold text-[#121c2a]">No Tutors Added</p>
-            <p className="text-xs text-[#737686]">Add tutors so they can log daily activities for children.</p>
+          <div className="py-16 text-center bg-gradient-to-b from-[#f8f9ff] to-white rounded-2xl border border-dashed border-[#cbd5e1] flex flex-col items-center justify-center space-y-4 shadow-sm">
+            <div className="w-24 h-24 rounded-full bg-blue-50 border-4 border-white shadow-lg text-blue-500 flex items-center justify-center animate-pulse">
+              <span className="material-symbols-outlined text-5xl">diversity_3</span>
+            </div>
+            <div>
+              <p className="text-xl font-extrabold text-[#0f172a] font-display">Build Your Care Team</p>
+              <p className="text-sm text-[#64748b] max-w-md mx-auto mt-2">
+                Invite tutors and caregivers to your platform. They will be able to log daily activities, manage rosters, and communicate with parents.
+              </p>
+            </div>
+            <button 
+              onClick={openAddForm}
+              className="mt-4 btn bg-[#004ac6] hover:bg-[#003ea8] text-white text-sm font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-lg">person_add</span>
+              Invite Your First Tutor
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {tutors.map(tutor => (
-              <div key={tutor.id} className="border border-[#e6eeff] bg-[#f8f9ff] rounded-2xl p-4 flex justify-between items-center hover:border-[#b4c5ff] transition-all">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#004ac6] text-white flex items-center justify-center font-bold">
-                    {tutor.email.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div>
-                  <h4 className="font-bold text-[#121c2a] text-sm">{tutor.email}</h4>
-                    <p className="text-xs text-[#737686]">{tutor.phone}</p>
+              <div 
+                key={tutor.id} 
+                className="bg-white border border-[#e2e8f0] rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col overflow-hidden group"
+              >
+                {/* Profile Card Header with Gradient */}
+                <div className="h-24 bg-gradient-to-r from-[#eff6ff] via-[#dbeafe] to-[#eff6ff] relative flex justify-center">
+                  {/* Action Menu (Top Right) */}
+                  <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={() => openEditForm(tutor)}
+                      className="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-[#334155] hover:bg-white hover:text-[#2563eb] shadow-sm flex items-center justify-center transition-all"
+                      title="Edit Tutor"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">edit</span>
+                    </button>
+                    <button 
+                      onClick={() => onRemoveTutor(tutor.id)}
+                      className="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-[#334155] hover:bg-white hover:text-red-500 shadow-sm flex items-center justify-center transition-all"
+                      title="Remove Tutor"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">person_remove</span>
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <button 
-                    onClick={() => onResendInvite(tutor.id)}
-                    className="w-8 h-8 rounded-full bg-white border border-[#c3c6d7] text-[#004ac6] hover:bg-[#eff4ff] flex items-center justify-center transition-all"
-                    title="Resend Credentials Invite"
-                  >
-                    <span className="material-symbols-outlined text-sm">mail</span>
-                  </button>
-                  <button 
-                    onClick={() => openEditForm(tutor)}
-                    className="w-8 h-8 rounded-full bg-white border border-[#c3c6d7] text-[#434655] hover:bg-[#f1f5f9] flex items-center justify-center transition-all"
-                    title="Edit Tutor"
-                  >
-                    <span className="material-symbols-outlined text-sm">edit</span>
-                  </button>
-                  <button 
-                    onClick={() => onRemoveTutor(tutor.id)}
-                    className="w-8 h-8 rounded-full bg-white border border-[#c3c6d7] text-[#c2410c] hover:bg-[#fff7ed] flex items-center justify-center transition-all"
-                    title="Remove Tutor"
-                  >
-                    <span className="material-symbols-outlined text-sm">delete</span>
-                  </button>
+
+                <div className="px-5 pb-5 flex-1 flex flex-col items-center text-center">
+                  {/* Large Avatar */}
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] text-white flex items-center justify-center font-extrabold text-2xl border-4 border-white shadow-lg -mt-10 mb-3 relative z-10">
+                    {tutor.email.substring(0, 2).toUpperCase()}
+                  </div>
+
+                  <h4 className="font-extrabold text-[#0f172a] text-lg font-display mb-1 truncate w-full">
+                    {(tutor as any).name || 'Staff Member'}
+                  </h4>
+                  <span className="text-[10px] uppercase tracking-wider font-bold text-[#2563eb] bg-[#eff6ff] px-2.5 py-1 rounded-full mb-4">
+                    Caregiver
+                  </span>
+
+                  <div className="space-y-2 w-full text-xs text-[#64748b] mb-6">
+                    <a href={`mailto:${tutor.email}`} className="flex items-center justify-center gap-2 hover:text-[#2563eb] transition-colors truncate">
+                      <span className="material-symbols-outlined text-[16px]">mail</span>
+                      {tutor.email}
+                    </a>
+                    <a href={`tel:${tutor.phone}`} className="flex items-center justify-center gap-2 hover:text-[#2563eb] transition-colors">
+                      <span className="material-symbols-outlined text-[16px]">call</span>
+                      {tutor.phone || 'No phone provided'}
+                    </a>
+                  </div>
+
+                  {/* Primary Action Button (Bottom) */}
+                  <div className="mt-auto w-full pt-4 border-t border-[#f1f5f9]">
+                    <button 
+                      onClick={() => onResendInvite(tutor.id)}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#f8fafc] text-[#475569] hover:bg-[#eff6ff] hover:text-[#2563eb] font-semibold text-xs transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">send</span>
+                      Resend Credentials
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

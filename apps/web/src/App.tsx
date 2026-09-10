@@ -24,7 +24,8 @@ import { StkPushModal, StkInstallment } from './components/common/StkPushModal';
 import { EnrollmentModal, EnrollingService } from './components/common/EnrollmentModal';
 import { AuthBox } from './components/auth/AuthBox';
 import { LandingView } from './components/landing/LandingView';
-
+import { Sidebar } from './components/common/Sidebar';
+import { ConfirmationModal } from './components/common/ConfirmationModal';
 import { MarketplaceView } from './components/parent/MarketplaceView';
 import { ChildrenView } from './components/parent/ChildrenView';
 import { ParentEnrollmentsView } from './components/parent/ParentEnrollmentsView';
@@ -51,13 +52,14 @@ import { AdminDirectoryTab } from './components/admin/AdminDirectoryTab';
 import { DocumentVerifyTab } from './components/admin/DocumentVerifyTab';
 import { AdminDisputesTab } from './components/admin/AdminDisputesTab';
 import { AuditLogsTab } from './components/admin/AuditLogsTab';
+import { AdminAnalyticsTab } from './components/admin/AdminAnalyticsTab';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem('refreshToken'));
-  const [error, setError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const setError = (msg: string | null) => { if (msg) toast.error(msg); };
+  const setSuccessMsg = (msg: string | null) => { if (msg) toast.success(msg); };
   const [loading, setLoading] = useState(false);
 
   // Marketplace & Browsing State
@@ -88,13 +90,21 @@ export default function App() {
   const [disputeReason, setDisputeReason] = useState('');
   const [submittingDispute, setSubmittingDispute] = useState(false);
 
+  // Confirmation Modal State
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    message: string;
+    isDestructive?: boolean;
+    onConfirm: () => void;
+  } | null>(null);
+
   // Child Modal State
   const [isChildModalOpen, setIsChildModalOpen] = useState(false);
   const [editingChild, setEditingChild] = useState<ChildDto | undefined>(undefined);
 
   // Admin Dashboard State
   const [adminSchools, setAdminSchools] = useState<SchoolDetailDto[]>([]);
-  const [adminTab, setAdminTab] = useState<'directory' | 'documents' | 'disputes' | 'audit'>('directory');
+  const [adminTab, setAdminTab] = useState<'analytics' | 'directory' | 'documents' | 'disputes' | 'audit'>('analytics');
   const [auditLogs, setAuditLogs] = useState<AuditLogDto[]>([]);
   const [adminDocuments, setAdminDocuments] = useState<SchoolDocumentDto[]>([]);
   const [adminDisputes, setAdminDisputes] = useState<DisputeDto[]>([]);
@@ -433,21 +443,28 @@ export default function App() {
   };
 
   const handleDeleteChild = async (childId: string) => {
-    if (!window.confirm("Are you sure you want to delete this child profile?")) return;
-    try {
-      const res = await fetch(`/api/children/${childId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || 'Failed to delete child');
+    setConfirmConfig({
+      title: 'Delete Child Profile',
+      message: 'Are you sure you want to delete this child profile? This action cannot be undone.',
+      isDestructive: true,
+      onConfirm: async () => {
+        setConfirmConfig(null);
+        try {
+          const res = await fetch(`/api/children/${childId}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message || 'Failed to delete child');
+          }
+          toast.success('Child profile deleted successfully!');
+          fetchMyChildren();
+        } catch (err: any) {
+          toast.error(err.message);
+        }
       }
-      toast.success('Child profile deleted successfully!');
-      fetchMyChildren();
-    } catch (err: any) {
-      toast.error(err.message);
-    }
+    });
   };
 
   const handleWalkinEnrollment = async (data: { childName: string; childDob: string; parentName?: string; parentEmail?: string; parentPhone?: string; serviceId: string }) => {
@@ -494,11 +511,10 @@ export default function App() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Enrollment failed');
 
-      const isWaitlisted = data.status === 'WAITLISTED';
       setSuccessMsg(
-        isWaitlisted
+        data.status === 'WAITLISTED'
           ? `Capacity reached! Child enrolled on WAITLIST for '${enrollingService.serviceName}'.`
-          : `Successfully enrolled in '${enrollingService.serviceName}'! Weekly billing cycle generated.`
+          : `Enrollment created! Please navigate to your Ledger to pay the first installment and activate the enrollment.`
       );
       setEnrollingService(null);
       fetchMyEnrollments();
@@ -666,27 +682,33 @@ export default function App() {
   };
 
   const handleEndEnrollment = async (enrollmentId: string) => {
-    if (!confirm('Are you sure you want to end this child enrollment?')) return;
-    setError(null);
+    setConfirmConfig({
+      title: 'End Enrollment',
+      message: 'Are you sure you want to end this child enrollment?',
+      isDestructive: true,
+      onConfirm: async () => {
+        setConfirmConfig(null);
+        setError(null);
+        try {
+          const res = await fetch(`/api/enrollments/${enrollmentId}/end`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+          });
 
-    try {
-      const res = await fetch(`/api/enrollments/${enrollmentId}/end`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || 'Failed to end enrollment');
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to end enrollment');
-
-      setSuccessMsg('Enrollment status updated to ENDED.');
-      if (currentUser?.role === UserRole.PARENT) fetchMyEnrollments();
-      if (mySchool) {
-        fetchSchoolRoster(mySchool.id);
-        fetchSchoolServices(mySchool.id);
+          setSuccessMsg('Enrollment status updated to ENDED.');
+          if (currentUser?.role === UserRole.PARENT) fetchMyEnrollments();
+          if (mySchool) {
+            fetchSchoolRoster(mySchool.id);
+            fetchSchoolServices(mySchool.id);
+          }
+        } catch (err: any) {
+          setError(err.message);
+        }
       }
-    } catch (err: any) {
-      setError(err.message);
-    }
+    });
   };
 
   const handleCreateDispute = async (e: React.FormEvent) => {
@@ -1215,10 +1237,21 @@ export default function App() {
         />
       )}
 
+      {/* Global Confirmation Modal */}
+      {confirmConfig && (
+        <ConfirmationModal
+          title={confirmConfig.title}
+          message={confirmConfig.message}
+          isDestructive={confirmConfig.isDestructive}
+          onConfirm={confirmConfig.onConfirm}
+          onCancel={() => setConfirmConfig(null)}
+        />
+      )}
+
       {/* Custom School Header */}
       {currentUser && currentUser.role === UserRole.SCHOOL && (
-        <header className="bg-white border-b border-[#e6eeff] px-4 md:px-8 py-3.5 shadow-sm sticky top-0 z-50 w-full">
-          <div className="max-w-7xl w-full mx-auto flex items-center justify-between gap-4">
+        <header className="bg-[#ebf0fa] border-b border-[#d3e0fc] px-4 md:px-8 py-3.5 shadow-sm sticky top-0 z-50 w-full">
+          <div className="w-full mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 shrink-0">
             <div className="w-10 h-10 rounded-xl bg-[#004ac6] text-white flex items-center justify-center font-bold">
               <span className="material-symbols-outlined text-xl">domain</span>
@@ -1238,89 +1271,8 @@ export default function App() {
             </div>
           </div>
           
-          {mySchool && mySchool.status !== ('PENDING_PROFILE' as any) && (
-            <div className="flex bg-[#eff4ff] p-1 rounded-xl border border-[#e6eeff] overflow-x-auto gap-1 flex-1 md:flex-none">
-              <button 
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  schoolTab === 'overview' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
-                }`}
-                onClick={() => setSchoolTab('overview')}
-              >
-                <span className="material-symbols-outlined text-base">dashboard</span>
-                <span className="hidden lg:inline">Overview</span>
-              </button>
+          {/* Horizontal tabs removed in favor of Sidebar */}
 
-              <button 
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  schoolTab === 'services' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
-                }`}
-                onClick={() => setSchoolTab('services')}
-              >
-                <span className="material-symbols-outlined text-base">tune</span>
-                <span className="hidden lg:inline">Services ({myServices.length})</span>
-              </button>
-
-              <button 
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  schoolTab === 'roster' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
-                }`}
-                onClick={() => setSchoolTab('roster')}
-              >
-                <span className="material-symbols-outlined text-base">groups</span>
-                <span className="hidden lg:inline">Roster ({schoolRoster.length})</span>
-              </button>
-
-              <button 
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  schoolTab === 'tutors' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
-                }`}
-                onClick={() => { setSchoolTab('tutors'); if (mySchool) fetchSchoolTutors(mySchool.id); }}
-              >
-                <span className="material-symbols-outlined text-base">co_present</span>
-                <span className="hidden lg:inline">Tutors ({schoolTutors.length})</span>
-              </button>
-
-              <button 
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  schoolTab === 'documents' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
-                }`}
-                onClick={() => { setSchoolTab('documents'); if (mySchool) fetchSchoolDocuments(mySchool.id); }}
-              >
-                <span className="material-symbols-outlined text-base">description</span>
-                <span className="hidden lg:inline">Documents ({schoolDocuments.length})</span>
-              </button>
-
-              <button 
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  schoolTab === 'financials' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
-                }`}
-                onClick={() => { setSchoolTab('financials'); if (mySchool) fetchSchoolFinancials(mySchool.id); }}
-              >
-                <span className="material-symbols-outlined text-base">analytics</span>
-                <span className="hidden lg:inline">Financials</span>
-              </button>
-
-              <button 
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  schoolTab === 'disputes' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
-                }`}
-                onClick={() => { setSchoolTab('disputes'); fetchSchoolDisputes(); }}
-              >
-                <span className="material-symbols-outlined text-base">gavel</span>
-                <span className="hidden lg:inline">Disputes ({schoolDisputes.length})</span>
-              </button>
-
-              <button 
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  schoolTab === 'profile' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
-                }`}
-                onClick={() => setSchoolTab('profile')}
-              >
-                <span className="material-symbols-outlined text-base">edit</span>
-                <span className="hidden lg:inline">Edit Profile</span>
-              </button>
-            </div>
-          )}
           <button onClick={handleLogout} className="text-[#737686] hover:text-[#e11d48] transition-all flex items-center gap-1 text-sm font-bold shrink-0">
             <span className="material-symbols-outlined text-lg">logout</span>
             <span className="hidden md:inline">Logout</span>
@@ -1329,27 +1281,9 @@ export default function App() {
         </header>
       )}
 
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 md:px-8 space-y-6">
+      <div className="flex-1 w-full mx-auto px-4 py-6 md:px-8 space-y-6">
 
-      {/* Notifications */}
-      {successMsg && (
-        <div className="bg-[#e6f7ef] border border-[#6cf8bb] text-[#00714d] px-5 py-3 rounded-2xl text-xs font-semibold flex items-center justify-between shadow-xs">
-          <span className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-base">check_circle</span>
-            {successMsg}
-          </span>
-          <button onClick={() => setSuccessMsg(null)} className="text-[#00714d] font-bold">✕</button>
-        </div>
-      )}
-      {error && (
-        <div className="bg-[#fff7ed] border border-[#fdba74] text-[#c2410c] px-5 py-3 rounded-2xl text-xs font-semibold flex items-center justify-between shadow-xs">
-          <span className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-base">warning</span>
-            {error}
-          </span>
-          <button onClick={() => setError(null)} className="text-[#c2410c] font-bold">✕</button>
-        </div>
-      )}
+      {/* Notifications handled by react-hot-toast */}
 
       {/* PUBLIC / LANDING VIEW FOR UNAUTHENTICATED USERS */}
       {!currentUser && (
@@ -1391,58 +1325,18 @@ export default function App() {
 
       {/* PARENT DASHBOARD */}
       {currentUser && currentUser.role === UserRole.PARENT && (
-        <div className="space-y-6">
-          <div className="flex bg-white p-1.5 rounded-2xl border border-[#e6eeff] shadow-xs overflow-x-auto gap-1">
-            <button 
-              className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                parentTab === 'marketplace' ? 'bg-[#004ac6] text-white shadow-sm' : 'text-[#737686] hover:text-[#121c2a]'
-              }`}
-              onClick={() => setParentTab('marketplace')}
-            >
-              <span className="material-symbols-outlined text-base">storefront</span>
-              Daycare Marketplace
-            </button>
-
-            <button 
-              className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                parentTab === 'children' ? 'bg-[#004ac6] text-white shadow-sm' : 'text-[#737686] hover:text-[#121c2a]'
-              }`}
-              onClick={() => setParentTab('children')}
-            >
-              <span className="material-symbols-outlined text-base">child_care</span>
-              My Children ({myChildren.length})
-            </button>
-
-            <button 
-              className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                parentTab === 'enrollments' ? 'bg-[#004ac6] text-white shadow-sm' : 'text-[#737686] hover:text-[#121c2a]'
-              }`}
-              onClick={() => setParentTab('enrollments')}
-            >
-              <span className="material-symbols-outlined text-base">assignment_turned_in</span>
-              Active Enrollments ({myEnrollments.length})
-            </button>
-
-            <button 
-              className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                parentTab === 'ledger' ? 'bg-[#004ac6] text-white shadow-sm' : 'text-[#737686] hover:text-[#121c2a]'
-              }`}
-              onClick={() => { setParentTab('ledger'); fetchParentLedger(); }}
-            >
-              <span className="material-symbols-outlined text-base">payments</span>
-              Financial Ledger & Balances
-            </button>
-
-            <button 
-              className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                parentTab === 'disputes' ? 'bg-[#004ac6] text-white shadow-sm' : 'text-[#737686] hover:text-[#121c2a]'
-              }`}
-              onClick={() => { setParentTab('disputes'); fetchParentDisputes(); }}
-            >
-              <span className="material-symbols-outlined text-base">flag</span>
-              My Disputes ({parentDisputes.length})
-            </button>
-          </div>
+        <div className="flex flex-col md:flex-row gap-6 h-full items-start">
+          <Sidebar 
+            currentUser={currentUser}
+            activeTab={parentTab}
+            setActiveTab={(tab: any) => { 
+              setParentTab(tab); 
+              if (tab === 'ledger') fetchParentLedger(); 
+              if (tab === 'disputes') fetchParentDisputes(); 
+            }}
+            counts={{ children: myChildren.length, enrollments: myEnrollments.length, parentDisputes: parentDisputes.length }}
+          />
+          <div className="flex-1 space-y-6 overflow-y-auto">
 
           {parentTab === 'marketplace' && (
             <MarketplaceView
@@ -1470,7 +1364,11 @@ export default function App() {
           )}
 
           {parentTab === 'enrollments' && (
-            <ParentEnrollmentsView myEnrollments={myEnrollments} />
+            <ParentEnrollmentsView 
+              myEnrollments={myEnrollments} 
+              onEndEnrollment={handleEndEnrollment}
+              onNavigateToMarketplace={() => setParentTab('marketplace')}
+            />
           )}
 
           {parentTab === 'ledger' && (
@@ -1498,7 +1396,8 @@ export default function App() {
             />
           )}
         </div>
-      )}
+      </div>
+    )}
 
 
       {/* FIRST LOGIN MANDATORY PASSWORD CHANGE MODAL */}
@@ -1511,7 +1410,23 @@ export default function App() {
 
       {/* SCHOOL MANAGER DASHBOARD */}
       {currentUser && currentUser.role === UserRole.SCHOOL && (
-        <div className="space-y-6">
+        <div className="flex flex-col md:flex-row gap-6 h-full items-start">
+          {mySchool && mySchool.status !== ('PENDING_PROFILE' as any) && (
+            <Sidebar 
+              currentUser={currentUser}
+              activeTab={schoolTab}
+              setActiveTab={(tab: any) => { 
+                setSchoolTab(tab); 
+                if (tab === 'tutors' && mySchool) fetchSchoolTutors(mySchool.id); 
+                if (tab === 'documents' && mySchool) fetchSchoolDocuments(mySchool.id);
+                if (tab === 'financials' && mySchool) fetchSchoolFinancials(mySchool.id);
+                if (tab === 'disputes') fetchSchoolDisputes();
+              }}
+              counts={{ services: myServices.length, roster: schoolRoster.length, tutors: schoolTutors.length, documents: schoolDocuments.length, schoolDisputes: schoolDisputes.length }}
+              mySchool={mySchool}
+            />
+          )}
+          <div className="flex-1 space-y-6 overflow-y-auto">
           {/* PROFILE CREATION WIZARD (IF PENDING PROFILE) */}
           {mySchool && mySchool.status === ('PENDING_PROFILE' as any) ? (
             <SchoolProfileWizard
@@ -1579,6 +1494,7 @@ export default function App() {
           )}
             </>
           )}
+          </div>
         </div>
       )}
 
@@ -1616,77 +1532,34 @@ export default function App() {
 
       {/* PLATFORM ADMIN DASHBOARD */}
       {currentUser && currentUser.role === UserRole.ADMIN && (
-        <div className="space-y-6">
-          <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-[#c2410c] text-white flex items-center justify-center font-bold">
-                <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-[#004ac6] font-display">
-                  Platform Admin Console
-                </h2>
-                <p className="text-xs text-[#737686]">
-                  Daycare Onboarding, Verification & System Audit Logging
-                </p>
-              </div>
-            </div>
-
-            <div className="flex bg-[#eff4ff] p-1 rounded-xl border border-[#e6eeff] overflow-x-auto gap-1">
-              <button 
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  adminTab === 'directory' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
-                }`}
-                onClick={() => { setAdminTab('directory'); fetchAdminSchools(); }}
-              >
-                <span className="material-symbols-outlined text-base">domain</span>
-                Directory ({adminSchools.length})
-              </button>
-
-              <button 
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  adminTab === 'documents' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
-                }`}
-                onClick={() => { setAdminTab('documents'); fetchAdminDocuments(); }}
-              >
-                <span className="material-symbols-outlined text-base">verified</span>
-                Verification ({adminDocuments.length})
-              </button>
-
-              <button 
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  adminTab === 'disputes' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
-                }`}
-                onClick={() => { setAdminTab('disputes'); fetchAdminDisputes(); }}
-              >
-                <span className="material-symbols-outlined text-base">gavel</span>
-                Disputes ({adminDisputes.length})
-              </button>
-
-              <button 
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  adminTab === 'audit' ? 'bg-white text-[#004ac6] shadow-xs' : 'text-[#737686] hover:text-[#121c2a]'
-                }`}
-                onClick={() => { setAdminTab('audit'); fetchAuditLogs(); }}
-              >
-                <span className="material-symbols-outlined text-base">history</span>
-                Audit Trail ({auditLogs.length})
-              </button>
-            </div>
+        <div className="flex flex-col md:flex-row gap-6 h-full items-start">
+          <Sidebar 
+            currentUser={currentUser}
+            activeTab={adminTab}
+            setActiveTab={(tab: any) => { 
+              setAdminTab(tab); 
+              if (tab === 'directory') fetchAdminSchools();
+              if (tab === 'documents') fetchAdminDocuments();
+              if (tab === 'disputes') fetchAdminDisputes();
+              if (tab === 'audit') fetchAuditLogs();
+            }}
+            counts={{ schools: adminSchools.length, documents: adminDocuments.length, adminDisputes: adminDisputes.length }}
+          />
+          <div className="flex-1 space-y-6 overflow-y-auto">
+            {adminTab === 'analytics' && <AdminAnalyticsTab />}
+            {adminTab === 'directory' && (
+              <AdminDirectoryTab 
+                adminSchools={adminSchools} 
+                onOnboardSchool={handleOnboardSchool} 
+                onUpdateCredentials={handleUpdateSchoolCredentials}
+                onDeleteSchool={handleDeleteSchool}
+                onToggleSchoolStatus={handleToggleSchoolStatus}
+              />
+            )}
+            {adminTab === 'documents' && <DocumentVerifyTab adminDocuments={adminDocuments} onVerifyDocument={handleVerifyDocument} />}
+            {adminTab === 'disputes' && <AdminDisputesTab adminDisputes={adminDisputes} onResolveDispute={handleResolveDispute} />}
+            {adminTab === 'audit' && <AuditLogsTab auditLogs={auditLogs} onRefresh={fetchAuditLogs} />}
           </div>
-
-          {adminTab === 'directory' && (
-            <AdminDirectoryTab 
-              adminSchools={adminSchools} 
-              onOnboardSchool={handleOnboardSchool} 
-              onUpdateCredentials={handleUpdateSchoolCredentials}
-              onDeleteSchool={handleDeleteSchool}
-              onToggleSchoolStatus={handleToggleSchoolStatus}
-            />
-          )}
-          {adminTab === 'documents' && <DocumentVerifyTab adminDocuments={adminDocuments} onVerifyDocument={handleVerifyDocument} />}
-          {adminTab === 'disputes' && <AdminDisputesTab adminDisputes={adminDisputes} onResolveDispute={handleResolveDispute} />}
-          {adminTab === 'audit' && <AuditLogsTab auditLogs={auditLogs} onRefresh={fetchAuditLogs} />}
         </div>
       )}
 

@@ -64,6 +64,8 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
   // Overview State
   const [showAllRegistrations, setShowAllRegistrations] = useState(false);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'PENDING' | 'SUSPENDED' | 'NO_CREDS'>('ALL');
   const [reportToast, setReportToast] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deleteConfirmName, setDeleteConfirmName] = useState('');
@@ -175,7 +177,14 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
     }
   };
 
-  const displayedSchools = showAllRegistrations ? adminSchools : adminSchools.slice(0, 5);
+  const displayedSchools = adminSchools.filter(sch => {
+    if (searchQuery && !sch.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (statusFilter === 'ACTIVE' && sch.status !== 'ACTIVE') return false;
+    if (statusFilter === 'SUSPENDED' && sch.status !== 'SUSPENDED') return false;
+    if (statusFilter === 'PENDING' && sch.status !== 'PENDING_PROFILE') return false;
+    if (statusFilter === 'NO_CREDS' && sch.credentialsStatus?.isConfigured) return false;
+    return true;
+  });
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 font-sans">
@@ -228,57 +237,57 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
               
               {/* Total Users (Dynamic) */}
-              <div className="bg-white border border-[#e6eeff] rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-[#b4c5ff] transition-all">
+              <div className="bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] border border-[#e2e8f0] rounded-2xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex flex-col justify-between space-y-4 hover:-translate-y-1 hover:shadow-[0_8px_20px_-6px_rgba(6,81,237,0.15)] transition-all duration-300">
                 <div className="flex justify-between items-start">
-                  <div className="w-12 h-12 rounded-xl bg-[#e8edff] text-[#2563eb] flex items-center justify-center font-bold">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] text-white flex items-center justify-center font-bold shadow-lg shadow-blue-500/30">
                     <span className="material-symbols-outlined text-2xl">group</span>
                   </div>
-                  <span className="text-xs font-bold text-[#16a34a] bg-[#dcfce7] px-2.5 py-1 rounded-full flex items-center gap-0.5">
-                    <span className="material-symbols-outlined text-xs">trending_up</span>
+                  <span className="text-[10px] font-bold text-[#16a34a] bg-[#dcfce7] border border-[#bbf7d0] px-2.5 py-1 rounded-full flex items-center gap-0.5 shadow-sm">
+                    <span className="material-symbols-outlined text-[10px]">trending_up</span>
                     Live DB
                   </span>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-[#737686]">Total Users</p>
-                  <p className="text-2xl md:text-3xl font-extrabold text-[#121c2a] font-display mt-0.5">
+                  <p className="text-xs font-semibold text-[#64748b] uppercase tracking-wider">Total Users</p>
+                  <p className="text-3xl font-extrabold text-[#0f172a] font-display mt-0.5">
                     {totalUsers}
                   </p>
                 </div>
               </div>
 
-              {/* Total Daycare Centres (Dynamic count from backend array) */}
-              <div className="bg-white border border-[#e6eeff] rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-[#b4c5ff] transition-all">
+              {/* Total Daycare Centres */}
+              <div className="bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] border border-[#e2e8f0] rounded-2xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex flex-col justify-between space-y-4 hover:-translate-y-1 hover:shadow-[0_8px_20px_-6px_rgba(6,81,237,0.15)] transition-all duration-300">
                 <div className="flex justify-between items-start">
-                  <div className="w-12 h-12 rounded-xl bg-[#ffedd5] text-[#d97706] flex items-center justify-center font-bold">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#f59e0b] to-[#d97706] text-white flex items-center justify-center font-bold shadow-lg shadow-amber-500/30">
                     <span className="material-symbols-outlined text-2xl">school</span>
                   </div>
-                  <span className="text-xs font-bold text-[#16a34a] bg-[#dcfce7] px-2.5 py-1 rounded-full flex items-center gap-0.5">
-                    <span className="material-symbols-outlined text-xs">trending_up</span>
+                  <span className="text-[10px] font-bold text-[#16a34a] bg-[#dcfce7] border border-[#bbf7d0] px-2.5 py-1 rounded-full flex items-center gap-0.5 shadow-sm">
+                    <span className="material-symbols-outlined text-[10px]">trending_up</span>
                     Backend DB
                   </span>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-[#737686]">Total Daycare Centres</p>
-                  <p className="text-2xl md:text-3xl font-extrabold text-[#121c2a] font-display mt-0.5">
+                  <p className="text-xs font-semibold text-[#64748b] uppercase tracking-wider">Total Daycare Centres</p>
+                  <p className="text-3xl font-extrabold text-[#0f172a] font-display mt-0.5">
                     {totalSchools}
                   </p>
                 </div>
               </div>
 
-              {/* Active Programs (Dynamic count from backend array) */}
-              <div className="bg-white border border-[#e6eeff] rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-[#b4c5ff] transition-all">
+              {/* Active Programs */}
+              <div className="bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] border border-[#e2e8f0] rounded-2xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex flex-col justify-between space-y-4 hover:-translate-y-1 hover:shadow-[0_8px_20px_-6px_rgba(6,81,237,0.15)] transition-all duration-300">
                 <div className="flex justify-between items-start">
-                  <div className="w-12 h-12 rounded-xl bg-[#dcfce7] text-[#16a34a] flex items-center justify-center font-bold">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#10b981] to-[#047857] text-white flex items-center justify-center font-bold shadow-lg shadow-emerald-500/30">
                     <span className="material-symbols-outlined text-2xl">widgets</span>
                   </div>
-                  <span className="text-xs font-bold text-[#16a34a] bg-[#dcfce7] px-2.5 py-1 rounded-full flex items-center gap-0.5">
-                    <span className="material-symbols-outlined text-xs">trending_up</span>
+                  <span className="text-[10px] font-bold text-[#16a34a] bg-[#dcfce7] border border-[#bbf7d0] px-2.5 py-1 rounded-full flex items-center gap-0.5 shadow-sm">
+                    <span className="material-symbols-outlined text-[10px]">trending_up</span>
                     Live DB
                   </span>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-[#737686]">Active Programs</p>
-                  <p className="text-2xl md:text-3xl font-extrabold text-[#121c2a] font-display mt-0.5">
+                  <p className="text-xs font-semibold text-[#64748b] uppercase tracking-wider">Active Programs</p>
+                  <p className="text-3xl font-extrabold text-[#0f172a] font-display mt-0.5">
                     {totalActivePrograms}
                   </p>
                 </div>
@@ -287,152 +296,176 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
             </div>
           </div>
 
-          {/* Recent School Registrations Container */}
-          <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-7 shadow-sm space-y-5">
-            <div className="flex justify-between items-center pb-2 border-b border-[#e6eeff]">
-              <h3 className="text-lg md:text-xl font-extrabold text-[#121c2a] font-display">
-                Recent School Registrations ({totalSchools})
-              </h3>
-              {totalSchools > 5 && (
-                <button 
-                  onClick={() => setShowAllRegistrations(!showAllRegistrations)}
-                  className="text-xs md:text-sm font-bold text-[#004ac6] hover:underline flex items-center gap-1"
-                >
-                  {showAllRegistrations ? 'Show Less' : 'View All'}
-                </button>
-              )}
+          {/* Interactive School Directory */}
+          <div className="bg-white border border-[#e6eeff] rounded-3xl shadow-sm overflow-hidden">
+            
+            {/* Search & Filter Header */}
+            <div className="p-5 md:p-6 border-b border-[#e6eeff] bg-gradient-to-b from-[#f8f9ff] to-white space-y-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h3 className="text-lg md:text-xl font-extrabold text-[#121c2a] font-display">
+                  School Directory ({displayedSchools.length})
+                </h3>
+                
+                <div className="relative w-full sm:w-64">
+                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8] text-lg">
+                    search
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Search schools..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 text-sm rounded-full border border-[#cbd5e1] bg-white focus:ring-2 focus:ring-[#2563eb] outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Filter Chips */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                {[
+                  { id: 'ALL', label: 'All Schools' },
+                  { id: 'ACTIVE', label: 'Active' },
+                  { id: 'PENDING', label: 'Pending' },
+                  { id: 'SUSPENDED', label: 'Suspended' },
+                  { id: 'NO_CREDS', label: 'Missing Credentials' }
+                ].map(filter => (
+                  <button
+                    key={filter.id}
+                    onClick={() => setStatusFilter(filter.id as any)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
+                      statusFilter === filter.id
+                        ? 'bg-[#121c2a] text-white shadow-md'
+                        : 'bg-[#f1f5f9] text-[#64748b] hover:bg-[#e2e8f0]'
+                    }`}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* School Items List from Backend API */}
-            {displayedSchools.length === 0 ? (
-              <div className="py-12 text-center space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-[#eff4ff] text-[#004ac6] mx-auto flex items-center justify-center font-bold">
-                  <span className="material-symbols-outlined text-3xl">domain_disabled</span>
-                </div>
-                <p className="font-bold text-[#121c2a] text-base font-display">No Schools Onboarded Yet</p>
-                <p className="text-xs text-[#737686] max-w-sm mx-auto">
-                  There are no childcare schools in the database. Onboard your first school to populate this list.
-                </p>
-                <button
-                  onClick={() => setView('add_school')}
-                  className="btn bg-[#004ac6] hover:bg-[#003ea8] text-white text-xs font-bold py-2.5 px-5 rounded-full shadow-md transition-all inline-flex items-center gap-2 mt-2"
-                >
-                  <span className="material-symbols-outlined text-lg">add_business</span>
-                  Onboard First School
-                </button>
-              </div>
-            ) : (
-              <div className="divide-y divide-[#f1f5f9]">
-                {displayedSchools.map((item) => {
-                  const badge = getStatusBadge(item.status);
-                  const hasCreds = item.credentialsStatus?.isConfigured;
-                  return (
-                    <div 
-                      key={item.id}
-                      className="py-4 flex items-center justify-between gap-3 first:pt-0 last:pb-0 hover:bg-[#f8f9ff] px-2 rounded-2xl transition-all relative"
+            <div className="p-5 md:p-6 bg-[#f8f9ff]">
+              {displayedSchools.length === 0 ? (
+                <div className="py-16 text-center space-y-4">
+                  <div className="w-20 h-20 rounded-full bg-white shadow-sm border border-[#e2e8f0] text-[#94a3b8] mx-auto flex items-center justify-center font-bold">
+                    <span className="material-symbols-outlined text-4xl">search_off</span>
+                  </div>
+                  <div>
+                    <p className="font-bold text-[#121c2a] text-lg font-display">No Schools Found</p>
+                    <p className="text-sm text-[#64748b] max-w-sm mx-auto mt-1">
+                      {totalSchools === 0 
+                        ? "There are no childcare schools in the database yet." 
+                        : "No schools match your current search or filter criteria."}
+                    </p>
+                  </div>
+                  {totalSchools === 0 && (
+                    <button
+                      onClick={() => setView('add_school')}
+                      className="btn bg-[#004ac6] hover:bg-[#003ea8] text-white text-sm font-bold py-2.5 px-6 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all inline-flex items-center gap-2 mt-4"
                     >
-                      <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="w-11 h-11 rounded-2xl bg-[#e0e7ff] text-[#2563eb] flex items-center justify-center font-bold shrink-0 shadow-xs">
-                          <span className="material-symbols-outlined text-xl">domain</span>
+                      <span className="material-symbols-outlined text-lg">add_business</span>
+                      Onboard First School
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5">
+                  {displayedSchools.map((item) => {
+                    const badge = getStatusBadge(item.status);
+                    const hasCreds = item.credentialsStatus?.isConfigured;
+                    return (
+                      <div 
+                        key={item.id}
+                        className="bg-white rounded-2xl shadow-sm border border-[#e2e8f0] overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group relative"
+                      >
+                        {/* Card Header Gradient Banner */}
+                        <div className="h-20 bg-gradient-to-r from-[#e0e7ff] via-[#dbeafe] to-[#e0e7ff] relative">
+                          <span className={`absolute top-3 right-3 text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-sm ${badge.badgeClass}`}>
+                            {badge.label}
+                          </span>
                         </div>
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <h4 className="font-bold text-[#121c2a] text-sm md:text-base truncate font-display">
+                        
+                        <div className="p-5 pt-0 flex-1 flex flex-col">
+                          {/* Floating Avatar */}
+                          <div className="w-16 h-16 rounded-2xl bg-white border-4 border-white shadow-md text-[#2563eb] flex items-center justify-center font-bold -mt-8 mb-3 shrink-0 relative z-10">
+                            <span className="material-symbols-outlined text-3xl">domain</span>
+                          </div>
+                          
+                          <div className="mb-4">
+                            <h4 className="font-extrabold text-[#0f172a] text-lg truncate font-display group-hover:text-[#2563eb] transition-colors">
                               {item.name}
                             </h4>
-                            {hasCreds ? (
-                              <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold flex items-center gap-0.5">
-                                <span className="material-symbols-outlined text-xs">payments</span>
-                                Payment Configured
-                              </span>
-                            ) : (
-                              <span className="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold flex items-center gap-0.5">
-                                <span className="material-symbols-outlined text-xs">warning</span>
-                                Credentials Missing
-                              </span>
-                            )}
+                            <p className="text-xs text-[#64748b] flex items-center gap-1 mt-1 truncate">
+                              <span className="material-symbols-outlined text-[14px]">location_on</span>
+                              {item.location || 'Location not specified'}
+                            </p>
                           </div>
-                          <p className="text-xs text-[#737686] truncate mt-0.5">
-                            {item.location || 'Location not specified'} • {formatRelativeTime((item as any).createdAt)}
-                          </p>
-                        </div>
-                      </div>
+                          
+                          <div className="space-y-2 mb-6">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-[#64748b]">Registration</span>
+                              <span className="font-medium text-[#334155]">{formatRelativeTime((item as any).createdAt)}</span>
+                            </div>
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-[#64748b]">Payments</span>
+                              {hasCreds ? (
+                                <span className="text-emerald-700 font-bold flex items-center gap-0.5">
+                                  <span className="material-symbols-outlined text-[14px]">check_circle</span> Configured
+                                </span>
+                              ) : (
+                                <span className="text-amber-600 font-bold flex items-center gap-0.5">
+                                  <span className="material-symbols-outlined text-[14px]">warning</span> Missing
+                                </span>
+                              )}
+                            </div>
+                          </div>
 
-                      <div className="flex items-center gap-3 shrink-0">
-                        <span className={`text-xs font-bold px-3 py-1 rounded-full ${badge.badgeClass}`}>
-                          {badge.label}
-                        </span>
-
-                        <button 
-                          onClick={() => setActiveMenuId(activeMenuId === item.id ? null : item.id)}
-                          className="w-8 h-8 rounded-full hover:bg-[#e6eeff] text-[#737686] flex items-center justify-center transition-colors"
-                          aria-label="Options"
-                        >
-                          <span className="material-symbols-outlined text-lg">more_vert</span>
-                        </button>
-
-                        {/* Popover Action Menu */}
-                        {activeMenuId === item.id && (
-                          <div className="absolute right-2 top-12 z-30 bg-white border border-[#e6eeff] rounded-2xl shadow-xl py-2 w-56 text-xs font-semibold text-[#121c2a] animate-fadeIn">
+                          <div className="mt-auto pt-4 border-t border-[#f1f5f9] grid grid-cols-4 gap-2">
+                            <button 
+                              onClick={() => { setView('add_school'); setSchoolName(item.name); setCityRegion(item.location || ''); }}
+                              className="w-full flex items-center justify-center py-2 rounded-xl hover:bg-[#f1f5f9] text-[#475569] hover:text-[#2563eb] transition-colors"
+                              title="Edit Profile"
+                            >
+                              <span className="material-symbols-outlined text-[20px]">edit</span>
+                            </button>
                             <button 
                               onClick={() => openCredentialsModal(item)}
-                              className="w-full text-left px-4 py-2 hover:bg-[#eff4ff] hover:text-[#004ac6] flex items-center gap-2"
+                              className="w-full flex items-center justify-center py-2 rounded-xl hover:bg-[#f1f5f9] text-[#475569] hover:text-[#10b981] transition-colors"
+                              title="Payment Credentials"
                             >
-                              <span className="material-symbols-outlined text-base">vpn_key</span>
-                              {hasCreds ? 'Update Credentials' : 'Assign M-Pesa Credentials'}
-                            </button>
-                            <button 
-                              onClick={() => { setActiveMenuId(null); setView('add_school'); setSchoolName(item.name); setCityRegion(item.location || ''); }}
-                              className="w-full text-left px-4 py-2 hover:bg-[#eff4ff] hover:text-[#004ac6] flex items-center gap-2"
-                            >
-                              <span className="material-symbols-outlined text-base">edit</span>
-                              Edit Daycare Profile
+                              <span className="material-symbols-outlined text-[20px]">vpn_key</span>
                             </button>
                             {onToggleSchoolStatus && (
-                              <button
-                                onClick={() => { setActiveMenuId(null); onToggleSchoolStatus(item.id, item.status || ''); }}
-                                className={`w-full text-left px-4 py-2 flex items-center gap-2 ${
-                                  item.status === 'SUSPENDED'
-                                    ? 'hover:bg-green-50 hover:text-green-700 text-green-600'
-                                    : 'hover:bg-amber-50 hover:text-amber-700 text-amber-600'
+                              <button 
+                                onClick={() => onToggleSchoolStatus(item.id, item.status || '')}
+                                className={`w-full flex items-center justify-center py-2 rounded-xl transition-colors ${
+                                  item.status === 'SUSPENDED' 
+                                  ? 'hover:bg-green-50 text-green-600' 
+                                  : 'hover:bg-amber-50 text-[#475569] hover:text-amber-600'
                                 }`}
+                                title={item.status === 'SUSPENDED' ? 'Reactivate' : 'Suspend'}
                               >
-                                <span className="material-symbols-outlined text-base">
-                                  {item.status === 'SUSPENDED' ? 'toggle_on' : 'toggle_off'}
+                                <span className="material-symbols-outlined text-[20px]">
+                                  {item.status === 'SUSPENDED' ? 'toggle_on' : 'block'}
                                 </span>
-                                {item.status === 'SUSPENDED' ? 'Reactivate School' : 'Deactivate School'}
                               </button>
                             )}
                             {onDeleteSchool && (
-                              <>
-                                <div className="border-t border-[#fee2e2] my-1" />
-                                <button
-                                  onClick={() => { setActiveMenuId(null); setDeleteConfirmId(item.id); setDeleteConfirmName(item.name); }}
-                                  className="w-full text-left px-4 py-2 hover:bg-red-50 hover:text-red-700 text-red-500 flex items-center gap-2"
-                                >
-                                  <span className="material-symbols-outlined text-base">delete_forever</span>
-                                  Delete School
-                                </button>
-                              </>
+                              <button 
+                                onClick={() => { setDeleteConfirmId(item.id); setDeleteConfirmName(item.name); }}
+                                className="w-full flex items-center justify-center py-2 rounded-xl hover:bg-red-50 text-[#475569] hover:text-red-500 transition-colors"
+                                title="Delete School"
+                              >
+                                <span className="material-symbols-outlined text-[20px]">delete</span>
+                              </button>
                             )}
                           </div>
-                        )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Quick Add School Action Banner */}
-            <div className="pt-3 border-t border-[#e6eeff] flex justify-center">
-              <button
-                onClick={() => setView('add_school')}
-                className="w-full btn bg-[#eff4ff] hover:bg-[#e6eeff] text-[#004ac6] text-xs font-bold py-3 rounded-2xl border border-[#b4c5ff] flex items-center justify-center gap-2 transition-all"
-              >
-                <span className="material-symbols-outlined text-lg">add_circle</span>
-                Onboard &amp; Register New Childcare School
-              </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 

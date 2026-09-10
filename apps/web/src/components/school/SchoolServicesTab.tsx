@@ -109,7 +109,7 @@ export const SchoolServicesTab: React.FC<SchoolServicesTabProps> = ({
       </div>
 
       {/* SERVICES LIST CARDS (EXACT MATCH FOR MOCKUP 1) */}
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {displayServices.map((svc) => {
           const enrolled = svc.currentEnrollmentCount || 0;
           const cap = svc.capacity || 10;

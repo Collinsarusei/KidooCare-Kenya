@@ -63,15 +63,83 @@ export class PaymentsService {
       throw new BadRequestException(`Daycare '${school.name}' has not completed M-Pesa payment setup. Please contact the daycare manager.`);
     }
 
-    // Generate unique CheckoutRequestID for STK Push
-    const checkoutRequestId = `ws_CO_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-    const merchantRequestId = `mrk_${Date.now()}`;
+    const mpesaCreds = await this.credentialsService.getDecryptedCredentialsInternal(school.id);
+    const authBuf = Buffer.from(`${mpesaCreds.consumerKey}:${mpesaCreds.consumerSecret}`).toString('base64');
+    let mpesaToken = '';
+    
+    try {
+      const tokenRes = await fetch('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
+        headers: { Authorization: `Basic ${authBuf}` }
+      });
+      const tokenData = await tokenRes.json();
+      if (!tokenRes.ok || !tokenData.access_token) {
+        this.logger.error(`Failed to get M-Pesa token: ${JSON.stringify(tokenData)}`);
+        throw new Error('M-Pesa auth failed');
+      }
+      mpesaToken = tokenData.access_token;
+    } catch (err: any) {
+      this.logger.error(`M-Pesa OAuth error: ${err.message}`);
+      throw new BadRequestException('Could not connect to payment gateway. Please try again later.');
+    }
+
+    const shortcode = mpesaCreds.shortcode;
+    const passkey = mpesaCreds.passkey;
+    const now = new Date();
+    const timestamp = 
+      now.getFullYear().toString() +
+      (now.getMonth() + 1).toString().padStart(2, '0') +
+      now.getDate().toString().padStart(2, '0') +
+      now.getHours().toString().padStart(2, '0') +
+      now.getMinutes().toString().padStart(2, '0') +
+      now.getSeconds().toString().padStart(2, '0');
+
+    const password = Buffer.from(shortcode + passkey + timestamp).toString('base64');
+    const paymentAmount = dto.amount && dto.amount > 0 ? dto.amount : (installment.amountDue - installment.amountPaid);
+    const callbackUrl = `${process.env.APP_URL || 'https://sandbox.kidoocare.com'}/api/payments/mpesa-callback`;
+
+    let checkoutRequestId = '';
+    let merchantRequestId = '';
+
+    try {
+      const stkRes = await fetch('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${mpesaToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          BusinessShortCode: shortcode,
+          Password: password,
+          Timestamp: timestamp,
+          TransactionType: 'CustomerPayBillOnline',
+          Amount: paymentAmount,
+          PartyA: formattedPhone,
+          PartyB: shortcode,
+          PhoneNumber: formattedPhone,
+          CallBackURL: callbackUrl,
+          AccountReference: `KidooCare ${installment.id.slice(0,5)}`,
+          TransactionDesc: `Daycare Payment for ${enrollment.child.name}`
+        })
+      });
+      const stkData = await stkRes.json();
+      
+      if (!stkRes.ok || stkData.ResponseCode !== '0') {
+        this.logger.error(`STK Push failed: ${JSON.stringify(stkData)}`);
+        throw new Error(stkData.errorMessage || 'STK Push failed');
+      }
+
+      checkoutRequestId = stkData.CheckoutRequestID;
+      merchantRequestId = stkData.MerchantRequestID;
+    } catch (err: any) {
+      this.logger.error(`M-Pesa STK Push error: ${err.message}`);
+      throw new BadRequestException(`Payment gateway error: ${err.message}`);
+    }
 
     // Create PENDING Payment record
     const payment = await this.prisma.payment.create({
       data: {
         weeklyInstallmentId: installment.id,
-        amount: dto.amount && dto.amount > 0 ? dto.amount : (installment.amountDue - installment.amountPaid),
+        amount: paymentAmount,
         method: PaymentMethod.MPESA,
         mpesaCheckoutRequestId: checkoutRequestId,
         status: PaymentStatus.PENDING,
@@ -229,6 +297,24 @@ export class PaymentsService {
             lastCalculatedAt: new Date(),
           },
         });
+
+        // 3.5. Activate PENDING_PAYMENT enrollment if first payment succeeds
+        const enrollment = await tx.enrollment.findUnique({ where: { id: enrollmentId } });
+        if (enrollment && enrollment.status === 'PENDING_PAYMENT') {
+          await tx.enrollment.update({
+            where: { id: enrollmentId },
+            data: { status: 'ACTIVE' },
+          });
+          await tx.auditLog.create({
+            data: {
+              entityType: 'Enrollment',
+              entityId: enrollmentId,
+              action: 'PAYMENT_ACTIVATED_ENROLLMENT',
+              actorId: 'MPESA_DARAJA_WEBHOOK',
+              afterState: { status: 'ACTIVE' },
+            },
+          });
+        }
 
         // 4. Write Audit Log
         await tx.auditLog.create({

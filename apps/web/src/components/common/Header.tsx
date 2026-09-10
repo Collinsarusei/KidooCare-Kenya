@@ -21,7 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white border-b border-[#e6eeff] px-4 md:px-8 py-3.5 shadow-sm sticky top-0 z-50 w-full text-left">
+    <header className="bg-[#ebf0fa] border-b border-[#d3e0fc] px-4 md:px-8 py-3.5 shadow-sm sticky top-0 z-50 w-full text-left">
       <div className="flex items-center justify-between">
         
         {/* Brand Logo (Left) */}
@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
 
         {/* Desktop Navigation Links (Center) */}
-        <nav className="hidden lg:flex items-center gap-1 bg-[#f8f9ff] px-3 py-1.5 rounded-full border border-[#e6eeff] text-xs font-bold text-[#434655]">
+        <nav className={`hidden ${currentUser ? 'lg:hidden' : 'lg:flex'} items-center gap-1 bg-white px-3 py-1.5 rounded-full border border-[#d3e0fc] text-xs font-bold text-[#434655]`}>
           <button
             onClick={onNavigateHome}
             className={`px-4 py-2 rounded-full transition-all ${

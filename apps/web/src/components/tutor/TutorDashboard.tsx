@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { EnrollmentDto, DailyLogMood } from '@daycare/shared-types';
+import { ConfirmationModal } from '../common/ConfirmationModal';
 
 interface TutorDashboardProps {
   schoolRoster: EnrollmentDto[];
@@ -22,6 +23,12 @@ export const TutorDashboard: React.FC<TutorDashboardProps> = ({
 
   const activeChildren = schoolRoster.filter(r => r.status === 'ACTIVE');
   const [attendance, setAttendance] = useState<Record<string, boolean>>({});
+
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
 
   useEffect(() => {
     const initialAttendance: Record<string, boolean> = {};
@@ -55,19 +62,32 @@ export const TutorDashboard: React.FC<TutorDashboardProps> = ({
   };
 
   const handleSaveBulkAttendance = async () => {
-    if (!window.confirm("Submit bulk attendance for all active children?")) return;
-    
-    for (const enr of activeChildren) {
-      await onLogActivity({
-        childId: enr.childId,
-        isPresent: attendance[enr.childId] || false,
-        mood: DailyLogMood.HAPPY,
-      });
-    }
+    setConfirmConfig({
+      title: 'Bulk Attendance',
+      message: 'Submit bulk attendance for all active children?',
+      onConfirm: async () => {
+        setConfirmConfig(null);
+        for (const enr of activeChildren) {
+          await onLogActivity({
+            childId: enr.childId,
+            isPresent: attendance[enr.childId] || false,
+            mood: DailyLogMood.HAPPY,
+          });
+        }
+      }
+    });
   };
 
   return (
     <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+      {confirmConfig && (
+        <ConfirmationModal
+          title={confirmConfig.title}
+          message={confirmConfig.message}
+          onConfirm={confirmConfig.onConfirm}
+          onCancel={() => setConfirmConfig(null)}
+        />
+      )}
       <div className="flex justify-between items-center border-b border-[#e6eeff] pb-4">
         <div>
           <h2 className="text-2xl font-bold text-[#004ac6] font-display flex items-center gap-2">

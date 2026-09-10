@@ -1,5 +1,31 @@
 import React from 'react';
 import { SchoolFinancialSummaryDto, ExecutiveSummaryReportDto } from '@daycare/shared-types';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+
+const revenueData = [
+  { name: 'Jan', value: 40 },
+  { name: 'Feb', value: 30 },
+  { name: 'Mar', value: 60 },
+  { name: 'Apr', value: 45 },
+  { name: 'May', value: 80 },
+  { name: 'Jun', value: 65 },
+  { name: 'Jul', value: 90 },
+];
+
+const enrollmentData = [
+  { name: 'Jan', value: 50 },
+  { name: 'Feb', value: 70 },
+  { name: 'Mar', value: 65 },
+  { name: 'Apr', value: 90 },
+  { name: 'May', value: 120 },
+  { name: 'Jun', value: 130 },
+  { name: 'Jul', value: 125 },
+  { name: 'Aug', value: 140 },
+  { name: 'Sep', value: 142 },
+  { name: 'Oct', value: 140 },
+  { name: 'Nov', value: 145 },
+  { name: 'Dec', value: 150 },
+];
 
 interface SchoolOverviewTabProps {
   financials: SchoolFinancialSummaryDto | null;
@@ -118,48 +144,30 @@ export const SchoolOverviewTab: React.FC<SchoolOverviewTabProps> = ({
       </div>
 
       {/* SECTION 1: REVENUE TRENDS CHART (Mockup 2 Match) */}
-      <div className="bg-white border border-[#e6eeff] rounded-3xl p-4 shadow-sm space-y-3">
+      <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm space-y-4">
         <h3 className="text-lg font-extrabold text-[#121c2a] font-display">Revenue Trends</h3>
         
-        {/* SVG Smooth Curve Line Chart */}
-        <div className="h-48 w-full relative pt-2">
-          <svg className="w-full h-36 overflow-visible" viewBox="0 0 300 100" preserveAspectRatio="none">
-            {/* Horizontal Grid lines */}
-            <line x1="0" y1="20" x2="300" y2="20" stroke="#f1f5f9" strokeWidth="1" />
-            <line x1="0" y1="50" x2="300" y2="50" stroke="#f1f5f9" strokeWidth="1" />
-            <line x1="0" y1="80" x2="300" y2="80" stroke="#f1f5f9" strokeWidth="1" />
-
-            {/* Gradient Fill under Curve */}
-            <defs>
-              <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#004ac6" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#004ac6" stopOpacity="0.0" />
-              </linearGradient>
-            </defs>
-
-            <path
-              d="M 0 80 Q 75 40 150 50 T 300 15 L 300 100 L 0 100 Z"
-              fill="url(#revGrad)"
-            />
-
-            {/* Smooth Curve Line */}
-            <path
-              d="M 0 80 Q 75 40 150 50 T 300 15"
-              fill="none"
-              stroke="#004ac6"
-              strokeWidth="4"
-              strokeLinecap="round"
-            />
-          </svg>
-
-          {/* X Axis Month Labels */}
-          <div className="flex justify-between text-[11px] font-bold text-[#737686] pt-2 px-1 border-t border-[#f1f5f9]">
-            <span>Jan</span>
-            <span>Feb</span>
-            <span>Mar</span>
-            <span>Apr</span>
-            <span>May</span>
-          </div>
+        <div className="h-64 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#004ac6" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#004ac6" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#737686', fontWeight: 'bold' }} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#737686', fontWeight: 'bold' }} tickFormatter={(val) => `KES ${val}k`} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e6eeff" />
+              <Tooltip 
+                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}
+                labelStyle={{ fontWeight: 'bold', color: '#121c2a' }}
+                itemStyle={{ color: '#004ac6', fontWeight: 'bold' }}
+                formatter={(val: any) => [`KES ${val}k`, 'Revenue']}
+              />
+              <Area type="monotone" dataKey="value" stroke="#004ac6" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
@@ -167,30 +175,21 @@ export const SchoolOverviewTab: React.FC<SchoolOverviewTabProps> = ({
       <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm space-y-4">
         <h3 className="text-lg font-extrabold text-[#121c2a] font-display">Enrollment Growth</h3>
         
-        {/* Bar Chart */}
-        <div className="h-44 flex items-end justify-between gap-3 pt-4 px-2">
-          {[
-            { month: 'Jan', val: 50, color: 'bg-[#6cf8bb]' },
-            { month: 'Feb', val: 70, color: 'bg-[#6cf8bb]' },
-            { month: 'Mar', val: 65, color: 'bg-[#6cf8bb]' },
-            { month: 'Apr', val: 90, color: 'bg-[#6cf8bb]' },
-            { month: 'May', val: 120, color: 'bg-[#00714d]' },
-            { month: 'Jun', val: 130, color: 'bg-[#00714d]' },
-            { month: 'Jul', val: 125, color: 'bg-[#00714d]' },
-            { month: 'Aug', val: 140, color: 'bg-[#00714d]' },
-            { month: 'Sep', val: 142, color: 'bg-[#00714d]' },
-            { month: 'Oct', val: 140, color: 'bg-[#00714d]' },
-            { month: 'Nov', val: 145, color: 'bg-[#00714d]' },
-            { month: 'Dec', val: 150, color: 'bg-[#00714d]' },
-          ].map((b, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-              <div
-                className={`w-full max-w-[24px] md:max-w-[40px] rounded-xl transition-all ${b.color}`}
-                style={{ height: `${(b.val / 150) * 100}%` }}
+        <div className="h-64 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={enrollmentData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#737686', fontWeight: 'bold' }} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#737686', fontWeight: 'bold' }} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e6eeff" />
+              <Tooltip 
+                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}
+                cursor={{ fill: '#f8f9ff' }}
+                labelStyle={{ fontWeight: 'bold', color: '#121c2a' }}
+                itemStyle={{ color: '#00714d', fontWeight: 'bold' }}
               />
-              <span className="text-[9px] md:text-[11px] font-bold text-[#737686]">{b.month}</span>
-            </div>
-          ))}
+              <Bar dataKey="value" fill="#00714d" radius={[6, 6, 0, 0]} barSize={24} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
