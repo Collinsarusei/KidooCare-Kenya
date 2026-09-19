@@ -395,7 +395,7 @@ export default function App() {
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const payload = isLogin ? { email, password } : { email, password, phone, role: UserRole.PARENT };
+      const payload = isLogin ? { email, password } : { email, password, phone };
 
       const res = await fetch(endpoint, {
         method: 'POST',
@@ -549,6 +549,31 @@ export default function App() {
       setStkResult(data);
       setStkInstallment({ ...stkInstallment, paymentId: data.paymentId });
       setSuccessMsg(`M-Pesa STK Push sent to ${stkPhone}! Enter PIN on phone.`);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleTestCardPayment = async (amount: number, cardNumber: string, expiry: string, cvv: string) => {
+    if (!stkInstallment) return;
+    setError(null);
+    try {
+      const res = await fetch('/api/payments/card-test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ weeklyInstallmentId: stkInstallment.id, amount, cardNumber, expiry, cvv }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Test card payment failed');
+
+      setSuccessMsg('Test card payment completed. The child balance was updated.');
+      setStkInstallment(null);
+      setStkResult(null);
+      fetchMyEnrollments();
+      fetchParentLedger();
     } catch (err: any) {
       setError(err.message);
     }
@@ -1183,7 +1208,7 @@ export default function App() {
 
       const endpoint = data.isRegistering ? '/api/auth/register' : '/api/auth/login';
       const payload = data.isRegistering 
-        ? { email, password: data.password, phone, role: data.role, name: data.name } 
+        ? { email, password: data.password, phone, name: data.name } 
         : { email, password: data.password };
 
       const res = await fetch(endpoint, {
@@ -1411,7 +1436,7 @@ export default function App() {
       {/* SCHOOL MANAGER DASHBOARD */}
       {currentUser && currentUser.role === UserRole.SCHOOL && (
         <div className="flex flex-col md:flex-row gap-6 h-full items-start">
-          {mySchool && mySchool.status !== ('PENDING_PROFILE' as any) && (
+          {mySchool && (
             <Sidebar 
               currentUser={currentUser}
               activeTab={schoolTab}
@@ -1428,7 +1453,7 @@ export default function App() {
           )}
           <div className="flex-1 space-y-6 overflow-y-auto">
           {/* PROFILE CREATION WIZARD (IF PENDING PROFILE) */}
-          {mySchool && mySchool.status === ('PENDING_PROFILE' as any) ? (
+          {mySchool && mySchool.status === ('PENDING_PROFILE' as any) && schoolTab === 'overview' && (
             <SchoolProfileWizard
               mySchool={mySchool}
               onUpdateProfile={handleUpdateProfile}
@@ -1439,7 +1464,9 @@ export default function App() {
                 setSchoolTab('overview');
               }}
             />
-          ) : (
+          )}
+
+          {mySchool && (mySchool.status !== ('PENDING_PROFILE' as any) || schoolTab !== 'overview') && (
             <>
 
           {schoolTab === 'overview' && (
@@ -1600,6 +1627,7 @@ export default function App() {
           stkResult={stkResult}
           setStkPhone={setStkPhone}
           onInitiate={handleInitiateStkPush}
+          onCardPay={handleTestCardPayment}
           onSimulateCallback={handleSimulateCallback}
           onClose={() => { setStkInstallment(null); setStkResult(null); }}
         />

@@ -42,6 +42,8 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
   const [cityRegion, setCityRegion] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+  const [confirmAdminPassword, setConfirmAdminPassword] = useState('');
 
   // M-Pesa Integration State for Onboarding (Blank by default)
   const [showPaybillInputs, setShowPaybillInputs] = useState(false);
@@ -84,13 +86,14 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
 
   const handleSaveAndComplete = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!schoolName) return;
+    if (!schoolName || !adminEmail || !adminPassword) return;
+    if (adminPassword.length < 6 || adminPassword !== confirmAdminPassword) return;
 
     onOnboardSchool({
       schoolName,
-      adminEmail: adminEmail || `admin@${schoolName.toLowerCase().replace(/\s+/g, '')}.co.ke`,
+      adminEmail,
       adminPhone: contactPhone || '+254712345678',
-      adminPassword: 'Password123!',
+      adminPassword,
       location: cityRegion || 'Nairobi',
       ...(paybillNumber && { mpesaShortcode: paybillNumber }),
       ...(passkey && { mpesaPasskey: passkey }),
@@ -103,6 +106,8 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
     setCityRegion('');
     setContactPhone('');
     setAdminEmail('');
+    setAdminPassword('');
+    setConfirmAdminPassword('');
     setPaybillNumber('');
     setPasskey('');
     setConsumerKey('');
@@ -553,11 +558,45 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 </label>
                 <input
                   type="email"
+                  required
                   placeholder="admin@school.com"
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
                   className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#2563eb] outline-none transition-all placeholder:text-[#94a3b8]"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
+                  Administrator Password <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  placeholder="At least 6 characters"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#2563eb] outline-none transition-all placeholder:text-[#94a3b8]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
+                  Confirm Administrator Password <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  placeholder="Re-enter the password"
+                  value={confirmAdminPassword}
+                  onChange={(e) => setConfirmAdminPassword(e.target.value)}
+                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#2563eb] outline-none transition-all placeholder:text-[#94a3b8]"
+                />
+                {confirmAdminPassword && adminPassword !== confirmAdminPassword && (
+                  <p className="text-xs text-red-600 mt-1.5">Passwords do not match.</p>
+                )}
               </div>
             </div>
           </div>
