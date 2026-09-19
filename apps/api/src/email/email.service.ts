@@ -33,7 +33,8 @@ export class EmailService {
       });
       return data;
     } catch (error) {
-      this.logger.error(`Failed to send email to ${to}: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Failed to send email to ${to}: ${message}`);
       throw error;
     }
   }

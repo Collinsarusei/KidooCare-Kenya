@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException, BadRequestException,
 import { PrismaService } from '../prisma/prisma.service';
 import { CredentialsService } from '../schools/credentials/credentials.service';
 import { StkPushDto } from './dto/stk-push.dto';
+import { CardTestDto } from './dto/card-test.dto';
 import { PaymentStatus, PaymentMethod, WeeklyInstallmentStatus } from '@prisma/client';
 
 @Injectable()
@@ -12,6 +13,47 @@ export class PaymentsService {
     private prisma: PrismaService,
     private credentialsService: CredentialsService,
   ) {}
+
+  async testCardPayment(parentId: string, dto: CardTestDto) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new BadRequestException('Test card payments are disabled in production');
+    }
+
+    const installment = await this.prisma.weeklyInstallment.findUnique({
+      where: { id: dto.weeklyInstallmentId },
+      include: { billingCycle: { include: { enrollment: { include: { child: true } } } } },
+    });
+    if (!installment) throw new NotFoundException('Weekly installment not found');
+    if (installment.billingCycle.enrollment.child.parentId !== parentId) {
+      throw new ForbiddenException('You can only pay for your enrolled children');
+    }
+    if (installment.status === WeeklyInstallmentStatus.PAID) {
+      throw new BadRequestException('This installment has already been paid');
+    }
+
+    const testCheckoutRequestId = `test-card-${Date.now()}`;
+    const payment = await this.prisma.payment.create({
+      data: {
+        weeklyInstallmentId: installment.id,
+        amount: dto.amount && dto.amount > 0 ? dto.amount : installment.amountDue - installment.amountPaid,
+        method: PaymentMethod.CARD,
+        mpesaCheckoutRequestId: testCheckoutRequestId,
+      },
+    });
+
+    await this.handleMpesaCallback({
+      Body: {
+        stkCallback: {
+          CheckoutRequestID: testCheckoutRequestId,
+          ResultCode: 0,
+          ResultDesc: 'Test card payment completed',
+          CallbackMetadata: { Item: [{ Name: 'MpesaReceiptNumber', Value: `TEST-CARD-${payment.id.slice(0, 8)}` }] },
+        },
+      },
+    });
+
+    return { paymentId: payment.id, status: PaymentStatus.COMPLETED, testMode: true };
+  }
 
   async initiateStkPush(parentId: string, dto: StkPushDto) {
     const installment = await this.prisma.weeklyInstallment.findUnique({

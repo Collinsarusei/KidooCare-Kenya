@@ -15,6 +15,7 @@ interface StkPushModalProps {
   stkResult: any;
   setStkPhone: (phone: string) => void;
   onInitiate: (phone: string, amount: number) => void;
+  onCardPay: (amount: number, cardNumber: string, expiry: string, cvv: string) => void;
   onSimulateCallback: () => void;
   onClose: () => void;
 }
@@ -25,22 +26,49 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
   stkResult,
   setStkPhone,
   onInitiate,
+  onCardPay,
   onSimulateCallback,
   onClose,
 }) => {
   const [customAmount, setCustomAmount] = React.useState<number>(stkInstallment.amount);
+  const [paymentMethod, setPaymentMethod] = React.useState<'mpesa' | 'card'>('mpesa');
+  const [cardNumber, setCardNumber] = React.useState('');
+  const [cardExpiry, setCardExpiry] = React.useState('');
+  const [cardCvv, setCardCvv] = React.useState('');
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 120, padding: '20px' }}>
       <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', width: '500px', maxWidth: '100%', padding: '32px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h3 style={{ color: 'var(--color-green-success)', fontSize: '1.4rem' }}>📱 M-Pesa Express Payment</h3>
+          <h3 style={{ color: 'var(--color-green-success)', fontSize: '1.4rem' }}>Choose How to Pay</h3>
           <button className="btn btn-secondary" onClick={onClose}>✕ Close</button>
         </div>
 
         <p style={{ fontSize: '0.95rem', color: 'var(--color-gray-600)', marginBottom: '16px' }}>
           Paying <strong>Week {stkInstallment.weekNumber}</strong> installment of <strong>KES {stkInstallment.amount.toLocaleString()}</strong> for <strong>{stkInstallment.childName}</strong> at <strong>{stkInstallment.schoolName}</strong>.
         </p>
+
+        {!stkResult && (
+          <div style={{ marginBottom: '18px' }}>
+            <p style={{ fontWeight: 600, marginBottom: '8px' }}>Payment method</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('mpesa')}
+                className={paymentMethod === 'mpesa' ? 'btn btn-primary' : 'btn btn-secondary'}
+              >
+                M-Pesa STK
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('card')}
+                className={paymentMethod === 'card' ? 'btn btn-primary' : 'btn btn-secondary'}
+              >
+                Card (Test)
+              </button>
+            </div>
+          </div>
+        )}
 
         {stkResult ? (
           <div style={{ background: 'var(--color-green-light)', padding: '20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-green-border)' }}>
@@ -56,7 +84,7 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
               ⚡ Simulate M-Pesa Daraja Success Callback (Dev Test)
             </button>
           </div>
-        ) : (
+        ) : paymentMethod === 'mpesa' ? (
           <form onSubmit={(e) => { e.preventDefault(); onInitiate(stkPhone, customAmount); }} style={{ display: 'grid', gap: '16px' }}>
             <div>
               <label style={{ display: 'block', fontWeight: 600, marginBottom: '6px' }}>M-Pesa Phone Number *</label>
@@ -92,6 +120,73 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
               </button>
             </div>
           </form>
+        ) : (
+          <div style={{ display: 'grid', gap: '16px' }}>
+            <p style={{ color: 'var(--color-gray-600)' }}>
+              Test card details are used only for local testing and are not stored.
+            </p>
+            <div>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '6px' }}>Card number *</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                required
+                maxLength={19}
+                placeholder="4242424242424242"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ''))}
+                style={{ width: '100%', padding: '10px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-gray-200)' }}
+              />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <div>
+                <label style={{ display: 'block', fontWeight: 600, marginBottom: '6px' }}>Expiry (MM/YY) *</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  required
+                  maxLength={5}
+                  placeholder="12/30"
+                  value={cardExpiry}
+                  onChange={(e) => setCardExpiry(e.target.value)}
+                  style={{ width: '100%', padding: '10px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-gray-200)' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontWeight: 600, marginBottom: '6px' }}>CVV *</label>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  required
+                  maxLength={4}
+                  placeholder="123"
+                  value={cardCvv}
+                  onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, ''))}
+                  style={{ width: '100%', padding: '10px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-gray-200)' }}
+                />
+              </div>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '6px' }}>Amount to Pay (KES) *</label>
+              <input
+                type="number"
+                required
+                min={1}
+                value={customAmount}
+                onChange={(e) => setCustomAmount(Number(e.target.value))}
+                style={{ width: '100%', padding: '10px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-gray-200)' }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+              <button type="button" className="btn btn-primary" onClick={() => onCardPay(customAmount, cardNumber, cardExpiry, cardCvv)}>
+                Complete Test Card Payment
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>

@@ -33,6 +33,7 @@ export class AuthService {
         phone: dto.phone,
         role: UserRole.PARENT, // Public self-registration is strictly for PARENTS
         passwordHash,
+        mustChangePassword: false,
       },
     });
 
