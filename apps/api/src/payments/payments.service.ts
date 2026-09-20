@@ -89,12 +89,20 @@ export class PaymentsService {
       throw new BadRequestException('This weekly installment has already been fully paid');
     }
 
-    // Format phone number to 2547XXXXXXXX
+    // Format phone number to 2547XXXXXXXX or 2541XXXXXXXX
     let formattedPhone = dto.phone.replace(/[^0-9]/g, '');
-    if (formattedPhone.startsWith('0')) {
+    if (formattedPhone.startsWith('2540')) {
+      formattedPhone = '254' + formattedPhone.slice(4);
+    } else if (formattedPhone.startsWith('0')) {
       formattedPhone = '254' + formattedPhone.slice(1);
     } else if (formattedPhone.startsWith('7') || formattedPhone.startsWith('1')) {
       formattedPhone = '254' + formattedPhone;
+    }
+
+    if (!/^254[71]\d{8}$/.test(formattedPhone)) {
+      throw new BadRequestException(
+        `Invalid Kenyan phone number format (${dto.phone}). Please enter a valid mobile number like 07XXXXXXXX or 01XXXXXXXX.`
+      );
     }
 
     const school = enrollment.service.school;
@@ -126,21 +134,50 @@ export class PaymentsService {
 
     const shortcode = mpesaCreds.shortcode;
     const passkey = mpesaCreds.passkey;
-    const now = new Date();
-    const timestamp = 
-      now.getFullYear().toString() +
-      (now.getMonth() + 1).toString().padStart(2, '0') +
-      now.getDate().toString().padStart(2, '0') +
-      now.getHours().toString().padStart(2, '0') +
-      now.getMinutes().toString().padStart(2, '0') +
-      now.getSeconds().toString().padStart(2, '0');
+
+    // Format East Africa Time (EAT, UTC+3) timestamp YYYYMMDDHHmmss required by Daraja
+    const eatFormatter = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Africa/Nairobi',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+    const parts = eatFormatter.formatToParts(new Date());
+    const getP = (type: string) => parts.find((p) => p.type === type)?.value || '';
+    const timestamp = `${getP('year')}${getP('month')}${getP('day')}${getP('hour')}${getP('minute')}${getP('second')}`;
 
     const password = Buffer.from(shortcode + passkey + timestamp).toString('base64');
-    const paymentAmount = dto.amount && dto.amount > 0 ? dto.amount : (installment.amountDue - installment.amountPaid);
-    const callbackUrl = `${process.env.APP_URL || 'https://sandbox.kidoocare.com'}/api/payments/mpesa-callback`;
+    const paymentAmount = Math.max(1, Math.round(dto.amount && dto.amount > 0 ? dto.amount : (installment.amountDue - installment.amountPaid)));
+    const callbackUrl = await this.getActiveCallbackUrl();
+
+    // Daraja Lipa Na M-Pesa strict constraints:
+    // - AccountReference: Max 12 alphanumeric characters, NO spaces/symbols
+    // - TransactionDesc: Max 13 alphanumeric characters, NO spaces/symbols
+    const accountRef = `KC${installment.id.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10).toUpperCase()}`;
+    const transactionDesc = 'DaycareFee';
 
     let checkoutRequestId = '';
     let merchantRequestId = '';
+
+    const payload = {
+      BusinessShortCode: shortcode,
+      Password: password,
+      Timestamp: timestamp,
+      TransactionType: 'CustomerPayBillOnline',
+      Amount: paymentAmount,
+      PartyA: formattedPhone,
+      PartyB: shortcode,
+      PhoneNumber: formattedPhone,
+      CallBackURL: callbackUrl,
+      AccountReference: accountRef,
+      TransactionDesc: transactionDesc,
+    };
+
+    this.logger.log(`Dispatching Daraja STK Push to ${formattedPhone} for KES ${paymentAmount} (Callback: ${callbackUrl})`);
 
     try {
       const stkRes = await fetch('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', {
@@ -149,32 +186,21 @@ export class PaymentsService {
           'Authorization': `Bearer ${mpesaToken}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          BusinessShortCode: shortcode,
-          Password: password,
-          Timestamp: timestamp,
-          TransactionType: 'CustomerPayBillOnline',
-          Amount: paymentAmount,
-          PartyA: formattedPhone,
-          PartyB: shortcode,
-          PhoneNumber: formattedPhone,
-          CallBackURL: callbackUrl,
-          AccountReference: `KidooCare ${installment.id.slice(0,5)}`,
-          TransactionDesc: `Daycare Payment for ${enrollment.child.name}`
-        })
+        body: JSON.stringify(payload)
       });
       const stkData = await stkRes.json();
       
       if (!stkRes.ok || stkData.ResponseCode !== '0') {
-        this.logger.error(`STK Push failed: ${JSON.stringify(stkData)}`);
-        throw new Error(stkData.errorMessage || 'STK Push failed');
+        this.logger.error(`STK Push failed from Safaricom: ${JSON.stringify(stkData)}`);
+        const msg = stkData.errorMessage || stkData.ResultDesc || stkData.ResponseDescription || 'STK Push failed';
+        throw new Error(msg);
       }
 
       checkoutRequestId = stkData.CheckoutRequestID;
       merchantRequestId = stkData.MerchantRequestID;
     } catch (err: any) {
       this.logger.error(`M-Pesa STK Push error: ${err.message}`);
-      throw new BadRequestException(`Payment gateway error: ${err.message}`);
+      throw new BadRequestException(`M-Pesa error: ${err.message}`);
     }
 
     // Create PENDING Payment record
@@ -340,20 +366,38 @@ export class PaymentsService {
           },
         });
 
-        // 3.5. Activate PENDING_PAYMENT enrollment if first payment succeeds
-        const enrollment = await tx.enrollment.findUnique({ where: { id: enrollmentId } });
-        if (enrollment && enrollment.status === 'PENDING_PAYMENT') {
-          await tx.enrollment.update({
-            where: { id: enrollmentId },
-            data: { status: 'ACTIVE' },
+        // 3.5. Activate PENDING_PAYMENT enrollment and link child to school
+        const enrollment = await tx.enrollment.findUnique({ 
+          where: { id: enrollmentId },
+          include: { service: true }
+        });
+        if (enrollment) {
+          if (enrollment.status === 'PENDING_PAYMENT') {
+            await tx.enrollment.update({
+              where: { id: enrollmentId },
+              data: { status: 'ACTIVE' },
+            });
+            
+            // Increment capacity
+            await tx.service.update({
+              where: { id: enrollment.serviceId },
+              data: { currentEnrollmentCount: { increment: 1 } },
+            });
+          }
+
+          // Always ensure child is assigned to school
+          await tx.child.update({
+            where: { id: enrollment.childId },
+            data: { schoolId: enrollment.service.schoolId },
           });
+
           await tx.auditLog.create({
             data: {
               entityType: 'Enrollment',
               entityId: enrollmentId,
               action: 'PAYMENT_ACTIVATED_ENROLLMENT',
               actorId: 'MPESA_DARAJA_WEBHOOK',
-              afterState: { status: 'ACTIVE' },
+              afterState: { status: 'ACTIVE', schoolId: enrollment.service.schoolId },
             },
           });
         }
@@ -390,6 +434,100 @@ export class PaymentsService {
     }
   }
 
+  async getParentPayments(parentId: string) {
+    const payments = await this.prisma.payment.findMany({
+      where: {
+        weeklyInstallment: {
+          billingCycle: {
+            enrollment: {
+              child: { parentId },
+            },
+          },
+        },
+      },
+      include: {
+        weeklyInstallment: {
+          include: {
+            billingCycle: {
+              include: {
+                enrollment: {
+                  include: {
+                    child: true,
+                    service: {
+                      include: {
+                        school: {
+                          select: { id: true, name: true, location: true },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        disputes: {
+          select: {
+            id: true,
+            reason: true,
+            status: true,
+            resolutionNote: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return (payments as any[]).map((p) => {
+      const inst = p.weeklyInstallment;
+      const cycle = inst?.billingCycle;
+      const enr = cycle?.enrollment;
+      const child = enr?.child;
+      const service = enr?.service;
+      const school = service?.school;
+      const latestDispute = p.disputes?.[0] || null;
+
+      return {
+        id: p.id,
+        amount: p.amount,
+        method: p.method,
+        status: p.status,
+        mpesaReceiptNumber: p.mpesaReceiptNumber,
+        mpesaCheckoutRequestId: p.mpesaCheckoutRequestId,
+        paidAt: p.paidAt,
+        createdAt: p.createdAt,
+        weeklyInstallmentId: inst?.id,
+        weekNumber: inst?.weekNumber,
+        childName: child?.name || 'Child',
+        childId: child?.id,
+        schoolName: school?.name || 'School',
+        schoolId: school?.id,
+        serviceName: service?.name || 'Service',
+        dispute: latestDispute,
+      };
+    });
+  }
+
+  async getPaymentStatus(paymentId: string) {
+    const payment = await this.prisma.payment.findUnique({
+      where: { id: paymentId },
+      select: {
+        id: true,
+        status: true,
+        amount: true,
+        mpesaReceiptNumber: true,
+        mpesaCheckoutRequestId: true,
+        paidAt: true,
+      },
+    });
+    if (!payment) {
+      throw new NotFoundException(`Payment record '${paymentId}' not found`);
+    }
+    return payment;
+  }
+
   /**
    * Test endpoint to simulate Daraja Webhook Callback in dev/sandbox environment
    */
@@ -413,4 +551,33 @@ export class PaymentsService {
       },
     });
   }
+
+  /**
+   * Resolves the active public callback URL for M-Pesa callbacks.
+   * If ngrok is running locally on port 4040, dynamically fetches the active tunnel URL.
+   * Otherwise falls back to APP_URL from environment variables.
+   */
+  private async getActiveCallbackUrl(): Promise<string> {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 600);
+      const res = await fetch('http://127.0.0.1:4040/api/tunnels', { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        const data: any = await res.json();
+        const httpsTunnel = data.tunnels?.find((t: any) => t.public_url?.startsWith('https://'));
+        if (httpsTunnel?.public_url) {
+          const url = `${httpsTunnel.public_url}/api/payments/mpesa/callback`;
+          this.logger.log(`Auto-detected active ngrok callback URL: ${url}`);
+          return url;
+        }
+      }
+    } catch {
+      // ngrok not running locally on 4040, fall back to APP_URL
+    }
+
+    const appUrl = (process.env.APP_URL || 'https://sandbox.kidoocare.com').trim().replace(/\/$/, '');
+    return `${appUrl}/api/payments/mpesa/callback`;
+  }
 }
+

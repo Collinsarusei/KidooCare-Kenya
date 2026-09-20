@@ -39,7 +39,7 @@ export class BalancesService {
     const enrollments = await this.prisma.enrollment.findMany({
       where: {
         child: { parentId },
-        status: EnrollmentStatus.ACTIVE,
+        status: { in: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PENDING_PAYMENT] },
       },
       include: {
         child: true,

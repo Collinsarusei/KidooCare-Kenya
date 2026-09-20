@@ -59,7 +59,7 @@ export class EnrollmentsService {
         },
       });
 
-      if (initialStatus !== EnrollmentStatus.WAITLISTED) {
+      if (initialStatus !== EnrollmentStatus.WAITLISTED && initialStatus !== EnrollmentStatus.PENDING_PAYMENT) {
         await tx.service.update({
           where: { id: service.id },
           data: { currentEnrollmentCount: { increment: 1 } },
@@ -69,8 +69,10 @@ export class EnrollmentsService {
           where: { id: child.id },
           data: { schoolId: service.schoolId },
         });
+      }
 
-        // Initialize Balance record for this enrollment
+      // Initialize Balance record for this enrollment (even for pending_payment, so billing cycle works)
+      if (initialStatus !== EnrollmentStatus.WAITLISTED) {
         await tx.balance.create({
           data: {
             enrollmentId: newEnrollment.id,
@@ -311,6 +313,44 @@ export class EnrollmentsService {
 
     return this.getEnrollmentById(enrollmentId);
   }
+  async cancelPendingEnrollment(enrollmentId: string, parentId: string) {
+    const enrollment = await this.prisma.enrollment.findUnique({
+      where: { id: enrollmentId },
+      include: { child: true },
+    });
+
+    if (!enrollment) {
+      throw new NotFoundException(`Enrollment with ID '${enrollmentId}' not found`);
+    }
+
+    if (enrollment.child.parentId !== parentId) {
+      throw new ForbiddenException('You can only cancel enrollments for your own children');
+    }
+
+    if (enrollment.status !== EnrollmentStatus.PENDING_PAYMENT) {
+      throw new BadRequestException('You can only cancel enrollments that are pending payment.');
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      // Delete any balance records
+      await tx.balance.deleteMany({ where: { enrollmentId } });
+      
+      // Delete any payment and weekly installment records
+      const installments = await tx.weeklyInstallment.findMany({ where: { billingCycle: { enrollmentId } } });
+      const installmentIds = installments.map(i => i.id);
+      await tx.payment.deleteMany({ where: { weeklyInstallmentId: { in: installmentIds } } });
+      await tx.weeklyInstallment.deleteMany({ where: { billingCycle: { enrollmentId } } });
+      
+      // Delete billing cycles
+      await tx.billingCycle.deleteMany({ where: { enrollmentId } });
+      
+      // Finally delete the enrollment
+      await tx.enrollment.delete({ where: { id: enrollmentId } });
+    });
+
+    return { message: 'Pending enrollment cancelled successfully' };
+  }
+
   async createWalkInEnrollment(
     schoolId: string,
     actorId: string,

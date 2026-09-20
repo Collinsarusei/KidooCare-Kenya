@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ChildDto } from '@daycare/shared-types';
 
 export interface EnrollingService {
@@ -30,58 +30,29 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
   onAddChildClick,
 }) => {
   const isFull = enrollingService.currentCount >= enrollingService.capacity;
-  
-  const [step, setStep] = useState<1 | 2>(1);
-  const [paymentMode, setPaymentMode] = useState<'LIPA_MDOGO_MDOGO' | 'ALL_FEES' | 'CUSTOM'>('LIPA_MDOGO_MDOGO');
-  const [customAmount, setCustomAmount] = useState<string>('');
 
-  const weeklyFee = enrollingService.price / 4;
-
-  const handleNextStep = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isFull) {
-      // If waitlisted, skip payment
-      onConfirm(e, 'WAITLIST', 0);
-    } else {
-      setStep(2);
-    }
-  };
-
-  const handleFinalSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    let amount = 0;
-    if (paymentMode === 'LIPA_MDOGO_MDOGO') amount = weeklyFee;
-    else if (paymentMode === 'ALL_FEES') amount = enrollingService.price;
-    else if (paymentMode === 'CUSTOM') amount = parseFloat(customAmount);
-
-    if (isNaN(amount) || amount <= 0) {
-      alert("Please enter a valid amount greater than 0");
-      return;
-    }
-
-    onConfirm(e, paymentMode, amount);
+    // Pass dummy payment values — actual payment mode is chosen in the StkPushModal
+    onConfirm(e, isFull ? 'WAITLIST' : 'PENDING', 0);
   };
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl w-[540px] max-w-full p-6 md:p-8 shadow-2xl space-y-6">
+      <div className="bg-white rounded-3xl w-[520px] max-w-full p-6 md:p-8 shadow-2xl space-y-6">
+
+        {/* Header */}
         <div className="flex justify-between items-start border-b border-[#e6eeff] pb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#004ac6] text-white flex items-center justify-center font-bold">
-              <span className="material-symbols-outlined text-xl">
-                {step === 1 ? 'assignment_add' : 'payments'}
-              </span>
+              <span className="material-symbols-outlined text-xl">assignment_add</span>
             </div>
             <div>
-              <h3 className="text-xl font-extrabold text-[#004ac6] font-display">
-                {step === 1 ? 'Daycare Intake & Enrollment' : 'Initial Payment Required'}
-              </h3>
-              <p className="text-xs text-[#737686]">
-                {step === 1 ? 'Complete child placement registration' : 'Secure your child\'s spot with an initial payment'}
-              </p>
+              <h3 className="text-xl font-extrabold text-[#004ac6] font-display">Daycare Enrollment</h3>
+              <p className="text-xs text-[#737686]">Select the child you want to enroll</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-[#f8f9ff] text-[#737686] hover:bg-[#e6eeff] flex items-center justify-center"
           >
@@ -89,13 +60,11 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
           </button>
         </div>
 
-        {/* Service Summary Card */}
+        {/* Service Summary */}
         <div className="bg-[#f8f9ff] border border-[#e6eeff] p-4 rounded-2xl space-y-2">
           <div className="flex justify-between items-start">
             <div>
-              <h4 className="font-bold text-[#004ac6] text-base font-display">
-                {enrollingService.serviceName}
-              </h4>
+              <h4 className="font-bold text-[#004ac6] text-base font-display">{enrollingService.serviceName}</h4>
               <p className="text-xs text-[#737686] flex items-center gap-1 mt-0.5">
                 <span className="material-symbols-outlined text-xs">domain</span>
                 {enrollingService.schoolName}
@@ -106,158 +75,93 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
             </span>
           </div>
           <div className="pt-2 border-t border-[#e6eeff] flex justify-between items-center text-xs">
-            <span className="text-[#737686]">Agreed Monthly Rate:</span>
+            <span className="text-[#737686]">Monthly Rate:</span>
             <span className="font-extrabold text-[#006c49] text-sm">
               KES {enrollingService.price.toLocaleString()} / mo
             </span>
           </div>
+          <div className="flex justify-between items-center text-xs">
+            <span className="text-[#737686]">Weekly (Lipa Mdogo Mdogo):</span>
+            <span className="font-bold text-[#004ac6]">
+              KES {(enrollingService.price / 4).toLocaleString()} / week
+            </span>
+          </div>
         </div>
 
-        {step === 1 && (
-          <>
-            {isFull && (
-              <div className="bg-[#fff7ed] border border-[#fdba74] p-3 rounded-2xl text-xs text-[#c2410c] flex items-start gap-2">
-                <span className="material-symbols-outlined text-lg shrink-0 mt-0.5">warning</span>
-                <div>
-                  <span className="font-bold block">Capacity Reached ({enrollingService.currentCount}/{enrollingService.capacity})</span>
-                  Your child will be assigned a priority waitlist status. The daycare manager will approve as soon as a slot opens. No payment is required yet.
-                </div>
-              </div>
-            )}
-
-            {myChildren.length === 0 ? (
-              <div className="bg-[#fff7ed] border border-[#fdba74] p-5 rounded-2xl text-center space-y-2">
-                <span className="material-symbols-outlined text-3xl text-[#c2410c]">no_accounts</span>
-                <p className="text-xs font-bold text-[#c2410c] uppercase">No Registered Children Profiles</p>
-                <p className="text-xs text-[#434655]">
-                  Please close this dialog and complete the Child Intake Form in your Children tab before enrolling.
-                </p>
-                <button type="button" className="btn btn-secondary text-xs py-2 px-4 mt-2" onClick={onAddChildClick}>
-                  Register Child
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleNextStep} className="space-y-5">
-                <div>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider">
-                      Select Child to Enroll *
-                    </label>
-                    <button 
-                      type="button"
-                      onClick={onAddChildClick}
-                      className="text-xs font-bold text-[#004ac6] hover:underline flex items-center gap-1"
-                    >
-                      <span className="material-symbols-outlined text-sm">person_add</span>
-                      Add Child
-                    </button>
-                  </div>
-                  <select
-                    required
-                    value={selectedChildId}
-                    onChange={(e) => setSelectedChildId(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none font-medium"
-                  >
-                    {myChildren.map((child) => (
-                      <option key={child.id} value={child.id}>
-                        👶 {child.name} (DOB: {new Date(child.dob).toLocaleDateString()})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex gap-3 justify-end pt-2">
-                  <button 
-                    type="button" 
-                    className="btn btn-secondary text-xs px-5 py-2.5 rounded-xl" 
-                    onClick={onClose}
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary text-xs px-6 py-2.5 rounded-xl shadow-md flex items-center gap-1.5"
-                  >
-                    <span>{isFull ? 'Join Waitlist' : 'Continue to Payment'}</span>
-                    <span className="material-symbols-outlined text-base">arrow_forward</span>
-                  </button>
-                </div>
-              </form>
-            )}
-          </>
+        {isFull && (
+          <div className="bg-[#fff7ed] border border-[#fdba74] p-3 rounded-2xl text-xs text-[#c2410c] flex items-start gap-2">
+            <span className="material-symbols-outlined text-lg shrink-0 mt-0.5">warning</span>
+            <div>
+              <span className="font-bold block">Capacity Reached ({enrollingService.currentCount}/{enrollingService.capacity})</span>
+              Your child will be placed on a priority waitlist. No payment required yet — the school will notify you when a slot opens.
+            </div>
+          </div>
         )}
 
-        {step === 2 && (
-          <form onSubmit={handleFinalSubmit} className="space-y-5">
-            <div className="space-y-3">
-              <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider">
-                Select Initial Payment Amount
-              </label>
-              
-              <div 
-                onClick={() => setPaymentMode('LIPA_MDOGO_MDOGO')}
-                className={`p-3 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-3 ${paymentMode === 'LIPA_MDOGO_MDOGO' ? 'border-[#004ac6] bg-[#eff4ff]' : 'border-[#e6eeff] bg-white hover:border-[#c3c6d7]'}`}
-              >
-                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentMode === 'LIPA_MDOGO_MDOGO' ? 'border-[#004ac6]' : 'border-[#c3c6d7]'}`}>
-                  {paymentMode === 'LIPA_MDOGO_MDOGO' && <div className="w-2 h-2 rounded-full bg-[#004ac6]" />}
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-[#121c2a]">Lipa Mdogo Mdogo (1 Week)</p>
-                  <p className="text-xs text-[#737686]">KES {weeklyFee.toLocaleString()}</p>
-                </div>
+        {myChildren.length === 0 ? (
+          <div className="bg-[#fff7ed] border border-[#fdba74] p-5 rounded-2xl text-center space-y-2">
+            <span className="material-symbols-outlined text-3xl text-[#c2410c]">no_accounts</span>
+            <p className="text-xs font-bold text-[#c2410c] uppercase">No Registered Children Profiles</p>
+            <p className="text-xs text-[#434655]">
+              Please close this dialog and complete the Child Intake Form in your Children tab before enrolling.
+            </p>
+            <button type="button" className="btn btn-secondary text-xs py-2 px-4 mt-2" onClick={onAddChildClick}>
+              Register Child
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider">
+                  Select Child to Enroll *
+                </label>
+                <button
+                  type="button"
+                  onClick={onAddChildClick}
+                  className="text-xs font-bold text-[#004ac6] hover:underline flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">person_add</span>
+                  Add Child
+                </button>
               </div>
-
-              <div 
-                onClick={() => setPaymentMode('ALL_FEES')}
-                className={`p-3 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-3 ${paymentMode === 'ALL_FEES' ? 'border-[#004ac6] bg-[#eff4ff]' : 'border-[#e6eeff] bg-white hover:border-[#c3c6d7]'}`}
+              <select
+                required
+                value={selectedChildId}
+                onChange={(e) => setSelectedChildId(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none font-medium"
               >
-                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentMode === 'ALL_FEES' ? 'border-[#004ac6]' : 'border-[#c3c6d7]'}`}>
-                  {paymentMode === 'ALL_FEES' && <div className="w-2 h-2 rounded-full bg-[#004ac6]" />}
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-[#121c2a]">All Fees (Full Month)</p>
-                  <p className="text-xs text-[#737686]">KES {enrollingService.price.toLocaleString()}</p>
-                </div>
-              </div>
-
-              <div 
-                onClick={() => setPaymentMode('CUSTOM')}
-                className={`p-3 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-3 ${paymentMode === 'CUSTOM' ? 'border-[#004ac6] bg-[#eff4ff]' : 'border-[#e6eeff] bg-white hover:border-[#c3c6d7]'}`}
-              >
-                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentMode === 'CUSTOM' ? 'border-[#004ac6]' : 'border-[#c3c6d7]'}`}>
-                  {paymentMode === 'CUSTOM' && <div className="w-2 h-2 rounded-full bg-[#004ac6]" />}
-                </div>
-                <div className="flex-1 flex items-center justify-between">
-                  <p className="text-sm font-bold text-[#121c2a]">Custom Amount</p>
-                  {paymentMode === 'CUSTOM' && (
-                    <input 
-                      type="number"
-                      placeholder="KES"
-                      value={customAmount}
-                      onChange={(e) => setCustomAmount(e.target.value)}
-                      className="w-32 px-2 py-1 text-sm rounded border border-[#c3c6d7] outline-none focus:ring-1 focus:ring-[#004ac6]"
-                      onClick={(e) => e.stopPropagation()}
-                      required
-                    />
-                  )}
-                </div>
-              </div>
+                {myChildren.map((child) => (
+                  <option key={child.id} value={child.id}>
+                    👶 {child.name} (DOB: {new Date(child.dob).toLocaleDateString()})
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="flex gap-3 justify-between pt-2 border-t border-[#e6eeff]">
-              <button 
-                type="button" 
-                className="btn btn-secondary text-xs px-5 py-2.5 rounded-xl" 
-                onClick={() => setStep(1)}
+            {!isFull && (
+              <div className="bg-[#eff4ff] border border-[#c3d7ff] rounded-xl p-3 flex items-start gap-2 text-xs">
+                <span className="material-symbols-outlined text-[#004ac6] text-base shrink-0 mt-0.5">info</span>
+                <p className="text-[#434655]">
+                  After confirming your child, you will be prompted to pay via <strong>M-Pesa</strong>. Choose to pay weekly (Lipa Mdogo Mdogo) or the full month upfront.
+                </p>
+              </div>
+            )}
+
+            <div className="flex gap-3 justify-end pt-2">
+              <button
+                type="button"
+                className="btn btn-secondary text-xs px-5 py-2.5 rounded-xl"
+                onClick={onClose}
               >
-                Back
+                Cancel
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="btn btn-primary text-xs px-6 py-2.5 rounded-xl shadow-md flex items-center gap-1.5"
               >
-                <span className="material-symbols-outlined text-base">phone_iphone</span>
-                Pay & Enroll
+                <span>{isFull ? 'Join Waitlist' : 'Confirm & Pay via M-Pesa'}</span>
+                <span className="material-symbols-outlined text-base">{isFull ? 'queue' : 'phone_iphone'}</span>
               </button>
             </div>
           </form>
@@ -266,4 +170,3 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
     </div>
   );
 };
-

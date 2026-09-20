@@ -39,6 +39,12 @@ export class EnrollmentsController {
     return this.enrollmentsService.endEnrollment(id, user.id, user.role);
   }
 
+  @Roles(UserRole.PARENT)
+  @Post('enrollments/:id/cancel')
+  async cancelPendingEnrollment(@Param('id') id: string, @CurrentUser('id') parentId: string) {
+    return this.enrollmentsService.cancelPendingEnrollment(id, parentId);
+  }
+
   @Roles(UserRole.SCHOOL, UserRole.TUTOR)
   @Post('schools/:schoolId/walk-in')
   async createWalkInEnrollment(

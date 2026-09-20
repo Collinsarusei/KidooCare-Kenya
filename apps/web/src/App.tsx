@@ -84,6 +84,7 @@ export default function App() {
   const [stkPhone, setStkPhone] = useState('');
   const [stkResult, setStkResult] = useState<any>(null);
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
+  const [myPayments, setMyPayments] = useState<any[]>([]);
 
   // Dispute Modal State
   const [disputeModalPayment, setDisputeModalPayment] = useState<{ id: string; amount: number; weekNumber: number; childName: string } | null>(null);
@@ -149,6 +150,7 @@ export default function App() {
         fetchMyChildren();
         fetchMyEnrollments();
         fetchParentLedger();
+        fetchMyPayments();
         fetchParentDisputes();
       } else if (currentUser.role === UserRole.TUTOR && currentUser.employedAtSchoolId) {
         fetchSchoolRoster(currentUser.employedAtSchoolId);
@@ -247,6 +249,20 @@ export default function App() {
       });
       const data = await res.json();
       if (res.ok) setParentLedger(data);
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  const fetchMyPayments = async () => {
+    const savedToken = localStorage.getItem('token');
+    if (!savedToken) return;
+    try {
+      const res = await fetch('/api/payments/my', {
+        headers: { Authorization: `Bearer ${savedToken}` },
+      });
+      const data = await res.json();
+      if (res.ok) setMyPayments(data);
     } catch (e) {
       // ignore
     }
@@ -511,12 +527,30 @@ export default function App() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Enrollment failed');
 
-      setSuccessMsg(
-        data.status === 'WAITLISTED'
-          ? `Capacity reached! Child enrolled on WAITLIST for '${enrollingService.serviceName}'.`
-          : `Enrollment created! Please navigate to your Ledger to pay the first installment and activate the enrollment.`
-      );
-      setEnrollingService(null);
+      if (data.status === 'WAITLISTED') {
+        setSuccessMsg(`Capacity reached! Child enrolled on WAITLIST for '${enrollingService.serviceName}'.`);
+        setEnrollingService(null);
+      } else {
+        // Automatically open STK Push modal for the first installment
+        const firstCycle = data.billingCycles?.[0];
+        const firstInstallment = firstCycle?.weeklyInstallments?.[0];
+
+        if (firstInstallment) {
+          setStkInstallment({
+            id: firstInstallment.id,
+            weekNumber: firstInstallment.weekNumber,
+            amount: firstInstallment.amountDue,
+            childName: data.child?.name || 'Child',
+            schoolName: data.service?.school?.name || enrollingService.schoolName,
+          });
+          setStkPhone(currentUser?.phone || '');
+          setEnrollingService(null);
+        } else {
+          setSuccessMsg(`Enrollment created! Please navigate to your Ledger to pay the first installment and activate the enrollment.`);
+          setEnrollingService(null);
+        }
+      }
+      
       fetchMyEnrollments();
       fetchParentLedger();
     } catch (err: any) {
@@ -554,6 +588,44 @@ export default function App() {
     }
   };
 
+  // Auto-poll payment status while waiting for M-Pesa STK confirmation
+  useEffect(() => {
+    if (!stkResult?.paymentId) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/payments/status/${stkResult.paymentId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'COMPLETED') {
+            clearInterval(interval);
+            toast.success(`M-Pesa payment of KES ${data.amount?.toLocaleString()} confirmed! (Receipt: ${data.mpesaReceiptNumber || 'Success'})`);
+            setStkInstallment(null);
+            setStkResult(null);
+            fetchMyEnrollments();
+            fetchParentLedger();
+            fetchMyPayments();
+            fetchMyChildren();
+            if (mySchool) {
+              fetchSchoolFinancials(mySchool.id);
+              fetchSchoolRoster(mySchool.id);
+            }
+          } else if (data.status === 'FAILED') {
+            clearInterval(interval);
+            toast.error('M-Pesa payment failed or was cancelled.');
+            setStkResult(null);
+          }
+        }
+      } catch {
+        // silent polling error
+      }
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [stkResult?.paymentId, token, mySchool]);
+
   const handleTestCardPayment = async (amount: number, cardNumber: string, expiry: string, cvv: string) => {
     if (!stkInstallment) return;
     setError(null);
@@ -574,6 +646,12 @@ export default function App() {
       setStkResult(null);
       fetchMyEnrollments();
       fetchParentLedger();
+      fetchMyPayments();
+      fetchMyChildren();
+      if (mySchool) {
+        fetchSchoolFinancials(mySchool.id);
+        fetchSchoolRoster(mySchool.id);
+      }
     } catch (err: any) {
       setError(err.message);
     }
@@ -600,7 +678,12 @@ export default function App() {
       setStkResult(null);
       fetchMyEnrollments();
       fetchParentLedger();
-      if (mySchool) fetchSchoolFinancials(mySchool.id);
+      fetchMyPayments();
+      fetchMyChildren();
+      if (mySchool) {
+        fetchSchoolFinancials(mySchool.id);
+        fetchSchoolRoster(mySchool.id);
+      }
     } catch (err: any) {
       setError(err.message);
     }
@@ -736,6 +819,32 @@ export default function App() {
     });
   };
 
+  const handleCancelPendingEnrollment = async (enrollmentId: string) => {
+    setConfirmConfig({
+      title: 'Cancel Enrollment',
+      message: 'Are you sure you want to cancel this pending enrollment?',
+      isDestructive: true,
+      onConfirm: async () => {
+        setConfirmConfig(null);
+        setError(null);
+        try {
+          const res = await fetch(`/api/enrollments/${enrollmentId}/cancel`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || 'Failed to cancel enrollment');
+
+          setSuccessMsg('Pending enrollment has been cancelled and removed.');
+          if (currentUser?.role === UserRole.PARENT) fetchMyEnrollments();
+        } catch (err: any) {
+          setError(err.message);
+        }
+      }
+    });
+  };
+
   const handleCreateDispute = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!disputeModalPayment || !disputeReason) return;
@@ -762,6 +871,7 @@ export default function App() {
       setDisputeModalPayment(null);
       setDisputeReason('');
       fetchParentDisputes();
+      fetchMyPayments();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -1110,6 +1220,29 @@ export default function App() {
     }
   };
 
+  const handleUpdateAdminSchoolProfile = async (schoolId: string, data: { name?: string; location?: string; }) => {
+    setError(null);
+    setSuccessMsg(null);
+    try {
+      const res = await fetch(`/api/schools/${schoolId}/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.message || 'Failed to update school profile');
+
+      setSuccessMsg('School profile updated successfully!');
+      fetchAdminSchools();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
   const handleDeleteSchool = async (schoolId: string, schoolName: string) => {
     setError(null);
     setSuccessMsg(null);
@@ -1356,7 +1489,9 @@ export default function App() {
             activeTab={parentTab}
             setActiveTab={(tab: any) => { 
               setParentTab(tab); 
-              if (tab === 'ledger') fetchParentLedger(); 
+              if (tab === 'children') fetchMyChildren();
+              if (tab === 'enrollments') fetchMyEnrollments();
+              if (tab === 'ledger') { fetchParentLedger(); fetchMyPayments(); }
               if (tab === 'disputes') fetchParentDisputes(); 
             }}
             counts={{ children: myChildren.length, enrollments: myEnrollments.length, parentDisputes: parentDisputes.length }}
@@ -1392,6 +1527,7 @@ export default function App() {
             <ParentEnrollmentsView 
               myEnrollments={myEnrollments} 
               onEndEnrollment={handleEndEnrollment}
+              onCancelEnrollment={handleCancelPendingEnrollment}
               onNavigateToMarketplace={() => setParentTab('marketplace')}
             />
           )}
@@ -1399,6 +1535,7 @@ export default function App() {
           {parentTab === 'ledger' && (
             <ParentLedgerView
               parentLedger={parentLedger}
+              payments={myPayments}
               onPayClick={(inst) => setStkInstallment(inst)}
               onViewReceipt={(receipt) => setReceiptData(receipt)}
               onFlagDispute={(payment) => setDisputeModalPayment(payment)}
@@ -1442,10 +1579,15 @@ export default function App() {
               activeTab={schoolTab}
               setActiveTab={(tab: any) => { 
                 setSchoolTab(tab); 
-                if (tab === 'tutors' && mySchool) fetchSchoolTutors(mySchool.id); 
-                if (tab === 'documents' && mySchool) fetchSchoolDocuments(mySchool.id);
-                if (tab === 'financials' && mySchool) fetchSchoolFinancials(mySchool.id);
-                if (tab === 'disputes') fetchSchoolDisputes();
+                if (mySchool) {
+                  if (tab === 'overview') fetchSchoolFinancials(mySchool.id);
+                  if (tab === 'services') fetchSchoolServices(mySchool.id);
+                  if (tab === 'roster') fetchSchoolRoster(mySchool.id);
+                  if (tab === 'tutors') fetchSchoolTutors(mySchool.id); 
+                  if (tab === 'documents') fetchSchoolDocuments(mySchool.id);
+                  if (tab === 'financials') fetchSchoolFinancials(mySchool.id);
+                  if (tab === 'disputes') fetchSchoolDisputes();
+                }
               }}
               counts={{ services: myServices.length, roster: schoolRoster.length, tutors: schoolTutors.length, documents: schoolDocuments.length, schoolDisputes: schoolDisputes.length }}
               mySchool={mySchool}
@@ -1579,6 +1721,7 @@ export default function App() {
                 adminSchools={adminSchools} 
                 onOnboardSchool={handleOnboardSchool} 
                 onUpdateCredentials={handleUpdateSchoolCredentials}
+                onUpdateSchoolProfile={handleUpdateAdminSchoolProfile}
                 onDeleteSchool={handleDeleteSchool}
                 onToggleSchoolStatus={handleToggleSchoolStatus}
               />

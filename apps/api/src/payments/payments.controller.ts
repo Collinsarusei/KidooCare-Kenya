@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { StkPushDto } from './dto/stk-push.dto';
 import { CardTestDto } from './dto/card-test.dto';
@@ -23,9 +23,27 @@ export class PaymentsController {
     return this.paymentsService.testCardPayment(parentId, dto);
   }
 
+  @Roles(UserRole.PARENT)
+  @Get('my')
+  async getMyPayments(@CurrentUser('id') parentId: string) {
+    return this.paymentsService.getParentPayments(parentId);
+  }
+
+  @Roles(UserRole.PARENT, UserRole.SCHOOL, UserRole.ADMIN)
+  @Get('status/:paymentId')
+  async getPaymentStatus(@Param('paymentId') paymentId: string) {
+    return this.paymentsService.getPaymentStatus(paymentId);
+  }
+
   @Public()
   @Post('mpesa/callback')
   async handleMpesaCallback(@Body() body: any) {
+    return this.paymentsService.handleMpesaCallback(body);
+  }
+
+  @Public()
+  @Post('mpesa-callback')
+  async handleMpesaCallbackAlt(@Body() body: any) {
     return this.paymentsService.handleMpesaCallback(body);
   }
 

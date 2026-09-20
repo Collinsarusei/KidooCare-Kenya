@@ -4,12 +4,14 @@ import { EnrollmentDto } from '@daycare/shared-types';
 interface ParentEnrollmentsViewProps {
   myEnrollments: EnrollmentDto[];
   onEndEnrollment: (id: string) => void;
+  onCancelEnrollment?: (id: string) => void;
   onNavigateToMarketplace: () => void;
 }
 
 export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({ 
   myEnrollments, 
-  onEndEnrollment, 
+  onEndEnrollment,
+  onCancelEnrollment, 
   onNavigateToMarketplace 
 }) => {
   return (
@@ -90,13 +92,22 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
                   <div className="text-base font-extrabold text-[#006c49]">
                     KES {enr.agreedMonthlyPrice.toLocaleString()} / mo
                   </div>
-                  {(enr.status === 'ACTIVE' || enr.status === 'PENDING_PAYMENT' || enr.status === 'WAITLISTED') && (
+                  {enr.status === 'PENDING_PAYMENT' && onCancelEnrollment && (
+                    <button 
+                      onClick={() => onCancelEnrollment(enr.id)}
+                      className="mt-2 text-xs font-bold flex items-center justify-end gap-1 ml-auto text-red-500 hover:text-red-700"
+                    >
+                      <span className="material-symbols-outlined text-sm">cancel</span>
+                      Cancel Enrollment
+                    </button>
+                  )}
+                  {(enr.status === 'ACTIVE' || enr.status === 'WAITLISTED') && (
                     <button 
                       onClick={() => onEndEnrollment(enr.id)}
-                      disabled={enr.status === 'ACTIVE' && (enr.balance?.totalArrears || 0) > 0}
-                      title={enr.status === 'ACTIVE' && (enr.balance?.totalArrears || 0) > 0 ? "Clear your arrears to cancel" : ""}
+                      disabled={enr.status === 'ACTIVE' && ((enr as any).balance?.totalArrears || 0) > 0}
+                      title={enr.status === 'ACTIVE' && ((enr as any).balance?.totalArrears || 0) > 0 ? "Clear your arrears to cancel" : ""}
                       className={`mt-2 text-xs font-bold flex items-center justify-end gap-1 ml-auto ${
-                        enr.status === 'ACTIVE' && (enr.balance?.totalArrears || 0) > 0
+                        enr.status === 'ACTIVE' && ((enr as any).balance?.totalArrears || 0) > 0
                         ? 'text-[#c3c6d7] cursor-not-allowed'
                         : 'text-red-500 hover:text-red-700'
                       }`}
@@ -116,26 +127,43 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
                     Current Month Weekly Installment Breakdown
                   </h5>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {enr.billingCycles[0].weeklyInstallments.map((w) => (
-                      <div 
-                        key={w.id} 
-                        className={`p-3 rounded-xl border text-xs space-y-1 ${
-                          w.status === 'PAID' 
-                            ? 'bg-[#e6f7ef] border-[#6cf8bb]' 
-                            : 'bg-[#fff7ed] border-[#fdba74]'
-                        }`}
-                      >
-                        <div className="flex justify-between items-center font-bold">
-                          <span>Week {w.weekNumber}</span>
-                          <span className={`badge ${w.status === 'PAID' ? 'badge-green' : 'badge-orange'}`}>
-                            {w.status}
-                          </span>
+                    {[...enr.billingCycles[0].weeklyInstallments].sort((a, b) => a.weekNumber - b.weekNumber).map((w) => {
+                      const isPartial = w.amountPaid > 0 && w.status !== 'PAID';
+                      const remaining = Math.max(0, w.amountDue - w.amountPaid);
+                      return (
+                        <div 
+                          key={w.id} 
+                          className={`p-3 rounded-xl border text-xs space-y-1 ${
+                            w.status === 'PAID' 
+                              ? 'bg-[#e6f7ef] border-[#6cf8bb]' 
+                              : isPartial
+                                ? 'bg-[#fefce8] border-[#fde047]'
+                                : 'bg-[#fff7ed] border-[#fdba74]'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center font-bold">
+                            <span>Week {w.weekNumber}</span>
+                            <span className={`badge ${
+                              w.status === 'PAID' 
+                                ? 'badge-green' 
+                                : isPartial 
+                                  ? 'badge-orange' 
+                                  : 'badge-orange'
+                            }`}>
+                              {w.status === 'PAID' ? 'PAID' : isPartial ? 'PARTIAL' : w.status}
+                            </span>
+                          </div>
+                          <p className={`font-extrabold ${w.status === 'PAID' ? 'text-[#00714d]' : 'text-[#c2410c]'}`}>
+                            KES {w.amountDue.toLocaleString()}
+                          </p>
+                          {isPartial && (
+                            <p className="text-[10px] text-[#00714d] font-semibold">
+                              Paid: KES {w.amountPaid.toLocaleString()} (Bal: {remaining.toLocaleString()})
+                            </p>
+                          )}
                         </div>
-                        <p className={`font-extrabold ${w.status === 'PAID' ? 'text-[#00714d]' : 'text-[#c2410c]'}`}>
-                          KES {w.amountDue.toLocaleString()}
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}

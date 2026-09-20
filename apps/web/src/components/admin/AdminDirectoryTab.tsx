@@ -25,6 +25,7 @@ interface AdminDirectoryTabProps {
     }
   ) => void;
   onDeleteSchool?: (schoolId: string, schoolName: string) => void;
+  onUpdateSchoolProfile?: (schoolId: string, data: { name?: string; location?: string }) => void;
   onToggleSchoolStatus?: (schoolId: string, currentStatus: string) => void;
 }
 
@@ -33,6 +34,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
   onOnboardSchool,
   onUpdateCredentials,
   onDeleteSchool,
+  onUpdateSchoolProfile,
   onToggleSchoolStatus,
 }) => {
   const [view, setView] = useState<'overview' | 'add_school'>('overview');
@@ -62,6 +64,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
   const [editConsumerKey, setEditConsumerKey] = useState('');
   const [editConsumerSecret, setEditConsumerSecret] = useState('');
   const [submittingCreds, setSubmittingCreds] = useState(false);
+
+  // Edit Existing School Profile Modal State
+  const [editModalSchool, setEditModalSchool] = useState<SchoolDetailDto | null>(null);
+  const [editSchoolName, setEditSchoolName] = useState('');
+  const [editCityRegion, setEditCityRegion] = useState('');
+  const [submittingProfile, setSubmittingProfile] = useState(false);
 
   // Overview State
   const [showAllRegistrations, setShowAllRegistrations] = useState(false);
@@ -139,6 +147,22 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
     }
   };
 
+  const handleSaveSchoolProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editModalSchool || !onUpdateSchoolProfile) return;
+
+    setSubmittingProfile(true);
+    try {
+      await onUpdateSchoolProfile(editModalSchool.id, {
+        name: editSchoolName,
+        location: editCityRegion,
+      });
+      setEditModalSchool(null);
+    } finally {
+      setSubmittingProfile(false);
+    }
+  };
+
   const openCredentialsModal = (sch: SchoolDetailDto) => {
     setCredModalSchool(sch);
     setEditPaybill('');
@@ -192,7 +216,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
   });
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 font-sans">
+    <div className="max-w-7xl mx-auto space-y-6 font-sans">
       {/* Toast Notification */}
       {reportToast && (
         <div className="fixed top-4 right-4 z-50 bg-[#004ac6] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce">
@@ -427,7 +451,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
 
                           <div className="mt-auto pt-4 border-t border-[#f1f5f9] grid grid-cols-4 gap-2">
                             <button 
-                              onClick={() => { setView('add_school'); setSchoolName(item.name); setCityRegion(item.location || ''); }}
+                              onClick={() => { setEditModalSchool(item); setEditSchoolName(item.name); setEditCityRegion(item.location || ''); }}
                               className="w-full flex items-center justify-center py-2 rounded-xl hover:bg-[#f1f5f9] text-[#475569] hover:text-[#2563eb] transition-colors"
                               title="Edit Profile"
                             >
@@ -743,7 +767,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowDarajaInputs(!showDarajaInputs)}
-                  className="w-full sm:w-auto btn bg-white hover:bg-[#f1f5f9] border border-[#cbd5e1] text-[#334155] text-xs font-bold py-2.5 px-6 rounded-xl transition-all"
+                  className="w-full sm:w-auto btn bg-[#dbeafe] hover:bg-[#bfdbfe] text-[#2563eb] text-xs font-bold py-2.5 px-6 rounded-xl transition-all mt-2"
                 >
                   {showDarajaInputs ? 'Close Panel' : consumerKey ? 'Update Keys' : 'Configure Credentials'}
                 </button>
@@ -866,6 +890,84 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 >
                   <span className="material-symbols-outlined text-base">check_circle</span>
                   {submittingCreds ? 'Saving...' : 'Save Credentials'}
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: EDIT EXISTING SCHOOL PROFILE */}
+      {editModalSchool && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl w-[520px] max-w-full p-6 md:p-8 shadow-2xl space-y-5 animate-fadeIn">
+            
+            <div className="flex justify-between items-start border-b border-[#e6eeff] pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#2563eb] text-white flex items-center justify-center font-bold">
+                  <span className="material-symbols-outlined text-xl">edit</span>
+                </div>
+                <div>
+                  <h3 className="text-lg md:text-xl font-extrabold text-[#121c2a] font-display">
+                    Edit School Profile
+                  </h3>
+                  <p className="text-xs text-[#737686]">
+                    Update details for <strong className="text-[#2563eb]">{editModalSchool.name}</strong>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditModalSchool(null)}
+                className="w-8 h-8 rounded-full bg-[#f8f9ff] text-[#737686] hover:bg-[#e6eeff] flex items-center justify-center"
+              >
+                <span className="material-symbols-outlined text-lg">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveSchoolProfile} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
+                  Daycare Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editSchoolName}
+                  onChange={(e) => setEditSchoolName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f8f9ff] focus:ring-2 focus:ring-[#2563eb] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
+                  City/Region *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editCityRegion}
+                  onChange={(e) => setEditCityRegion(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f8f9ff] focus:ring-2 focus:ring-[#2563eb] outline-none"
+                />
+              </div>
+
+              <div className="flex gap-3 justify-end pt-3 border-t border-[#e6eeff]">
+                <button
+                  type="button"
+                  className="btn btn-secondary text-xs px-4 py-2.5 rounded-xl"
+                  onClick={() => setEditModalSchool(null)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingProfile}
+                  className="btn bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs px-5 py-2.5 rounded-xl shadow-md flex items-center gap-1.5"
+                >
+                  <span className="material-symbols-outlined text-base">save</span>
+                  {submittingProfile ? 'Saving...' : 'Save Profile'}
                 </button>
               </div>
             </form>

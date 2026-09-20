@@ -1,311 +1,348 @@
-# 👶 KiddoCare Kenya — Daycare Marketplace Platform
+# 👶 KiddoCare Kenya — Daycare Marketplace & Flexible Billing Platform
 
-A full-stack daycare marketplace and flexible weekly billing platform ("Lipa Mdogo Mdogo") for daycare centers, parents, and platform administrators in Kenya.
-
----
-
-## 📦 Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Frontend | React 18 + TypeScript + Vite + Tailwind CSS |
-| Backend API | NestJS + Prisma ORM + PostgreSQL |
-| Auth | JWT (Access + Refresh tokens) |
-| Payments | M-Pesa STK Push (Daraja API) |
-| Email | Resend API |
-| File Uploads | UploadThing |
-| AI Features | Google Genkit + Gemini 1.5 |
-| Caching | Redis |
-| Monorepo | Turborepo |
+KiddoCare Kenya is a full-stack daycare marketplace and flexible weekly installment billing platform (**"Lipa Mdogo Mdogo"**) built for Kenyan daycares, parents, and platform administrators. It features integrated Safaricom M-Pesa STK Push payments, real-time transaction ledgers, dispute resolution, and local Google Genkit AI features for automated school bio creation and executive reporting.
 
 ---
 
-## ✅ Prerequisites
+## 🏗️ System Architecture & Services
 
-Make sure the following are installed before you begin:
+The platform consists of **3 core applications** and **2 infrastructure services**:
 
-1. **Node.js v18+** — [Download](https://nodejs.org/)
-2. **PostgreSQL** — either installed natively or via Docker
-3. **Redis** — either installed natively or via Docker
-4. **Docker Desktop** *(optional but recommended)* — [Download](https://www.docker.com/products/docker-desktop/)
-
----
-
-## 🚀 Full Setup Guide
-
-### Step 1 — Clone & Install Dependencies
-
-Open **PowerShell** or **Command Prompt** in the project folder:
-
-```powershell
-cd "c:\Users\ADMIN\Desktop\Christine project"
-npm install
-```
-
-This installs all workspace packages (root, `apps/api`, `apps/web`, shared packages).
+| Service | Technology | Port / URL | Description |
+|---|---|---|---|
+| **Frontend Web** | React 18 + Vite + Tailwind CSS | `http://localhost:5173` | Parent portal, School dashboard, Admin panel |
+| **Backend REST API** | NestJS 10 + Prisma ORM | `http://localhost:3000` | Core business logic, auth, M-Pesa, disputes |
+| **AI Microservice** | Express + Google Genkit + Gemini 1.5 | `http://localhost:3002` | School bio generation, executive summaries |
+| **PostgreSQL** | Postgres 16 | `localhost:5432` | Relational database (users, schools, payments) |
+| **Redis** | Redis 7 | `localhost:6379` | Token caching, rate limiting, queues |
+| **Ngrok Tunnel** | Ngrok CLI | `https://xxxx.ngrok-free.app` | Public HTTPS tunnel for Safaricom M-Pesa callbacks |
 
 ---
 
-### Step 2 — Configure Environment Variables
+## 📋 Prerequisites
 
-The project uses **two `.env` files** — both must be configured:
+Before setting up, ensure you have the following installed on your machine:
 
-#### File 1: `apps/api/.env` (Backend API — primary)
+1. **Node.js** v18 or v20 LTS — [Download Node.js](https://nodejs.org/)
+2. **Git** — [Download Git](https://git-scm.com/)
+3. **Docker Desktop** *(Recommended for Postgres & Redis)* — [Download Docker](https://www.docker.com/products/docker-desktop/)  
+   *(Alternatively, you can install native PostgreSQL 16 and Redis for Windows).*
+4. **Ngrok** *(Required for live M-Pesa STK push testing)* — [Download Ngrok](https://ngrok.com/download)
+5. **Google AI Studio API Key** *(Free for Gemini AI)* — [Get Key](https://aistudio.google.com/app/apikey)
+
+---
+
+## 🔑 Environment Variables Setup (`.env`)
+
+The platform requires **three `.env` files** across the workspace. Create each file with the templates provided below:
+
+### 1. File: `apps/api/.env` (Backend API — Primary)
+Create or edit `apps/api/.env`:
+
 ```env
-DATABASE_URL="postgresql://christine:christine1234@localhost:5432/daycare?schema=public"
+# ── Database & Redis ────────────────────────────────────────────────────────
+# If using Docker Compose (dev:dev):
+DATABASE_URL="postgresql://dev:dev@localhost:5432/daycare?schema=public"
+# If using Native Postgres on Windows (e.g. christine:christine1234 or postgres:postgres):
+# DATABASE_URL="postgresql://christine:christine1234@localhost:5432/daycare?schema=public"
+
 REDIS_URL="redis://localhost:6379"
 PORT=3000
-JWT_SECRET="your-jwt-secret-here"
+
+# ── Authentication ──────────────────────────────────────────────────────────
+JWT_SECRET="56da58d0d0e6928e65c5da70abfee1d99f91376f9b16d4b04a000ac41b11cd98"
 JWT_EXPIRES_IN="7d"
+
+# ── AES-256 Credentials Encryption ─────────────────────────────────────────
+# 64-character hex key (32 bytes) used to encrypt Daraja API credentials in DB
 MASTER_ENCRYPTION_KEY="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 
-# Google Gemini AI — get free key at: https://aistudio.google.com/app/apikey
-GOOGLE_API_KEY="YOUR_GOOGLE_AI_API_KEY"
-AI_SERVICE_URL=http://localhost:3002
+# ── Public App URL (For M-Pesa Callbacks) ───────────────────────────────────
+# Active ngrok tunnel forwarding to port 3000 (e.g. https://your-subdomain.ngrok-free.app)
+# NOTE: The API also automatically auto-discovers active local ngrok tunnels via port 4040!
+APP_URL="https://your-subdomain.ngrok-free.app"
 
-# Resend Email — get key at: https://resend.com/api-keys
+# ── KiddoCare AI Service (Google Genkit + Gemini) ────────────────────────────
+# Free key from: https://aistudio.google.com/app/apikey
+GOOGLE_API_KEY="YOUR_GOOGLE_GEMINI_API_KEY"
+AI_SERVICE_URL="http://localhost:3002"
+
+# ── Resend Email Service ─────────────────────────────────────────────────────
+# Key from: https://resend.com/api-keys
 RESEND_API_KEY="re_xxxxxxxxxxxxxxxxxxxxxxxx"
 RESEND_FROM_EMAIL="KiddoCare Kenya <info@yourdomain.com>"
 
-# UploadThing — get token at: https://uploadthing.com/dashboard
+# ── UploadThing Service ──────────────────────────────────────────────────────
+# Token from: https://uploadthing.com/dashboard
 UPLOADTHING_TOKEN="YOUR_UPLOADTHING_TOKEN"
 ```
 
-#### File 2: `.env` (Root — mirrors the API .env for Turborepo)
-Copy the same values into the root `.env` file as well.
+### 2. File: `Ai/AI_service/.env` (Genkit AI Microservice)
+Create or edit `Ai/AI_service/.env`:
 
-> **Note:** The `RESEND_FROM_EMAIL` sender domain must be verified in your Resend dashboard. Until then, emails can only be delivered to the email address used to register your Resend account.
+```env
+# Google Gemini API key (must match the key in apps/api/.env)
+GOOGLE_API_KEY="YOUR_GOOGLE_GEMINI_API_KEY"
+PORT=3002
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:5173
+```
+
+### 3. File: `.env` (Project Root — Turborepo Monorepo Mirror)
+Create or edit `.env` in the root folder (mirrors the API env):
+
+```env
+DATABASE_URL="postgresql://dev:dev@localhost:5432/daycare?schema=public"
+REDIS_URL="redis://localhost:6379"
+PORT=3000
+JWT_SECRET="56da58d0d0e6928e65c5da70abfee1d99f91376f9b16d4b04a000ac41b11cd98"
+JWT_EXPIRES_IN="7d"
+MASTER_ENCRYPTION_KEY="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+APP_URL="https://your-subdomain.ngrok-free.app"
+GOOGLE_API_KEY="YOUR_GOOGLE_GEMINI_API_KEY"
+AI_SERVICE_URL="http://localhost:3002"
+```
+
+> 💡 **Encryption Key Tip:** To generate a new 64-character hex encryption key anytime, run:
+> ```bash
+> node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+> ```
 
 ---
 
-### Step 3 — Start PostgreSQL & Redis
+## 🚀 Step-by-Step Installation & Quickstart
 
-#### Option A: Docker Desktop (Recommended)
+Follow these steps in order to get the complete platform running from scratch:
 
-Make sure Docker Desktop is **open and running**, then:
+### Step 1: Install All Dependencies
+
+Open PowerShell or terminal in the project root:
 
 ```powershell
-cd "c:\Users\ADMIN\Desktop\Christine project"
+# 1. Install root, API, and Web dependencies
+npm install
+
+# 2. Install AI Service dependencies
+cd Ai/AI_service
+npm install
+cd ../..
+```
+
+---
+
+### Step 2: Start PostgreSQL & Redis
+
+#### Option A: Using Docker Desktop (Recommended)
+Make sure Docker Desktop is running, then run:
+
+```powershell
 docker compose up -d
 ```
 
-This starts PostgreSQL on port `5432` and Redis on port `6379` as background containers.
-
-To stop them later:
+Verify containers are running:
 ```powershell
-docker compose down
+docker ps
 ```
+*(You should see `daycare_postgres` on port `5432` and `daycare_redis` on port `6379`).*
 
-#### Option B: Native PostgreSQL & Redis on Windows
-
-If you have PostgreSQL installed natively, create the database and user:
-
-```powershell
-# Create user 'christine' with password 'christine1234'
-& "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -c "CREATE USER christine WITH PASSWORD 'christine1234';"
-
-# Create database 'daycare' owned by that user
-& "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -c "CREATE DATABASE daycare OWNER christine;"
-
-# Grant all privileges
-& "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE daycare TO christine;"
-```
-
-Or run the equivalent SQL in **pgAdmin** or the `psql` shell:
-
+#### Option B: Using Native PostgreSQL & Redis
+If you do not use Docker, ensure PostgreSQL is running and create the database:
 ```sql
-CREATE USER christine WITH PASSWORD 'christine1234';
-CREATE DATABASE daycare OWNER christine;
-GRANT ALL PRIVILEGES ON DATABASE daycare TO christine;
+CREATE DATABASE daycare;
 ```
+Ensure your `DATABASE_URL` in `apps/api/.env` points to your native postgres credentials.
 
 ---
 
-### Step 4 — Push Database Schema (Create Tables)
+### Step 3: Push Database Schema & Seed Data
 
-Navigate to the API directory and push the Prisma schema to create all tables:
+Push the Prisma schema to create all database tables and seed test accounts:
 
 ```powershell
-cd "c:\Users\ADMIN\Desktop\Christine project\apps\api"
+cd apps/api
+
+# Sync tables with Prisma schema
 npx prisma db push
+
+# Seed initial admin, sample daycare schools, and parent accounts
+npm run prisma:seed
+
+cd ../..
 ```
 
 Expected output:
 ```
-🚀  Your database is now in sync with your Prisma schema. Done in XXXms
-```
-
-> **Note:** `db push` is used instead of migrations for rapid development. It directly syncs the schema.
-
----
-
-### Step 5 — Seed the Database ⭐
-
-Seeding creates the admin account, two sample daycare schools, and their service listings.
-
-#### ▶ Method 1: Prisma seed command (from `apps/api` folder)
-
-```powershell
-cd "c:\Users\ADMIN\Desktop\Christine project\apps\api"
-npx prisma db seed
-```
-
-#### ▶ Method 2: Via npm script (same folder)
-
-```powershell
-cd "c:\Users\ADMIN\Desktop\Christine project\apps\api"
-npm run prisma:seed
-```
-
-#### ▶ Method 3: Run the TypeScript seed file directly
-
-```powershell
-cd "c:\Users\ADMIN\Desktop\Christine project\apps\api"
-npx ts-node prisma/seed.ts
-```
-
-#### ✅ Expected seed output:
-```
 🌱 Seeding Daycare Platform Database...
 ✅ Admin user created: admin@daycare.com
-✅ Daycare Schools & Service Presets seeded cleanly!
-```
-
-#### ⚠️ If seed fails with "already exists" errors:
-The seed uses `upsert` so it is safe to run multiple times. If you hit errors, reset the database first:
-
-```powershell
-cd "c:\Users\ADMIN\Desktop\Christine project\apps\api"
-
-# Reset (drops all data) and re-push schema
-npx prisma db push --force-reset
-
-# Then seed fresh
-npx prisma db seed
+✅ Daycare Schools, Services, and Parent seeded cleanly!
 ```
 
 ---
 
-### Step 6 — (Optional) Start the AI Service
+### Step 4: Start the Services
 
-The Genkit AI service runs separately. To enable AI profile drafting and executive summary reports:
+Open **4 separate terminal windows** (or use VS Code / Antigravity terminal tabs):
+
+#### 🖥️ Terminal 1 — Backend API (Port 3000)
+```powershell
+cd apps/api
+npm run dev
+```
+*Healthcheck:* [http://localhost:3000/api/health](http://localhost:3000/api/health)
+
+#### 🖥️ Terminal 2 — Frontend Web App (Port 5173)
+```powershell
+cd apps/web
+npm run dev
+```
+*Web Portal:* [http://localhost:5173](http://localhost:5173)
+
+#### 🖥️ Terminal 3 — AI Microservice (Port 3002)
+```powershell
+# You can run this from root:
+npm run ai:start
+
+# Or directly in the folder:
+cd Ai/AI_service
+npm run dev
+```
+*Status:* `KiddoCare AI Service listening on port 3002`
+
+#### 🖥️ Terminal 4 — Ngrok Tunnel for M-Pesa Callbacks
+Safaricom Daraja servers cannot call `localhost`. Ngrok provides the public callback tunnel:
 
 ```powershell
-cd "c:\Users\ADMIN\Desktop\Christine project\Ai\AI_service"
-npx tsx src/server.ts
+ngrok http 3000
 ```
 
-The AI service runs on `http://localhost:3002`. Make sure `AI_SERVICE_URL=http://localhost:3002` is set in your `.env`.
+> ⚡ **Smart Auto-Discovery:** The KiddoCare API automatically connects to your local ngrok client at `http://127.0.0.1:4040/api/tunnels` to fetch your active forwarding URL on every STK push. Even if your ngrok URL changes, you don't need to restart the API!
 
 ---
 
-### Step 7 — Run the Full Platform
+## 🔐 Seeded Accounts & Login Credentials
 
-From the **project root**, start all services together with Turborepo:
+All seeded accounts share the same default password: **`Password123!`**
 
-```powershell
-cd "c:\Users\ADMIN\Desktop\Christine project"
-npm run dev
-```
+| Role | Email | Password | Access & Capabilities |
+|---|---|---|---|
+| 👑 **Platform Admin** | `admin@daycare.com` | `Password123!` | School onboarding, document verification, badge approvals, dispute resolution, audit trail |
+| 🏫 **School 1** (Kilimani) | `kilimani@littleangels.co.ke` | `Password123!` | Little Angels Daycare profile, service pricing, M-Pesa settings, child roster, attendance |
+| 🏫 **School 2** (Westlands) | `info@sunshineearlylearning.co.ke` | `Password123!` | Sunshine Early Learning profile, services, student enrollment |
+| 👨‍👩‍👧 **Parent** | `parent@daycare.com` | `Password123!` | Child management, daycare enrollment, Lipa Mdogo Mdogo payments, dispute filing |
 
-Or run each app separately in different terminal windows:
-
-```powershell
-# Terminal 1 — Backend API
-cd "c:\Users\ADMIN\Desktop\Christine project\apps\api"
-npm run dev
-
-# Terminal 2 — Frontend Web App
-cd "c:\Users\ADMIN\Desktop\Christine project\apps\web"
-npm run dev
-```
-
-**Running services:**
-
-| Service | URL |
-|---|---|
-| 🌐 Frontend (Parent & School Portal) | http://localhost:5173 |
-| ⚙️ Backend REST API | http://localhost:3000 |
-| 🤖 AI Service (optional) | http://localhost:3002 |
-| 🗃️ PostgreSQL | localhost:5432 |
-| 🗄️ Redis | localhost:6379 |
+> 💡 You can also click **Sign In / Register → Register Account** on the web app to register new parent accounts at any time.
 
 ---
 
-## 🗄️ Prisma Useful Commands
+## 🧭 How to Maneuver & Test the Platform
 
-Run these from inside `apps/api`:
+Here is a quick walkthrough to test each core user flow:
+
+### Flow 1: Daycare M-Pesa Setup (School Portal)
+1. Navigate to [http://localhost:5173](http://localhost:5173) and log in with `kilimani@littleangels.co.ke` / `Password123!`.
+2. Go to **Settings** or the **M-Pesa Credentials** section.
+3. If not configured, enter Safaricom Daraja Sandbox credentials:
+   - **Business Shortcode**: `174379` (Sandbox default)
+   - **Passkey**: `bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919`
+   - **Consumer Key** & **Consumer Secret**: *(From your Daraja developer sandbox app)*.
+4. Click **Save Credentials**. The backend encrypts them via AES-256-GCM using `MASTER_ENCRYPTION_KEY`.
+
+---
+
+### Flow 2: Child Enrollment & "Lipa Mdogo Mdogo" Payment (Parent Portal)
+1. Log in with `parent@daycare.com` / `Password123!`.
+2. Go to **My Children** → ensure a child (e.g. *Joy Wanjiku*) is registered.
+3. Go to **Daycare Directory** → select **Little Angels Daycare & Nursery**.
+4. Choose a program (e.g., *Full-Day Care* or *Toddler Care*) and click **Enroll Child**.
+5. Select the child and submit enrollment.
+6. Navigate to **Financial Ledger / Lipa Mdogo Mdogo**:
+   - You will see the weekly billing breakdown (Weeks 1 through 4).
+   - Select an installment card, or select a custom amount.
+   - Enter your Kenyan mobile number (e.g., `07XXXXXXXX` or `01XXXXXXXX`).
+   - Click **Pay with M-Pesa**.
+7. **The STK Push Prompt** will hit your physical phone:
+   - Enter your M-Pesa PIN.
+   - Safaricom delivers the callback through your ngrok tunnel to `/api/payments/mpesa/callback`.
+   - The UI automatically updates to **COMPLETED** without page reloads.
+8. View the payment in the **Payment Transactions & Dispute Center**:
+   - Click **View Receipt** to view and print official receipt with M-Pesa Receipt Number.
+   - Click **Raise Dispute** to report any issue (overcharge, duplicate, service discrepancy).
+
+---
+
+### Flow 3: AI Bio Generation & Executive Reporting (School & Admin)
+1. **School Profile Bio Drafting**:
+   - Log in as a school account.
+   - Open the School Profile editor or onboarding wizard.
+   - Fill in school name, location, and teaching philosophies, then click **Generate Bio with AI**.
+   - The Genkit AI service (`localhost:3002`) streams back a tailored profile description.
+2. **Executive Financial & Health Reports**:
+   - In the School dashboard or Admin panel, click **Generate Executive Report**.
+   - The AI evaluates enrollment metrics, payment compliance, and delivers recommendations.
+
+---
+
+### Flow 4: Dispute Resolution & Verification (Admin Portal)
+1. Log in with `admin@daycare.com` / `Password123!`.
+2. Go to **Disputes**:
+   - Review disputes raised by parents with linked transaction receipts and audit IDs.
+   - Resolve disputes or approve refunds.
+3. Go to **Schools & Verification**:
+   - View uploaded licensing and safety documents.
+   - Toggle the **Verified Badge** (`✓ Verified`) for legitimate schools.
+4. Go to **Audit Logs**:
+   - Review immutable system records of every onboarding, payment, and administrative action.
+
+---
+
+## 🛠️ Useful Prisma Commands
+
+Run these inside `apps/api`:
 
 ```powershell
-cd "c:\Users\ADMIN\Desktop\Christine project\apps\api"
+cd apps/api
 
-# View and explore the database in a browser UI
+# Open Prisma Studio visual database viewer
 npx prisma studio
 
-# Re-sync schema to database (no data loss for compatible changes)
+# Re-push schema if models are changed
 npx prisma db push
 
-# Wipe database completely and re-push schema (DELETES ALL DATA)
+# Wipe database completely and re-seed (use if test data becomes messy)
 npx prisma db push --force-reset
+npm run prisma:seed
 
-# Re-run seed after a reset
-npx prisma db seed
-
-# Regenerate Prisma Client after schema changes
+# Regenerate Prisma Client types
 npx prisma generate
 ```
 
 ---
 
-## 🔐 Seeded Login Credentials
+## ❓ Troubleshooting & FAQs
 
-### 1. Platform Admin
-| Field | Value |
-|---|---|
-| Email | `admin@daycare.com` |
-| Password | `Password123!` |
-| Access | Onboard schools, verify documents, resolve disputes, view audit logs |
+### 1. `ECONNREFUSED 127.0.0.1:5432`
+- **Cause:** PostgreSQL is not running.
+- **Fix:** Start Docker Desktop and run `docker compose up -d`, or start your native PostgreSQL Windows service.
 
-### 2. Sample School Accounts (pre-seeded)
+### 2. `ECONNREFUSED 127.0.0.1:6379`
+- **Cause:** Redis is not running.
+- **Fix:** Start Docker Desktop (`docker compose up -d`) or start native Redis.
 
-| School | Email | Password |
-|---|---|---|
-| Little Angels Daycare, Kilimani | `kilimani@littleangels.co.ke` | `Password123!` |
-| Sunshine Early Learning, Westlands | `info@sunshineearlylearning.co.ke` | `Password123!` |
+### 3. M-Pesa STK Push: "Could not connect to payment gateway"
+- **Cause:** Invalid or missing Safaricom Daraja Consumer Key / Secret in the school settings.
+- **Fix:** Log in as the school, go to settings, and confirm your Daraja sandbox credentials are valid.
 
-> **First login behavior:** Any school account created by the admin via the onboarding form will be forced to change their password on first login, then guided through a multi-step profile creation wizard.
+### 4. STK Push succeeds on phone but payment remains "PENDING"
+- **Cause:** Safaricom cannot reach your local machine because Ngrok is not running or callback URL is blocked.
+- **Fix:** Ensure `ngrok http 3000` is running in a terminal. Open [http://127.0.0.1:4040](http://127.0.0.1:4040) in your browser to inspect incoming webhook requests from Safaricom in real-time.
 
-### 3. Parent Accounts
-Register directly on the web app — click **Sign In / Register → Register Account**. No seed required.
+### 5. AI Service: "Failed to connect to AI service"
+- **Cause:** Genkit AI service is not running on port 3002 or `GOOGLE_API_KEY` is missing.
+- **Fix:** Run `npm run ai:start` from the project root and ensure `GOOGLE_API_KEY` is placed in both `apps/api/.env` and `Ai/AI_service/.env`.
 
----
-
-## ✨ Platform Features
-
-1. **Admin Onboarding** — Admin creates school accounts; credentials are emailed via Resend. School is forced to change password on first login.
-2. **Multi-Step School Profile Wizard** — New schools complete a guided profile setup (logo, cover images via UploadThing, services, AI-assisted bio).
-3. **Public Daycare Marketplace** — Browse schools, view programs, verified badges, average star ratings, and parent reviews.
-4. **Child Intake Form** — Register children with name, date of birth, and medical/dietary notes.
-5. **Lipa Mdogo Mdogo Weekly Billing** — Monthly daycare fees automatically split into weekly installments. Final week absorbs any remainder.
-6. **M-Pesa STK Push Payments** — Pay weekly installments via Safaricom M-Pesa. Generates printable official receipts.
-7. **Google Genkit AI Integration** — Auto-draft daycare profiles and generate executive summary reports with financial health ratings and recommendations.
-8. **Document Verification & Badges** — Schools upload licensing documents; admin verifies to grant a `✓ Verified` badge.
-9. **Dispute Resolution** — Parents flag payment disputes; admins resolve or approve refunds.
-10. **School Management** — Admin can deactivate or permanently delete schools from the directory.
-11. **Audit Trail** — Every major action (onboard, update, delete, resolve dispute) is logged in an audit trail.
-
----
-
-## 🔧 Common Troubleshooting
-
-| Problem | Fix |
-|---|---|
-| `ECONNREFUSED 5432` | PostgreSQL is not running. Start Docker (`docker compose up -d`) or start native PostgreSQL service. |
-| `ECONNREFUSED 6379` | Redis is not running. Start it with Docker or native Redis service. |
-| Seed fails with unique constraint error | Run `npx prisma db push --force-reset` then `npx prisma db seed` |
-| Login returns 401 | Check that seed ran successfully. Admin email is `admin@daycare.com` (not `admin@daycare.co.ke`) |
-| Email not sent on onboarding | Check `RESEND_API_KEY` in `apps/api/.env`. Check spam folder. Resend test mode only delivers to your registered Resend account email unless you verify a custom domain. |
-| AI features not working | Make sure `GOOGLE_API_KEY` is set and the AI service is running on port 3002 |
-| UploadThing upload fails | Check `UPLOADTHING_TOKEN` in `apps/api/.env` |
-#   K i d o o C a r e - K e n y a  
- 
+### 6. Resetting everything to a clean slate
+```powershell
+cd apps/api
+npx prisma db push --force-reset
+npm run prisma:seed
+```
+This wipes all test transactions, creates all tables fresh, and re-seeds default admin, schools, and parents.
