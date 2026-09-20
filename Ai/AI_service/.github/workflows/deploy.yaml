@@ -1,0 +1,110 @@
+name: Deploy Genkit Service to Ubuntu
+on:
+  push:
+    branches:
+      - master
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: 🏗️ Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      
+      # Install dependencies
+      - name: 📦 Install dependencies
+        run: npm ci
+      
+      # Build TypeScript
+      - name: 🏗️ Build TypeScript
+        run: npm run build
+      
+      # Verify that compiled files exist
+      - name: ✅ Verify build output
+        run: |
+          if [ ! -d dist ]; then
+            echo "❌ dist directory not found. Build failed or wrong output path."
+            ls -R || true
+            exit 1
+          else
+            echo "✅ dist directory found. Proceeding with deploy..."
+            ls -la dist/
+          fi
+      
+      # Deploy dist folder to server
+      - name: 🔄 Upload dist to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "dist"
+          target: "${{ secrets.GENKIT_PROJECT_PATH }}/"
+          strip_components: 0
+      
+      # Deploy package files
+      - name: 🔄 Upload package files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "package*.json"
+          target: "${{ secrets.GENKIT_PROJECT_PATH }}/"
+          strip_components: 0
+      
+      # Create .env file on the server
+      - name: 🔑 Create .env file
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cat > ${{ secrets.GENKIT_PROJECT_PATH }}/.env <<EOF
+            PORT=${{ secrets.GENKIT_PORT }}
+            NODE_ENV=${{ secrets.NODE_ENV }}
+            GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+            EOF
+            chmod 600 ${{ secrets.GENKIT_PROJECT_PATH }}/.env
+      
+      # Install dependencies & start service with PM2
+      - name: 🚀 Start Genkit Service with PM2
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd ${{ secrets.GENKIT_PROJECT_PATH }}
+            
+            # Verify dist folder exists
+            if [ ! -d "dist" ]; then
+              echo "❌ dist folder not found"
+              ls -la
+              exit 1
+            fi
+            
+            # Install production dependencies
+            npm ci --omit=dev
+            
+            # Stop existing PM2 process
+            pm2 delete lindatoto_genkit || true
+            
+            # Verify main entry point exists
+            if [ ! -f dist/server.js ]; then
+              echo "❌ dist/server.js not found on server."
+              ls -R dist || true
+              exit 1
+            fi
+            
+            # Start the service with PM2
+            pm2 start dist/server.js --name "lindatoto_genkit" --node-args="--max-old-space-size=512"
+            pm2 save
+            pm2 status

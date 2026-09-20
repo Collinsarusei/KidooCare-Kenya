@@ -113,6 +113,7 @@ build/
 # AI / Editor specific
 .cursor/
 .gemini/
+.genkit/
 
 # Stitch screens (if they shouldn't be tracked)
 # stitch_screens/
