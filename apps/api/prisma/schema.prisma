@@ -74,6 +74,13 @@ enum DailyLogMood {
   CRANKY
 }
 
+enum ChildHealthStatus {
+  WELL
+  UNWELL
+  EMERGENCY
+  HOSPITALIZED
+}
+
 model User {
   id                 String   @id @default(uuid())
   email              String   @unique
@@ -299,5 +306,14 @@ model DailyLog {
   milestones       String[]     @default([])
   allergiesSpotted String?
   assignments      String?
+  assessmentType   String?
+  assessmentResult String?
+  behavior         String?
+  healthStatus     ChildHealthStatus @default(WELL)
+  healthNotes      String?
+  requiresPickup   Boolean            @default(false)
+  hospitalName     String?
+  hospitalNotes    String?
+  parentSmsSentAt  DateTime?
   createdAt        DateTime     @default(now())
 }

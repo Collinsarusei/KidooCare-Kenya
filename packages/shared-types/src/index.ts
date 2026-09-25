@@ -65,6 +65,13 @@ export enum DailyLogMood {
   CRANKY = 'CRANKY',
 }
 
+export enum ChildHealthStatus {
+  WELL = 'WELL',
+  UNWELL = 'UNWELL',
+  EMERGENCY = 'EMERGENCY',
+  HOSPITALIZED = 'HOSPITALIZED',
+}
+
 export interface UserDto {
   id: string;
   email: string;
@@ -72,6 +79,28 @@ export interface UserDto {
   role: UserRole;
   mustChangePassword?: boolean;
   employedAtSchoolId?: string | null;
+  createdAt: string | Date;
+}
+
+export interface DailyLogDto {
+  id: string;
+  childId: string;
+  tutorId: string;
+  isPresent: boolean;
+  mood: DailyLogMood;
+  achievements: string[];
+  milestones: string[];
+  allergiesSpotted: string | null;
+  assignments: string | null;
+  assessmentType: string | null;
+  assessmentResult: string | null;
+  behavior: string | null;
+  healthStatus: ChildHealthStatus;
+  healthNotes: string | null;
+  requiresPickup: boolean;
+  hospitalName: string | null;
+  hospitalNotes: string | null;
+  parentSmsSentAt: string | Date | null;
   createdAt: string | Date;
 }
 

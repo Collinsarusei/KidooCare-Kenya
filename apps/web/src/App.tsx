@@ -54,6 +54,32 @@ import { AdminDisputesTab } from './components/admin/AdminDisputesTab';
 import { AuditLogsTab } from './components/admin/AuditLogsTab';
 import { AdminAnalyticsTab } from './components/admin/AdminAnalyticsTab';
 
+const parseResponseJson = async <T = any>(res: Response): Promise<T | null> => {
+  const body = await res.text();
+  if (!body.trim()) return null;
+
+  try {
+    return JSON.parse(body) as T;
+  } catch {
+    return null;
+  }
+};
+
+const fetchWithSafeJson = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+  const res = await globalThis.fetch(input, init);
+  const originalJson = res.json.bind(res);
+  res.json = async () => {
+    try {
+      return await originalJson();
+    } catch {
+      return null;
+    }
+  };
+  return res;
+};
+
+const fetch = fetchWithSafeJson;
+
 export default function App() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
@@ -170,7 +196,7 @@ export default function App() {
     try {
       const url = query ? `/api/public/schools?search=${encodeURIComponent(query)}` : '/api/public/schools';
       const res = await fetch(url);
-      const data = await res.json();
+      const data = await parseResponseJson(res);
       if (res.ok) setPublicSchools(data);
     } catch (e) {
       // ignore

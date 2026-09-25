@@ -4,7 +4,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { UserRole, DailyLogMood } from '@prisma/client';
+import { UserRole, DailyLogMood, ChildHealthStatus } from '@prisma/client';
 
 @Controller('daily-logs')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -15,7 +15,22 @@ export class DailyLogsController {
   @Post('child/:childId')
   async createDailyLog(
     @Param('childId') childId: string,
-    @Body() dto: { isPresent: boolean; mood: DailyLogMood; achievements: string[]; milestones: string[]; allergiesSpotted?: string; assignments?: string },
+    @Body() dto: {
+      isPresent: boolean;
+      mood: DailyLogMood;
+      achievements?: string[];
+      milestones?: string[];
+      allergiesSpotted?: string;
+      assignments?: string;
+      assessmentType?: string;
+      assessmentResult?: string;
+      behavior?: string;
+      healthStatus?: ChildHealthStatus;
+      healthNotes?: string;
+      requiresPickup?: boolean;
+      hospitalName?: string;
+      hospitalNotes?: string;
+    },
     @CurrentUser() user: any
   ) {
     return this.dailyLogsService.createDailyLog(user.id, childId, dto);

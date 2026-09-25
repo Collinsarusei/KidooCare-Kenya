@@ -117,6 +117,27 @@ export const ParentDailyLogsView: React.FC<ParentDailyLogsViewProps> = ({
                     <p className="text-xs text-[#434655]">{log.assignments}</p>
                   </div>
                 )}
+                {log.assessmentType && (
+                  <div>
+                    <h4 className="font-bold text-[#121c2a] flex items-center gap-1"><span className="material-symbols-outlined text-sm">quiz</span> Assessment</h4>
+                    <p className="text-xs text-[#434655]">{log.assessmentType}: {log.assessmentResult || 'Feedback pending'}</p>
+                  </div>
+                )}
+                {log.behavior && (
+                  <div>
+                    <h4 className="font-bold text-[#121c2a] flex items-center gap-1"><span className="material-symbols-outlined text-sm">groups</span> Behaviour</h4>
+                    <p className="text-xs text-[#434655]">{log.behavior}</p>
+                  </div>
+                )}
+                {log.healthStatus !== 'WELL' && (
+                  <div className="md:col-span-2 border border-orange-200 bg-orange-50 rounded-xl p-3">
+                    <h4 className="font-bold text-orange-900 flex items-center gap-1"><span className="material-symbols-outlined text-sm">health_and_safety</span> Health: {log.healthStatus}</h4>
+                    {log.healthNotes && <p className="text-xs text-orange-900 mt-1">{log.healthNotes}</p>}
+                    {log.requiresPickup && <p className="text-xs font-bold text-orange-900 mt-1">Please arrange to pick up your child.</p>}
+                    {log.hospitalName && <p className="text-xs text-orange-900 mt-1">Hospital: {log.hospitalName}{log.hospitalNotes ? ` - ${log.hospitalNotes}` : ''}</p>}
+                    {log.parentSmsSentAt && <p className="text-[11px] text-green-700 mt-2">SMS alert sent to your phone.</p>}
+                  </div>
+                )}
               </div>
               
 
