@@ -1012,7 +1012,11 @@ export default function App() {
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.message || 'Failed to add tutor');
 
-      setSuccessMsg(data.sendInvite ? `Tutor invitation sent to '${resData.email}'.` : `Tutor '${resData.email}' added without an invitation.`);
+      if (data.sendInvite && !resData.invitationSent) {
+        setError(`${resData.message || 'Email invitation could not be sent.'} Open this link manually: ${resData.invitationUrl || 'No invitation link was generated.'}`);
+      } else {
+        setSuccessMsg(data.sendInvite ? `Tutor invitation sent to '${resData.email}'.` : `Tutor '${resData.email}' added without an invitation.`);
+      }
       fetchSchoolTutors(mySchool.id);
     } catch (err: any) {
       setError(err.message);
@@ -1058,7 +1062,11 @@ export default function App() {
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.message || 'Failed to resend invite');
 
-      setSuccessMsg(`Invite resent successfully to the tutor!`);
+      if (resData.invitationSent) {
+        setSuccessMsg(`Invitation resent successfully to the tutor.`);
+      } else {
+        setError(`${resData.message || 'Email invitation could not be sent.'} Open this link manually: ${resData.invitationUrl || 'No invitation link was generated.'}`);
+      }
     } catch (err: any) {
       setError(err.message);
     }

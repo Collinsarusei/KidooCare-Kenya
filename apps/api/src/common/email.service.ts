@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 export interface EmailSendResult {
   sent: boolean;
   message: string;
+  invitationUrl?: string;
 }
 
 @Injectable()
@@ -197,7 +198,7 @@ export class EmailService {
 
     if (isPlaceholder) {
       this.logger.warn(`[INVITE NOT SENT] RESEND_API_KEY is not configured. Invitation URL for ${recipientEmail}: ${invitationUrl}`);
-      return { sent: false, message: 'RESEND_API_KEY is not configured. Configure it before sending tutor invitations.' };
+      return { sent: false, message: 'RESEND_API_KEY is not configured. Configure it before sending tutor invitations.', invitationUrl };
     }
 
     try {
@@ -217,13 +218,13 @@ export class EmailService {
 
       if (!response.ok) {
         this.logger.error(`Tutor invitation email failed (HTTP ${response.status})`);
-        return { sent: false, message: `Email provider rejected the invitation (HTTP ${response.status}).` };
+        return { sent: false, message: `Email provider rejected the invitation (HTTP ${response.status}).`, invitationUrl };
       }
 
-      return { sent: true, message: `Tutor invitation sent to ${recipientEmail}.` };
+      return { sent: true, message: `Tutor invitation sent to ${recipientEmail}.`, invitationUrl };
     } catch (error: any) {
       this.logger.error(`Tutor invitation email failed: ${error.message}`);
-      return { sent: false, message: `Invitation email failed: ${error.message}` };
+      return { sent: false, message: `Invitation email failed: ${error.message}`, invitationUrl };
     }
   }
 }

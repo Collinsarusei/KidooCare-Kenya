@@ -408,13 +408,15 @@ export class SchoolsService {
     });
 
     let invitationSent = false;
+    let invitationUrl: string | undefined;
     if (dto.sendInvite !== false) {
       const invitation = await this.createTutorInvitation(schoolId, tutor.id);
       invitationSent = invitation.sent;
+      invitationUrl = invitation.invitationUrl;
     }
 
     const { passwordHash: _, refreshTokenHash: __, ...safeTutor } = tutor;
-    return { ...safeTutor, invitationSent };
+    return { ...safeTutor, invitationSent, invitationUrl };
   }
 
   private async createTutorInvitation(schoolId: string, tutorId: string) {
@@ -480,7 +482,7 @@ export class SchoolsService {
     const school = await this.prisma.school.findUnique({ where: { id: schoolId } });
     if (!school) throw new NotFoundException('School not found');
     const invitation = await this.createTutorInvitation(schoolId, tutorId);
-    return { message: invitation.message, invitationSent: invitation.sent };
+    return { message: invitation.message, invitationSent: invitation.sent, invitationUrl: invitation.invitationUrl };
   }
 
   async getTutorsBySchoolId(schoolId: string) {
