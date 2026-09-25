@@ -15,7 +15,7 @@ export class TutorsController {
   @Post()
   async addTutor(
     @Param('id') schoolId: string,
-    @Body() dto: { name: string; email: string; phone: string },
+    @Body() dto: { name: string; email: string; phone: string; sendInvite?: boolean },
     @CurrentUser() user: any,
   ) {
     // Verify ownership

@@ -6,6 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserRole, SchoolStatus } from '@prisma/client';
+import { createHash } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -124,6 +125,36 @@ export class AuthService {
 
     const { passwordHash: _, refreshTokenHash: __, ...sanitizedUser } = updatedUser;
     return sanitizedUser;
+  }
+
+  async acceptTutorInvitation(token: string, password: string) {
+    if (!token || !password || password.length < 6) {
+      throw new BadRequestException('A valid invitation and password of at least 6 characters are required');
+    }
+
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+    const invitation = await this.prisma.tutorInvitation.findUnique({
+      where: { tokenHash },
+      include: { user: true },
+    });
+    if (!invitation || invitation.acceptedAt || invitation.expiresAt < new Date()) {
+      throw new BadRequestException('This tutor invitation is invalid or expired');
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = await this.prisma.user.update({
+      where: { id: invitation.userId },
+      data: { passwordHash, mustChangePassword: false },
+    });
+    await this.prisma.tutorInvitation.update({
+      where: { id: invitation.id },
+      data: { acceptedAt: new Date() },
+    });
+
+    const tokens = await this.getTokens(user.id, user.email, user.role, user.phone);
+    await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
+    const { passwordHash: _, refreshTokenHash: __, ...sanitizedUser } = user;
+    return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken, user: sanitizedUser };
   }
 
   async logout(userId: string) {

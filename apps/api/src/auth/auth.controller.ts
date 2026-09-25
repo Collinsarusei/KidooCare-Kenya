@@ -30,6 +30,12 @@ export class AuthController {
     return this.authService.refreshTokens(dto.refreshToken);
   }
 
+  @Public()
+  @Post('tutor-invitations/accept')
+  async acceptTutorInvitation(@Body() dto: { token: string; password: string }) {
+    return this.authService.acceptTutorInvitation(dto.token, dto.password);
+  }
+
   @Post('logout')
   async logout(@CurrentUser('id') userId: string) {
     return this.authService.logout(userId);

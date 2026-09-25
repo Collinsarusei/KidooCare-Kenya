@@ -23,6 +23,7 @@ import { ReceiptModal, ReceiptData } from './components/common/ReceiptModal';
 import { StkPushModal, StkInstallment } from './components/common/StkPushModal';
 import { EnrollmentModal, EnrollingService } from './components/common/EnrollmentModal';
 import { AuthBox } from './components/auth/AuthBox';
+import { TutorInvitationAccept } from './components/auth/TutorInvitationAccept';
 import { LandingView } from './components/landing/LandingView';
 import { Sidebar } from './components/common/Sidebar';
 import { ConfirmationModal } from './components/common/ConfirmationModal';
@@ -82,6 +83,7 @@ const fetch = fetchWithSafeJson;
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [tutorInviteToken] = useState(() => new URLSearchParams(window.location.search).get('tutorInvite'));
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem('refreshToken'));
   const setError = (msg: string | null) => { if (msg) toast.error(msg); };
@@ -992,7 +994,7 @@ export default function App() {
     }
   };
 
-  const handleAddTutor = async (data: { name: string; email: string; phone: string }) => {
+  const handleAddTutor = async (data: { name: string; email: string; phone: string; sendInvite: boolean }) => {
     if (!mySchool) return;
     setError(null);
     setSuccessMsg(null);
@@ -1010,7 +1012,7 @@ export default function App() {
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.message || 'Failed to add tutor');
 
-      setSuccessMsg(`Tutor '${resData.email}' added successfully!`);
+      setSuccessMsg(data.sendInvite ? `Tutor invitation sent to '${resData.email}'.` : `Tutor '${resData.email}' added without an invitation.`);
       fetchSchoolTutors(mySchool.id);
     } catch (err: any) {
       setError(err.message);
@@ -1470,7 +1472,19 @@ export default function App() {
       {/* Notifications handled by react-hot-toast */}
 
       {/* PUBLIC / LANDING VIEW FOR UNAUTHENTICATED USERS */}
-      {!currentUser && (
+      {!currentUser && tutorInviteToken ? (
+        <TutorInvitationAccept
+          token={tutorInviteToken}
+          onAccepted={(data) => {
+            localStorage.setItem('token', data.accessToken);
+            localStorage.setItem('refreshToken', data.refreshToken);
+            setToken(data.accessToken);
+            setRefreshToken(data.refreshToken);
+            setCurrentUser(data.user);
+            window.history.replaceState({}, '', window.location.pathname);
+          }}
+        />
+      ) : !currentUser && (
         <>
           {activeView === 'landing' && (
             <LandingView

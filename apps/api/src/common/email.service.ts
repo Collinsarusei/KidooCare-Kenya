@@ -187,4 +187,43 @@ export class EmailService {
       return { sent: false, message: `Email delivery error: ${err.message}` };
     }
   }
+
+  async sendTutorInvitation(schoolName: string, recipientEmail: string, token: string): Promise<EmailSendResult> {
+    const apiKey = this.configService.get<string>('RESEND_API_KEY') || process.env.RESEND_API_KEY;
+    const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL') || 'onboarding@resend.dev';
+    const appUrl = this.configService.get<string>('APP_URL') || 'http://localhost:5173';
+    const isPlaceholder = !apiKey || apiKey.trim() === '' || apiKey === 'YOUR_RESEND_API_KEY_HERE';
+    const invitationUrl = `${appUrl}/?tutorInvite=${encodeURIComponent(token)}`;
+
+    if (isPlaceholder) {
+      this.logger.warn(`[INVITE NOT SENT] RESEND_API_KEY is not configured. Invitation URL for ${recipientEmail}: ${invitationUrl}`);
+      return { sent: false, message: 'RESEND_API_KEY is not configured. Configure it before sending tutor invitations.' };
+    }
+
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          from: fromEmail,
+          to: [recipientEmail],
+          subject: `You are invited to join ${schoolName} on KiddoCare`,
+          html: `<p>You have been invited to join <strong>${schoolName}</strong> as a tutor.</p><p><a href="${invitationUrl}">Accept your tutor invitation</a></p><p>This invitation expires in 48 hours.</p>`,
+        }),
+      });
+
+      if (!response.ok) {
+        this.logger.error(`Tutor invitation email failed (HTTP ${response.status})`);
+        return { sent: false, message: `Email provider rejected the invitation (HTTP ${response.status}).` };
+      }
+
+      return { sent: true, message: `Tutor invitation sent to ${recipientEmail}.` };
+    } catch (error: any) {
+      this.logger.error(`Tutor invitation email failed: ${error.message}`);
+      return { sent: false, message: `Invitation email failed: ${error.message}` };
+    }
+  }
 }

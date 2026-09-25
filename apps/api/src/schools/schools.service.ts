@@ -1,5 +1,6 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { createHash, randomBytes } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CredentialsService } from './credentials/credentials.service';
 import { EmailService } from '../common/email.service';
@@ -379,7 +380,7 @@ export class SchoolsService {
     return this.getSchoolById(updated.id);
   }
 
-  async addTutor(schoolId: string, dto: { name: string; email: string; phone: string }) {
+  async addTutor(schoolId: string, dto: { name: string; email: string; phone: string; sendInvite?: boolean }) {
     const existing = await this.prisma.user.findUnique({
       where: { email: dto.email.toLowerCase().trim() },
     });
@@ -398,6 +399,7 @@ export class SchoolsService {
       data: {
         email: dto.email.toLowerCase().trim(),
         phone: dto.phone,
+        name: dto.name,
         role: UserRole.TUTOR,
         passwordHash,
         mustChangePassword: true,
@@ -405,13 +407,32 @@ export class SchoolsService {
       },
     });
 
-    await this.emailService.sendTutorCredentialsEmail(
-      school.name,
-      tutor.email,
-      tempPassword,
-    );
+    let invitationSent = false;
+    if (dto.sendInvite !== false) {
+      const invitation = await this.createTutorInvitation(schoolId, tutor.id);
+      invitationSent = invitation.sent;
+    }
 
-    return tutor;
+    const { passwordHash: _, refreshTokenHash: __, ...safeTutor } = tutor;
+    return { ...safeTutor, invitationSent };
+  }
+
+  private async createTutorInvitation(schoolId: string, tutorId: string) {
+    const [school, tutor] = await Promise.all([
+      this.prisma.school.findUnique({ where: { id: schoolId } }),
+      this.prisma.user.findUnique({ where: { id: tutorId } }),
+    ]);
+    if (!school || !tutor) throw new NotFoundException('Tutor or school not found');
+
+    const token = randomBytes(32).toString('hex');
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+    await this.prisma.tutorInvitation.upsert({
+      where: { userId: tutorId },
+      create: { userId: tutorId, schoolId, tokenHash, expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000) },
+      update: { tokenHash, expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000), acceptedAt: null },
+    });
+
+    return this.emailService.sendTutorInvitation(school.name, tutor.email, token);
   }
 
   async updateTutor(schoolId: string, tutorId: string, dto: { email?: string; phone?: string }) {
@@ -457,26 +478,9 @@ export class SchoolsService {
     }
 
     const school = await this.prisma.school.findUnique({ where: { id: schoolId } });
-    
-    const tempPassword = Math.random().toString(36).slice(-8) + 'T!';
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(tempPassword, saltRounds);
-
-    await this.prisma.user.update({
-      where: { id: tutorId },
-      data: {
-        passwordHash,
-        mustChangePassword: true,
-      }
-    });
-
-    await this.emailService.sendTutorCredentialsEmail(
-      school!.name,
-      tutor.email,
-      tempPassword,
-    );
-
-    return { message: 'Invite resent successfully' };
+    if (!school) throw new NotFoundException('School not found');
+    const invitation = await this.createTutorInvitation(schoolId, tutorId);
+    return { message: invitation.message, invitationSent: invitation.sent };
   }
 
   async getTutorsBySchoolId(schoolId: string) {
@@ -487,6 +491,7 @@ export class SchoolsService {
       },
       select: {
         id: true,
+        name: true,
         email: true,
         phone: true,
         createdAt: true,

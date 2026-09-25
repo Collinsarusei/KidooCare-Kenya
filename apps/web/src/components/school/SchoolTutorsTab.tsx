@@ -3,7 +3,7 @@ import { UserDto } from '@daycare/shared-types';
 
 interface SchoolTutorsTabProps {
   tutors: UserDto[];
-  onAddTutor: (data: { name: string; email: string; phone: string }) => void;
+  onAddTutor: (data: { name: string; email: string; phone: string; sendInvite: boolean }) => void;
   onUpdateTutor: (tutorId: string, data: { name: string; email: string; phone: string }) => void;
   onRemoveTutor: (tutorId: string) => void;
   onResendInvite: (tutorId: string) => void;
@@ -21,19 +21,21 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [sendInvite, setSendInvite] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingTutorId) {
       onUpdateTutor(editingTutorId, { name, email, phone });
     } else {
-      onAddTutor({ name, email, phone });
+      onAddTutor({ name, email, phone, sendInvite });
     }
     setIsAdding(false);
     setEditingTutorId(null);
     setName('');
     setEmail('');
     setPhone('');
+    setSendInvite(true);
   };
 
   const openAddForm = () => {
@@ -42,6 +44,7 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
     setName('');
     setEmail('');
     setPhone('');
+    setSendInvite(true);
   };
 
   const openEditForm = (tutor: UserDto) => {
@@ -107,12 +110,18 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
               placeholder="Phone Number"
             />
           </div>
+          {!editingTutorId && (
+            <label className="flex items-center gap-2 text-sm font-semibold text-[#121c2a]">
+              <input type="checkbox" checked={sendInvite} onChange={(e) => setSendInvite(e.target.checked)} className="w-4 h-4" />
+              Send email invitation now
+            </label>
+          )}
           <div className="flex justify-end gap-2">
             <button type="button" className="btn btn-secondary text-xs px-4 py-2 rounded-xl" onClick={() => { setIsAdding(false); setEditingTutorId(null); }}>
               Cancel
             </button>
             <button type="submit" className="btn btn-primary text-xs px-5 py-2 rounded-xl">
-              {editingTutorId ? 'Save Changes' : 'Send Invite'}
+              {editingTutorId ? 'Save Changes' : sendInvite ? 'Add and Send Invite' : 'Add Without Invite'}
             </button>
           </div>
         </form>
