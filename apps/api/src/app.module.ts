@@ -20,6 +20,7 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { SchoolDocumentsModule } from './school-documents/school-documents.module';
 import { DisputesModule } from './disputes/disputes.module';
 import { UploadthingModule } from './uploadthing/uploadthing.module';
+import { DailyLogsModule } from './daily-logs/daily-logs.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 
@@ -63,6 +64,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
     SchoolDocumentsModule,
     DisputesModule,
     UploadthingModule,
+    DailyLogsModule,
   ],
   providers: [
     {

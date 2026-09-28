@@ -380,7 +380,7 @@ export class SchoolsService {
     return this.getSchoolById(updated.id);
   }
 
-  async addTutor(schoolId: string, dto: { name: string; email: string; phone: string; sendInvite?: boolean }) {
+  async addTutor(schoolId: string, dto: { name: string; email: string; phone: string; password: string }) {
     const existing = await this.prisma.user.findUnique({
       where: { email: dto.email.toLowerCase().trim() },
     });
@@ -391,9 +391,11 @@ export class SchoolsService {
     const school = await this.prisma.school.findUnique({ where: { id: schoolId } });
     if (!school) throw new NotFoundException('School not found');
 
-    const tempPassword = Math.random().toString(36).slice(-8) + 'T!';
+    if (!dto.password || dto.password.length < 6) {
+      throw new ConflictException('Tutor password must be at least 6 characters long');
+    }
     const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(tempPassword, saltRounds);
+    const passwordHash = await bcrypt.hash(dto.password, saltRounds);
 
     const tutor = await this.prisma.user.create({
       data: {
@@ -407,16 +409,8 @@ export class SchoolsService {
       },
     });
 
-    let invitationSent = false;
-    let invitationUrl: string | undefined;
-    if (dto.sendInvite !== false) {
-      const invitation = await this.createTutorInvitation(schoolId, tutor.id);
-      invitationSent = invitation.sent;
-      invitationUrl = invitation.invitationUrl;
-    }
-
     const { passwordHash: _, refreshTokenHash: __, ...safeTutor } = tutor;
-    return { ...safeTutor, invitationSent, invitationUrl };
+    return safeTutor;
   }
 
   private async createTutorInvitation(schoolId: string, tutorId: string) {
@@ -499,5 +493,15 @@ export class SchoolsService {
         createdAt: true,
       }
     });
+  }
+
+  async deleteTutor(schoolId: string, tutorId: string) {
+    const tutor = await this.prisma.user.findUnique({ where: { id: tutorId } });
+    if (!tutor || tutor.role !== UserRole.TUTOR || tutor.employedAtSchoolId !== schoolId) {
+      throw new NotFoundException('Tutor not found');
+    }
+
+    await this.prisma.user.delete({ where: { id: tutorId } });
+    return { message: 'Tutor removed successfully' };
   }
 }

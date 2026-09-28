@@ -192,13 +192,13 @@ export class EmailService {
   async sendTutorInvitation(schoolName: string, recipientEmail: string, token: string): Promise<EmailSendResult> {
     const apiKey = this.configService.get<string>('RESEND_API_KEY') || process.env.RESEND_API_KEY;
     const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL') || 'onboarding@resend.dev';
-    const appUrl = this.configService.get<string>('APP_URL') || 'http://localhost:5173';
-    const isPlaceholder = !apiKey || apiKey.trim() === '' || apiKey === 'YOUR_RESEND_API_KEY_HERE';
+    const appUrl = this.configService.get<string>('WEB_APP_URL') || 'http://localhost:5173';
+    const isPlaceholder = !apiKey || apiKey.trim() === '' || apiKey === 'YOUR_RESEND_API_KEY_HERE' || /^re_x+$/.test(apiKey.trim());
     const invitationUrl = `${appUrl}/?tutorInvite=${encodeURIComponent(token)}`;
 
     if (isPlaceholder) {
       this.logger.warn(`[INVITE NOT SENT] RESEND_API_KEY is not configured. Invitation URL for ${recipientEmail}: ${invitationUrl}`);
-      return { sent: false, message: 'RESEND_API_KEY is not configured. Configure it before sending tutor invitations.', invitationUrl };
+      return { sent: false, message: 'Invitation link created for local use.', invitationUrl };
     }
 
     try {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import {
   UserRole,
@@ -16,6 +16,7 @@ import {
   SchoolDocumentDto,
   DisputeDto,
   DisputeStatus,
+  DailyLogDto,
 } from '@daycare/shared-types';
 
 import { Header } from './components/common/Header';
@@ -98,11 +99,15 @@ export default function App() {
   const [submittingReview, setSubmittingReview] = useState(false);
 
   // Parent Dashboard State
-  const [parentTab, setParentTab] = useState<'marketplace' | 'children' | 'enrollments' | 'ledger' | 'disputes'>('marketplace');
+  const [parentTab, setParentTab] = useState<'marketplace' | 'children' | 'enrollments' | 'dailyLogs' | 'ledger' | 'disputes'>('marketplace');
   const [myChildren, setMyChildren] = useState<ChildDto[]>([]);
   const [myEnrollments, setMyEnrollments] = useState<EnrollmentDto[]>([]);
   const [parentLedger, setParentLedger] = useState<ParentLedgerSummaryDto | null>(null);
   const [parentDisputes, setParentDisputes] = useState<DisputeDto[]>([]);
+  const [parentDailyLogs, setParentDailyLogs] = useState<DailyLogDto[]>([]);
+  const [loadingDailyLogs, setLoadingDailyLogs] = useState(false);
+  const dailyLogsRequestId = useRef(0);
+  const [selectedDailyLogChildId, setSelectedDailyLogChildId] = useState('');
 
   // Modals State
   const [enrollingService, setEnrollingService] = useState<EnrollingService | null>(null);
@@ -247,10 +252,44 @@ export default function App() {
       const data = await res.json();
       if (res.ok) {
         setMyChildren(data);
-        if (data.length > 0 && !selectedChildId) setSelectedChildId(data[0].id);
+        if (data.length > 0) {
+          if (!selectedChildId) setSelectedChildId(data[0].id);
+          if (!selectedDailyLogChildId) setSelectedDailyLogChildId(data[0].id);
+        }
       }
     } catch (e) {
       // ignore
+    }
+  };
+
+  const fetchDailyLogs = async (childId: string) => {
+    const requestId = ++dailyLogsRequestId.current;
+    setParentDailyLogs([]);
+    if (!childId) {
+      setLoadingDailyLogs(false);
+      return;
+    }
+
+    const savedToken = localStorage.getItem('token');
+    if (!savedToken) {
+      setLoadingDailyLogs(false);
+      return;
+    }
+
+    setLoadingDailyLogs(true);
+    try {
+      const res = await fetch(`/api/daily-logs/child/${childId}`, {
+        headers: { Authorization: `Bearer ${savedToken}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Failed to load daily activity');
+      if (requestId === dailyLogsRequestId.current) {
+        setParentDailyLogs(Array.isArray(data) ? data.filter((log: DailyLogDto) => log.childId === childId) : []);
+      }
+    } catch (err: any) {
+      if (requestId === dailyLogsRequestId.current) setError(err.message);
+    } finally {
+      if (requestId === dailyLogsRequestId.current) setLoadingDailyLogs(false);
     }
   };
 
@@ -514,7 +553,7 @@ export default function App() {
   const handleWalkinEnrollment = async (data: { childName: string; childDob: string; parentName?: string; parentEmail?: string; parentPhone?: string; serviceId: string }) => {
     if (!mySchool) return;
     try {
-      const res = await fetch(`/api/schools/${mySchool.id}/walkin`, {
+      const res = await fetch(`/api/schools/${mySchool.id}/walk-in`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -994,7 +1033,7 @@ export default function App() {
     }
   };
 
-  const handleAddTutor = async (data: { name: string; email: string; phone: string; sendInvite: boolean }) => {
+  const handleAddTutor = async (data: { name: string; email: string; phone: string; password: string }) => {
     if (!mySchool) return;
     setError(null);
     setSuccessMsg(null);
@@ -1012,11 +1051,7 @@ export default function App() {
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.message || 'Failed to add tutor');
 
-      if (data.sendInvite && !resData.invitationSent) {
-        setError(`${resData.message || 'Email invitation could not be sent.'} Open this link manually: ${resData.invitationUrl || 'No invitation link was generated.'}`);
-      } else {
-        setSuccessMsg(data.sendInvite ? `Tutor invitation sent to '${resData.email}'.` : `Tutor '${resData.email}' added without an invitation.`);
-      }
+      setSuccessMsg(`Tutor '${resData.email}' added successfully. Give the tutor the temporary password and ask them to change it after login.`);
       fetchSchoolTutors(mySchool.id);
     } catch (err: any) {
       setError(err.message);
@@ -1065,7 +1100,7 @@ export default function App() {
       if (resData.invitationSent) {
         setSuccessMsg(`Invitation resent successfully to the tutor.`);
       } else {
-        setError(`${resData.message || 'Email invitation could not be sent.'} Open this link manually: ${resData.invitationUrl || 'No invitation link was generated.'}`);
+        setSuccessMsg(`${resData.message || 'Invitation link created.'} Open this link: ${resData.invitationUrl || 'No invitation link was generated.'}`);
       }
     } catch (err: any) {
       setError(err.message);
@@ -1358,6 +1393,13 @@ export default function App() {
     isRegistering: false,
   });
 
+  const handleNavigateAbout = () => {
+    setActiveView('landing');
+    window.requestAnimationFrame(() => {
+      document.getElementById('about-kiddocare')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
   const handleOpenAuth = (role: UserRole = UserRole.PARENT, isRegistering: boolean = false) => {
     setSelectedSchool(null);
     setAuthPreset({ role, isRegistering });
@@ -1425,6 +1467,7 @@ export default function App() {
           currentUser={currentUser} 
           onLogout={handleLogout} 
           onNavigateHome={() => setActiveView('landing')}
+          onNavigateAbout={handleNavigateAbout}
           onNavigateMarketplace={() => setActiveView('marketplace')}
           onOpenAuth={handleOpenAuth} 
           activeView={activeView}
@@ -1539,6 +1582,11 @@ export default function App() {
               setParentTab(tab); 
               if (tab === 'children') fetchMyChildren();
               if (tab === 'enrollments') fetchMyEnrollments();
+              if (tab === 'dailyLogs') {
+                const childId = selectedDailyLogChildId || myChildren[0]?.id || '';
+                setSelectedDailyLogChildId(childId);
+                setParentDailyLogs([]);
+              }
               if (tab === 'ledger') { fetchParentLedger(); fetchMyPayments(); }
               if (tab === 'disputes') fetchParentDisputes(); 
             }}
@@ -1577,6 +1625,20 @@ export default function App() {
               onEndEnrollment={handleEndEnrollment}
               onCancelEnrollment={handleCancelPendingEnrollment}
               onNavigateToMarketplace={() => setParentTab('marketplace')}
+            />
+          )}
+
+          {parentTab === 'dailyLogs' && (
+            <ParentDailyLogsView
+              myChildren={myChildren}
+              dailyLogs={parentDailyLogs}
+              loading={loadingDailyLogs}
+              selectedChildId={selectedDailyLogChildId}
+              setSelectedChildId={(childId) => {
+                setParentDailyLogs([]);
+                setSelectedDailyLogChildId(childId);
+              }}
+              fetchDailyLogs={fetchDailyLogs}
             />
           )}
 
@@ -1694,7 +1756,6 @@ export default function App() {
               onAddTutor={handleAddTutor}
               onUpdateTutor={handleUpdateTutor}
               onRemoveTutor={handleRemoveTutor}
-              onResendInvite={handleResendTutorInvite}
             />
           )}
           {schoolTab === 'documents' && <SchoolDocumentsTab schoolDocuments={schoolDocuments} onUploadDocument={handleUploadDocument} submittingDoc={submittingDoc} />}

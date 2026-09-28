@@ -5,6 +5,7 @@ interface HeaderProps {
   currentUser: any;
   onLogout: () => void;
   onNavigateHome: () => void;
+  onNavigateAbout: () => void;
   onNavigateMarketplace: () => void;
   onOpenAuth: (role?: UserRole, isRegistering?: boolean) => void;
   activeView?: 'landing' | 'marketplace' | 'dashboard' | 'auth';
@@ -14,6 +15,7 @@ export const Header: React.FC<HeaderProps> = ({
   currentUser,
   onLogout,
   onNavigateHome,
+  onNavigateAbout,
   onNavigateMarketplace,
   onOpenAuth,
   activeView = 'landing',
@@ -61,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({
             Browse Daycares
           </button>
           <button
-            onClick={onNavigateHome}
+            onClick={onNavigateAbout}
             className="px-4 py-2 rounded-full hover:text-[#004ac6] transition-all"
           >
             About KiddoCare
@@ -147,6 +149,15 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="material-symbols-outlined text-lg text-[#004ac6]">storefront</span>
               Browse Daycares
             </button>
+            {!currentUser && (
+              <button
+                onClick={() => { onNavigateAbout(); setMobileMenuOpen(false); }}
+                className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f8f9ff] text-[#121c2a] flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-lg text-[#004ac6]">info</span>
+                About KiddoCare
+              </button>
+            )}
             <a
               href="mailto:admin@kiddocare.co.ke"
               className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f8f9ff] text-[#006c49] flex items-center gap-2 no-underline"

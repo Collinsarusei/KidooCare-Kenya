@@ -4,6 +4,7 @@ import { DailyLogDto, ChildDto } from '@daycare/shared-types';
 interface ParentDailyLogsViewProps {
   myChildren: ChildDto[];
   dailyLogs: DailyLogDto[];
+  loading: boolean;
   selectedChildId: string;
   setSelectedChildId: (id: string) => void;
   fetchDailyLogs: (childId: string) => void;
@@ -12,6 +13,7 @@ interface ParentDailyLogsViewProps {
 export const ParentDailyLogsView: React.FC<ParentDailyLogsViewProps> = ({
   myChildren,
   dailyLogs,
+  loading,
   selectedChildId,
   setSelectedChildId,
   fetchDailyLogs,
@@ -60,6 +62,10 @@ export const ParentDailyLogsView: React.FC<ParentDailyLogsViewProps> = ({
           <span className="material-symbols-outlined text-4xl text-[#737686]">touch_app</span>
           <p className="text-sm font-semibold text-[#121c2a]">Select a Child</p>
           <p className="text-xs text-[#737686]">Please select a child from the dropdown to view logs.</p>
+        </div>
+      ) : loading ? (
+        <div className="text-center py-10 text-sm text-[#737686]" role="status">
+          Loading daily activity...
         </div>
       ) : dailyLogs.length === 0 ? (
         <div className="text-center py-10 bg-[#f8f9ff] rounded-2xl border border-dashed border-[#c3c6d7] space-y-2">

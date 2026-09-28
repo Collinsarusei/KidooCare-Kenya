@@ -96,10 +96,10 @@ export const LandingView: React.FC<LandingViewProps> = ({
       </section>
 
       {/* Feature Highlights Grid */}
-      <section className="space-y-8">
+      <section id="about-kiddocare" className="space-y-8 scroll-mt-24">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-[#004ac6] font-display">
-            Why Parents & Daycares Choose KiddoCare Kenya
+            About KiddoCare Kenya
           </h2>
           <p className="text-xs sm:text-sm text-[#737686]">
             Designed specifically for Kenyan working families with flexible payment plans and verified safety standards.

@@ -3,10 +3,9 @@ import { UserDto } from '@daycare/shared-types';
 
 interface SchoolTutorsTabProps {
   tutors: UserDto[];
-  onAddTutor: (data: { name: string; email: string; phone: string; sendInvite: boolean }) => void;
+  onAddTutor: (data: { name: string; email: string; phone: string; password: string }) => void;
   onUpdateTutor: (tutorId: string, data: { name: string; email: string; phone: string }) => void;
   onRemoveTutor: (tutorId: string) => void;
-  onResendInvite: (tutorId: string) => void;
 }
 
 export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
@@ -14,28 +13,27 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
   onAddTutor,
   onUpdateTutor,
   onRemoveTutor,
-  onResendInvite,
 }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [editingTutorId, setEditingTutorId] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [sendInvite, setSendInvite] = useState(true);
+  const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingTutorId) {
       onUpdateTutor(editingTutorId, { name, email, phone });
     } else {
-      onAddTutor({ name, email, phone, sendInvite });
+      onAddTutor({ name, email, phone, password });
     }
     setIsAdding(false);
     setEditingTutorId(null);
     setName('');
     setEmail('');
     setPhone('');
-    setSendInvite(true);
+    setPassword('');
   };
 
   const openAddForm = () => {
@@ -44,7 +42,7 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
     setName('');
     setEmail('');
     setPhone('');
-    setSendInvite(true);
+    setPassword('');
   };
 
   const openEditForm = (tutor: UserDto) => {
@@ -53,6 +51,7 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
     setName((tutor as any).name || '');
     setEmail(tutor.email);
     setPhone(tutor.phone || '');
+    setPassword('');
   };
 
   return (
@@ -84,7 +83,7 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
       {isAdding && (
         <form onSubmit={handleSubmit} className="border border-[#c3c6d7] bg-[#f8f9ff] rounded-2xl p-5 space-y-4">
           <h4 className="font-bold text-[#121c2a] text-sm">{editingTutorId ? 'Edit Tutor' : 'Add New Tutor'}</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <input
               type="text"
               required
@@ -109,19 +108,24 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
               className="px-3 py-2 text-sm rounded-xl border border-[#c3c6d7] focus:ring-2 focus:ring-[#004ac6] outline-none"
               placeholder="Phone Number"
             />
+            {!editingTutorId && (
+              <input
+                type="password"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="px-3 py-2 text-sm rounded-xl border border-[#c3c6d7] focus:ring-2 focus:ring-[#004ac6] outline-none"
+                placeholder="Temporary Password (6+ chars)"
+              />
+            )}
           </div>
-          {!editingTutorId && (
-            <label className="flex items-center gap-2 text-sm font-semibold text-[#121c2a]">
-              <input type="checkbox" checked={sendInvite} onChange={(e) => setSendInvite(e.target.checked)} className="w-4 h-4" />
-              Send email invitation now
-            </label>
-          )}
           <div className="flex justify-end gap-2">
             <button type="button" className="btn btn-secondary text-xs px-4 py-2 rounded-xl" onClick={() => { setIsAdding(false); setEditingTutorId(null); }}>
               Cancel
             </button>
             <button type="submit" className="btn btn-primary text-xs px-5 py-2 rounded-xl">
-              {editingTutorId ? 'Save Changes' : sendInvite ? 'Add and Send Invite' : 'Add Without Invite'}
+              {editingTutorId ? 'Save Changes' : 'Add Tutor'}
             </button>
           </div>
         </form>
@@ -201,13 +205,7 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
 
                   {/* Primary Action Button (Bottom) */}
                   <div className="mt-auto w-full pt-4 border-t border-[#f1f5f9]">
-                    <button 
-                      onClick={() => onResendInvite(tutor.id)}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#f8fafc] text-[#475569] hover:bg-[#eff6ff] hover:text-[#2563eb] font-semibold text-xs transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-[16px]">send</span>
-                      Resend Credentials
-                    </button>
+                    <p className="text-center text-[11px] text-[#64748b]">Direct login enabled. Tutor must change the temporary password after login.</p>
                   </div>
                 </div>
               </div>

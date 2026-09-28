@@ -33,6 +33,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'marketplace', icon: 'storefront', label: 'Daycare Marketplace' },
     { id: 'children', icon: 'child_care', label: `My Children (${counts.children || 0})` },
     { id: 'enrollments', icon: 'assignment_turned_in', label: `Active Enrollments (${counts.enrollments || 0})` },
+    { id: 'dailyLogs', icon: 'history_edu', label: 'Daily Activity' },
     { id: 'ledger', icon: 'payments', label: 'Financial Ledger & Balances' },
     { id: 'disputes', icon: 'flag', label: `My Disputes (${counts.parentDisputes || 0})` },
   ];

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, Param, ForbiddenException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ForbiddenException, UseGuards } from '@nestjs/common';
 import { SchoolsService } from './schools.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -15,7 +15,7 @@ export class TutorsController {
   @Post()
   async addTutor(
     @Param('id') schoolId: string,
-    @Body() dto: { name: string; email: string; phone: string; sendInvite?: boolean },
+    @Body() dto: { name: string; email: string; phone: string; password: string },
     @CurrentUser() user: any,
   ) {
     // Verify ownership
@@ -60,5 +60,19 @@ export class TutorsController {
       throw new ForbiddenException('You can only resend invites to tutors in your own school');
     }
     return this.schoolsService.resendTutorInvite(schoolId, tutorId);
+  }
+
+  @Roles(UserRole.SCHOOL)
+  @Delete(':tutorId')
+  async deleteTutor(
+    @Param('id') schoolId: string,
+    @Param('tutorId') tutorId: string,
+    @CurrentUser() user: any,
+  ) {
+    const school = await this.schoolsService.getSchoolById(schoolId);
+    if (school.userId !== user.id) {
+      throw new ForbiddenException('You can only remove tutors from your own school');
+    }
+    return this.schoolsService.deleteTutor(schoolId, tutorId);
   }
 }
