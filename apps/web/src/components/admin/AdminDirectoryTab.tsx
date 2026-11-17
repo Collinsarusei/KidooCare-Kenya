@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { fetchPlatformAnalytics, openPlatformReport, PlatformAnalytics } from './platformReport';
 import { SchoolDetailDto } from '@daycare/shared-types';
 
 interface AdminDirectoryTabProps {
@@ -80,13 +81,21 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deleteConfirmName, setDeleteConfirmName] = useState('');
 
+  const [analytics, setAnalytics] = useState<PlatformAnalytics | null>(null);
+  const [generatingReport, setGeneratingReport] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchPlatformAnalytics().then(setAnalytics).catch(() => undefined);
+  }, [adminSchools.length]);
+
   // DYNAMICALLY COMPUTED REAL METRICS FROM BACKEND DB DATA
   const totalSchools = adminSchools.length;
   const totalChildrenEnrolled = adminSchools.reduce(
     (sum, sch) => sum + ((sch as any)._count?.children || 0),
     0
   );
-  const totalUsers = totalChildrenEnrolled + totalSchools;
+  const totalUsers = analytics?.kpis.totalUsers ?? totalChildrenEnrolled + totalSchools;
   const totalActivePrograms = adminSchools.reduce(
     (sum, sch) => sum + ((sch as any)._count?.services || 0),
     0
@@ -172,9 +181,21 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
     setActiveMenuId(null);
   };
 
-  const handleGenerateReport = () => {
-    setReportToast(true);
-    setTimeout(() => setReportToast(false), 4000);
+  const handleGenerateReport = async () => {
+    setGeneratingReport(true);
+    setReportError(null);
+    try {
+      const fresh = await fetchPlatformAnalytics();
+      setAnalytics(fresh);
+      openPlatformReport(fresh, adminSchools);
+      setReportToast(true);
+      setTimeout(() => setReportToast(false), 4000);
+    } catch (e: any) {
+      setReportError(e.message || 'Failed to generate report');
+      setTimeout(() => setReportError(null), 6000);
+    } finally {
+      setGeneratingReport(false);
+    }
   };
 
   const formatRelativeTime = (dateStr?: string | Date): string => {
@@ -219,12 +240,17 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
     <div className="max-w-7xl mx-auto space-y-6 font-sans">
       {/* Toast Notification */}
       {reportToast && (
-        <div className="fixed top-4 right-4 z-50 bg-[#004ac6] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce">
+        <div className="fixed top-4 right-4 z-50 bg-[#004ac6] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-fadeIn">
           <span className="material-symbols-outlined text-xl">analytics</span>
           <div>
             <p className="font-bold text-xs">Real-Time Platform Report</p>
-            <p className="text-[11px] text-blue-100">Generating analytics PDF for {totalSchools} backend database schools...</p>
+            <p className="text-[11px] text-blue-100">Report opened in a new tab — use "Print / Save as PDF" to download.</p>
           </div>
+        </div>
+      )}
+      {reportError && (
+        <div className="fixed top-4 right-4 z-50 bg-[#ba1a1a] text-white px-5 py-3 rounded-2xl shadow-xl text-xs font-bold">
+          {reportError}
         </div>
       )}
 
@@ -247,10 +273,11 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleGenerateReport}
+                  disabled={generatingReport}
                   className="btn bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs md:text-sm font-bold py-2.5 px-5 rounded-full shadow-md transition-all flex items-center gap-2 whitespace-nowrap"
                 >
                   <span className="material-symbols-outlined text-lg">assessment</span>
-                  Generate Report
+                  {generatingReport ? 'Generating...' : 'Generate Report'}
                 </button>
                 <button
                   onClick={() => setView('add_school')}

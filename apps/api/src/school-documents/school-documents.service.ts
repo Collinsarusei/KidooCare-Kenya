@@ -23,6 +23,9 @@ export class SchoolDocumentsService {
         schoolId,
         type: dto.type,
         fileUrl: dto.fileUrl,
+        title: dto.title,
+        fileName: dto.fileName,
+        fileSize: dto.fileSize,
       },
     });
 
@@ -32,7 +35,7 @@ export class SchoolDocumentsService {
         entityId: doc.id,
         action: 'UPLOAD_DOCUMENT',
         actorId,
-        afterState: { type: doc.type, fileUrl: doc.fileUrl, schoolId },
+        afterState: { type: doc.type, title: doc.title, fileUrl: doc.fileUrl, schoolId },
       },
     });
 

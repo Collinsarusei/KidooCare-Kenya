@@ -132,6 +132,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 src={(school as any).coverImages?.[0] || 'https://images.unsplash.com/photo-1576495199011-eb94736d05d6?auto=format&fit=crop&w=800&q=80'}
                 alt={school.name}
                 className="w-full h-full object-cover"
+                onError={(e) => { const img = e.currentTarget as HTMLImageElement; if (!img.dataset.fallback) { img.dataset.fallback = '1'; img.src = 'https://images.unsplash.com/photo-1576495199011-eb94736d05d6?auto=format&fit=crop&w=800&q=80'; } }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
                 <h4 className="text-lg font-bold text-white group-hover:text-[#6cf8bb] transition-colors font-display">
@@ -193,6 +194,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 src={(selectedSchool as any).coverImages?.[0] || 'https://images.unsplash.com/photo-1576495199011-eb94736d05d6?auto=format&fit=crop&w=800&q=80'} 
                 alt={selectedSchool.name}
                 className="w-full h-full object-cover"
+                onError={(e) => { const img = e.currentTarget as HTMLImageElement; if (!img.dataset.fallback) { img.dataset.fallback = '1'; img.src = 'https://images.unsplash.com/photo-1576495199011-eb94736d05d6?auto=format&fit=crop&w=800&q=80'; } }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 

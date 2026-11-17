@@ -180,9 +180,38 @@ export class BalancesService {
       };
     });
 
+    // ── Monthly trend (last 6 months) from real payments & enrollments ─────
+    const now = new Date();
+    const rangeStart = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+    const [trendPayments, trendEnrollments] = await Promise.all([
+      this.prisma.payment.findMany({
+        where: {
+          status: 'COMPLETED',
+          OR: [{ paidAt: { gte: rangeStart } }, { paidAt: null, createdAt: { gte: rangeStart } }],
+          weeklyInstallment: { billingCycle: { enrollment: { service: { schoolId } } } },
+        },
+        select: { amount: true, paidAt: true, createdAt: true },
+      }),
+      this.prisma.enrollment.findMany({
+        where: { service: { schoolId }, createdAt: { gte: rangeStart } },
+        select: { createdAt: true },
+      }),
+    ]);
+    const monthlyTrend = Array.from({ length: 6 }, (_, i) => {
+      const start = new Date(rangeStart.getFullYear(), rangeStart.getMonth() + i, 1);
+      const end = new Date(start.getFullYear(), start.getMonth() + 1, 1);
+      const inMonth = (d: Date) => d >= start && d < end;
+      return {
+        month: start.toLocaleString('en-US', { month: 'short' }),
+        revenue: trendPayments.filter((p) => inMonth(p.paidAt ?? p.createdAt)).reduce((s, p) => s + p.amount, 0),
+        newEnrollments: trendEnrollments.filter((e) => inMonth(e.createdAt)).length,
+      };
+    });
+
     return {
       schoolId: school.id,
       schoolName: school.name,
+      monthlyTrend,
       totalRevenueCollected,
       totalOutstandingArrears,
       totalEnrolledChildrenCount: enrollments.length,

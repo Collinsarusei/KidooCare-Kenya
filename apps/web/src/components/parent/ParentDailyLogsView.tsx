@@ -8,6 +8,7 @@ interface ParentDailyLogsViewProps {
   selectedChildId: string;
   setSelectedChildId: (id: string) => void;
   fetchDailyLogs: (childId: string) => void;
+  onAcknowledgePickup: (logId: string) => void;
 }
 
 export const ParentDailyLogsView: React.FC<ParentDailyLogsViewProps> = ({
@@ -17,6 +18,7 @@ export const ParentDailyLogsView: React.FC<ParentDailyLogsViewProps> = ({
   selectedChildId,
   setSelectedChildId,
   fetchDailyLogs,
+  onAcknowledgePickup,
 }) => {
   
   // Fetch logs when child changes
@@ -82,17 +84,51 @@ export const ParentDailyLogsView: React.FC<ParentDailyLogsViewProps> = ({
                   <span className="text-xs font-bold text-[#737686] uppercase tracking-wider block mb-1">
                     {new Date(log.createdAt).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                   </span>
-                  <h4 className="text-[#004ac6] font-bold text-sm">Logged by Tutor ID: {log.tutorId}</h4>
+                  <h4 className="text-[#004ac6] font-bold text-sm">
+                    Logged by {log.tutor?.name || log.tutor?.email || 'tutor'}
+                    {log.updatedAt ? ` • ${new Date(log.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}
+                  </h4>
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <span className={`badge ${log.isPresent ? 'badge-green' : 'badge-orange'}`}>
                     {log.isPresent ? 'Present' : 'Absent'}
                   </span>
-                  <span className={`badge ${log.mood === 'HAPPY' ? 'badge-blue' : log.mood === 'SAD' ? 'badge-orange' : 'badge-gray'}`}>
-                    {log.mood}
-                  </span>
+                  {log.isPresent && log.mood && (
+                    <span className={`badge ${log.mood === 'HAPPY' ? 'badge-blue' : log.mood === 'SAD' ? 'badge-orange' : 'badge-gray'}`}>
+                      {log.mood.charAt(0) + log.mood.slice(1).toLowerCase()}
+                    </span>
+                  )}
                 </div>
               </div>
+
+              {/* Pickup request — shown whether or not a health issue was logged */}
+              {log.requiresPickup && (
+                <div
+                  className={`rounded-xl border p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+                    log.pickedUpAt ? 'border-[#bbf7d0] bg-[#f0fdf4]' : 'border-[#fdba74] bg-[#fff7ed]'
+                  }`}
+                >
+                  <div>
+                    <p className={`text-sm font-bold flex items-center gap-1 ${log.pickedUpAt ? 'text-[#166534]' : 'text-[#9a3412]'}`}>
+                      <span className="material-symbols-outlined text-base">directions_walk</span>
+                      {log.pickedUpAt
+                        ? `Picked up at ${new Date(log.pickedUpAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                        : 'The daycare has asked you to pick up your child'}
+                    </p>
+                    {log.healthNotes && <p className="text-xs text-[#434655] mt-0.5">Reason: {log.healthNotes}</p>}
+                  </div>
+                  {!log.pickedUpAt &&
+                    (log.pickupAcknowledgedAt ? (
+                      <span className="text-xs font-bold text-[#166534]">✓ You confirmed you're on the way</span>
+                    ) : (
+                      <button onClick={() => onAcknowledgePickup(log.id)} className="btn btn-primary text-xs py-1.5 px-4 rounded-xl shrink-0">
+                        I'm on my way
+                      </button>
+                    ))}
+                </div>
+              )}
+
+              {!log.isPresent && <p className="text-xs text-[#737686]">Your child was marked absent on this day.</p>}
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 {log.achievements && log.achievements.length > 0 && (
@@ -139,7 +175,6 @@ export const ParentDailyLogsView: React.FC<ParentDailyLogsViewProps> = ({
                   <div className="md:col-span-2 border border-orange-200 bg-orange-50 rounded-xl p-3">
                     <h4 className="font-bold text-orange-900 flex items-center gap-1"><span className="material-symbols-outlined text-sm">health_and_safety</span> Health: {log.healthStatus}</h4>
                     {log.healthNotes && <p className="text-xs text-orange-900 mt-1">{log.healthNotes}</p>}
-                    {log.requiresPickup && <p className="text-xs font-bold text-orange-900 mt-1">Please arrange to pick up your child.</p>}
                     {log.hospitalName && <p className="text-xs text-orange-900 mt-1">Hospital: {log.hospitalName}{log.hospitalNotes ? ` - ${log.hospitalNotes}` : ''}</p>}
                     {log.parentSmsSentAt && <p className="text-[11px] text-green-700 mt-2">SMS alert sent to your phone.</p>}
                   </div>

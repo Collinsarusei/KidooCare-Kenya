@@ -117,3 +117,6 @@ build/
 
 # Stitch screens (if they shouldn't be tracked)
 # stitch_screens/
+
+# Uploaded files (stored by the API)
+apps/api/uploads/

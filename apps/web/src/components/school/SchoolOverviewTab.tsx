@@ -2,31 +2,6 @@ import React from 'react';
 import { SchoolFinancialSummaryDto, ExecutiveSummaryReportDto } from '@daycare/shared-types';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
-const revenueData = [
-  { name: 'Jan', value: 40 },
-  { name: 'Feb', value: 30 },
-  { name: 'Mar', value: 60 },
-  { name: 'Apr', value: 45 },
-  { name: 'May', value: 80 },
-  { name: 'Jun', value: 65 },
-  { name: 'Jul', value: 90 },
-];
-
-const enrollmentData = [
-  { name: 'Jan', value: 50 },
-  { name: 'Feb', value: 70 },
-  { name: 'Mar', value: 65 },
-  { name: 'Apr', value: 90 },
-  { name: 'May', value: 120 },
-  { name: 'Jun', value: 130 },
-  { name: 'Jul', value: 125 },
-  { name: 'Aug', value: 140 },
-  { name: 'Sep', value: 142 },
-  { name: 'Oct', value: 140 },
-  { name: 'Nov', value: 145 },
-  { name: 'Dec', value: 150 },
-];
-
 interface SchoolOverviewTabProps {
   financials: SchoolFinancialSummaryDto | null;
   aiReport: ExecutiveSummaryReportDto | null;
@@ -42,13 +17,12 @@ export const SchoolOverviewTab: React.FC<SchoolOverviewTabProps> = ({
   onGenerateAiReport,
   onNavigateTab,
 }) => {
-  const totalEnrolled = financials?.totalEnrolledChildrenCount || 142;
-  const monthlyRevenue = financials?.totalRevenueCollected
-    ? `KES ${Math.round(financials.totalRevenueCollected / 1000)}K`
-    : 'KES 450K';
-  const totalArrears = financials?.totalOutstandingArrears
-    ? `KES ${Math.round(financials.totalOutstandingArrears / 1000)}K`
-    : 'KES 35K';
+  const totalEnrolled = financials?.totalEnrolledChildrenCount ?? 0;
+  const monthlyRevenue = `KES ${Math.round(financials?.totalRevenueCollected ?? 0).toLocaleString()}`;
+  const totalArrears = `KES ${Math.round(financials?.totalOutstandingArrears ?? 0).toLocaleString()}`;
+  const trend = financials?.monthlyTrend ?? [];
+  const revenueData = trend.map((t) => ({ name: t.month, value: Math.round(t.revenue) }));
+  const enrollmentData = trend.map((t) => ({ name: t.month, value: t.newEnrollments }));
 
   return (
     <div className="w-full mx-auto space-y-4 font-sans pb-20 animate-fadeIn">
@@ -145,7 +119,7 @@ export const SchoolOverviewTab: React.FC<SchoolOverviewTabProps> = ({
 
       {/* SECTION 1: REVENUE TRENDS CHART (Mockup 2 Match) */}
       <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm space-y-4">
-        <h3 className="text-lg font-extrabold text-[#121c2a] font-display">Revenue Trends</h3>
+        <h3 className="text-lg font-extrabold text-[#121c2a] font-display">Revenue Trends (last 6 months)</h3>
         
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -157,13 +131,13 @@ export const SchoolOverviewTab: React.FC<SchoolOverviewTabProps> = ({
                 </linearGradient>
               </defs>
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#737686', fontWeight: 'bold' }} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#737686', fontWeight: 'bold' }} tickFormatter={(val) => `KES ${val}k`} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#737686', fontWeight: 'bold' }} tickFormatter={(val) => (val >= 1000 ? `${val / 1000}k` : `${val}`)} />
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e6eeff" />
               <Tooltip 
                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}
                 labelStyle={{ fontWeight: 'bold', color: '#121c2a' }}
                 itemStyle={{ color: '#004ac6', fontWeight: 'bold' }}
-                formatter={(val: any) => [`KES ${val}k`, 'Revenue']}
+                formatter={(val: any) => [`KES ${Number(val).toLocaleString()}`, 'Revenue']}
               />
               <Area type="monotone" dataKey="value" stroke="#004ac6" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
             </AreaChart>
@@ -173,15 +147,16 @@ export const SchoolOverviewTab: React.FC<SchoolOverviewTabProps> = ({
 
       {/* SECTION 2: ENROLLMENT GROWTH BAR CHART (Mockup 2 Match) */}
       <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm space-y-4">
-        <h3 className="text-lg font-extrabold text-[#121c2a] font-display">Enrollment Growth</h3>
+        <h3 className="text-lg font-extrabold text-[#121c2a] font-display">New Enrollments per Month</h3>
         
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={enrollmentData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#737686', fontWeight: 'bold' }} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#737686', fontWeight: 'bold' }} />
+              <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#737686', fontWeight: 'bold' }} />
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e6eeff" />
               <Tooltip 
+                formatter={(val: any) => [val, 'New enrollments']}
                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}
                 cursor={{ fill: '#f8f9ff' }}
                 labelStyle={{ fontWeight: 'bold', color: '#121c2a' }}

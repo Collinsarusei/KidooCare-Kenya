@@ -34,6 +34,7 @@ import { ParentEnrollmentsView } from './components/parent/ParentEnrollmentsView
 import { ParentLedgerView } from './components/parent/ParentLedgerView';
 import { ParentDisputesView } from './components/parent/ParentDisputesView';
 import { ParentDailyLogsView } from './components/parent/ParentDailyLogsView';
+import { PickupAlertBanner } from './components/parent/PickupAlertBanner';
 import { ChildModal } from './components/parent/ChildModal';
 
 import { SchoolServicesTab } from './components/school/SchoolServicesTab';
@@ -48,7 +49,7 @@ import { SchoolTutorsTab } from './components/school/SchoolTutorsTab';
 import { WalkinEnrollmentModal } from './components/school/WalkinEnrollmentModal';
 import { ChangePasswordModal } from './components/auth/ChangePasswordModal';
 
-import { TutorDashboard } from './components/tutor/TutorDashboard';
+import { TutorDashboard, TutorLogInput } from './components/tutor/TutorDashboard';
 
 import { AdminDirectoryTab } from './components/admin/AdminDirectoryTab';
 import { DocumentVerifyTab } from './components/admin/DocumentVerifyTab';
@@ -158,6 +159,78 @@ export default function App() {
 
   // Tutor State
   const [submittingLog, setSubmittingLog] = useState(false);
+  const [tutorTodayLogs, setTutorTodayLogs] = useState<DailyLogDto[]>([]);
+  const [pickupRequests, setPickupRequests] = useState<DailyLogDto[]>([]);
+
+  // ── Attendance / pickup helpers ──────────────────────────────────────────
+  const authHeaders = (): Record<string, string> => {
+    const t = localStorage.getItem('token');
+    return t ? { Authorization: `Bearer ${t}` } : {};
+  };
+
+  const fetchPickupRequests = async () => {
+    try {
+      const res = await fetch('/api/daily-logs/pickup-requests', { headers: authHeaders() });
+      const data = await res.json();
+      if (res.ok && Array.isArray(data)) setPickupRequests(data);
+    } catch {
+      // ignore
+    }
+  };
+
+  const fetchTutorTodayLogs = async () => {
+    try {
+      const res = await fetch('/api/daily-logs/today', { headers: authHeaders() });
+      const data = await res.json();
+      if (res.ok && Array.isArray(data)) setTutorTodayLogs(data);
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleTutorLog = async (data: TutorLogInput, opts?: { silent?: boolean }): Promise<boolean> => {
+    if (!opts?.silent) setSubmittingLog(true);
+    try {
+      const { childId, ...body } = data;
+      const res = await fetch(`/api/daily-logs/child/${childId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify(body),
+      });
+      const resData: any = await res.json();
+      if (!res.ok) {
+        throw new Error(Array.isArray(resData?.message) ? resData.message.join(', ') : resData?.message || 'Failed to submit log');
+      }
+      if (!opts?.silent) {
+        toast.success(
+          !data.isPresent
+            ? 'Child marked absent for today.'
+            : data.requiresPickup
+            ? 'Log saved — the parent has been asked to pick up the child.'
+            : 'Daily log saved!',
+        );
+        fetchTutorTodayLogs();
+      }
+      return true;
+    } catch (err: any) {
+      if (!opts?.silent) toast.error(err.message);
+      return false;
+    } finally {
+      if (!opts?.silent) setSubmittingLog(false);
+    }
+  };
+
+  const handleMarkPickedUp = async (logId: string) => {
+    try {
+      const res = await fetch(`/api/daily-logs/${logId}/picked-up`, { method: 'PATCH', headers: authHeaders() });
+      const data: any = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Failed to update pickup');
+      toast.success('Marked as picked up.');
+      fetchTutorTodayLogs();
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
 
   useEffect(() => {
     fetchPublicMarketplace();
@@ -292,6 +365,29 @@ export default function App() {
       if (requestId === dailyLogsRequestId.current) setLoadingDailyLogs(false);
     }
   };
+
+  const handleAcknowledgePickup = async (logId: string) => {
+    try {
+      const res = await fetch(`/api/daily-logs/${logId}/acknowledge-pickup`, { method: 'PATCH', headers: authHeaders() });
+      const data: any = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Could not notify the daycare');
+      toast.success("The daycare has been told you're on your way.");
+      fetchPickupRequests();
+      if (selectedDailyLogChildId) fetchDailyLogs(selectedDailyLogChildId);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  // Parents: poll pickup requests. Tutors: poll today's attendance/pickup board.
+  useEffect(() => {
+    if (!currentUser) return;
+    if (currentUser.role !== UserRole.PARENT && currentUser.role !== UserRole.TUTOR) return;
+    const tick = () => (currentUser.role === UserRole.PARENT ? fetchPickupRequests() : fetchTutorTodayLogs());
+    tick();
+    const id = setInterval(tick, 60_000);
+    return () => clearInterval(id);
+  }, [currentUser]);
 
   const fetchMyEnrollments = async () => {
     const savedToken = localStorage.getItem('token');
@@ -782,7 +878,7 @@ export default function App() {
     }
   };
 
-  const handleUploadDocument = async (type: string, fileUrl: string) => {
+  const handleUploadDocument = async (doc: { type: string; fileUrl: string; title: string; fileName?: string; fileSize?: number }) => {
     if (!mySchool) return;
     setError(null);
     setSubmittingDoc(true);
@@ -794,7 +890,7 @@ export default function App() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ type, fileUrl }),
+        body: JSON.stringify(doc),
       });
 
       const data = await res.json();
@@ -1593,6 +1689,17 @@ export default function App() {
             counts={{ children: myChildren.length, enrollments: myEnrollments.length, parentDisputes: parentDisputes.length }}
           />
           <div className="flex-1 space-y-6 overflow-y-auto">
+          <PickupAlertBanner
+            requests={pickupRequests}
+            onAcknowledge={handleAcknowledgePickup}
+            onViewLogs={(childId) => {
+              setParentDailyLogs([]);
+              setSelectedDailyLogChildId(childId);
+              setParentTab('dailyLogs');
+              fetchDailyLogs(childId);
+            }}
+          />
+
 
           {parentTab === 'marketplace' && (
             <MarketplaceView
@@ -1639,6 +1746,7 @@ export default function App() {
                 setSelectedDailyLogChildId(childId);
               }}
               fetchDailyLogs={fetchDailyLogs}
+              onAcknowledgePickup={handleAcknowledgePickup}
             />
           )}
 
@@ -1758,7 +1866,7 @@ export default function App() {
               onRemoveTutor={handleRemoveTutor}
             />
           )}
-          {schoolTab === 'documents' && <SchoolDocumentsTab schoolDocuments={schoolDocuments} onUploadDocument={handleUploadDocument} submittingDoc={submittingDoc} />}
+          {schoolTab === 'documents' && <SchoolDocumentsTab schoolDocuments={schoolDocuments} onUploadDocument={handleUploadDocument} submittingDoc={submittingDoc} schoolName={mySchool?.name} verifiedBadge={(mySchool as any)?.verifiedBadge} />}
           {schoolTab === 'financials' && <SchoolFinancialsTab schoolFinancials={schoolFinancials} aiReport={aiReport} isGeneratingAi={isGeneratingAi} onGenerateAiReport={handleGenerateExecutiveSummary} />}
           {schoolTab === 'disputes' && <SchoolDisputesTab disputes={schoolDisputes} onResolveDispute={handleResolveDispute} />}
           {schoolTab === 'profile' && (
@@ -1779,30 +1887,15 @@ export default function App() {
       {/* TUTOR DASHBOARD */}
       {currentUser && currentUser.role === UserRole.TUTOR && (
         <div className="space-y-6">
-          <TutorDashboard 
-            schoolRoster={schoolRoster} 
+          <TutorDashboard
+            schoolRoster={schoolRoster}
+            todayLogs={tutorTodayLogs}
             submittingLog={submittingLog}
-            onLogActivity={async (data) => {
-              setSubmittingLog(true);
-              try {
-                const res = await fetch(`/api/daily-logs/child/${data.childId}`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                  },
-                  body: JSON.stringify(data)
-                });
-                if (!res.ok) {
-                  const errorData = await res.json();
-                  throw new Error(errorData.message || 'Failed to submit log');
-                }
-                toast.success('Activity logged successfully!');
-              } catch (err: any) {
-                toast.error(err.message);
-              } finally {
-                setSubmittingLog(false);
-              }
+            onLogActivity={handleTutorLog}
+            onMarkPickedUp={handleMarkPickedUp}
+            onRefresh={() => {
+              fetchTutorTodayLogs();
+              if (currentUser?.employedAtSchoolId) fetchSchoolRoster(currentUser.employedAtSchoolId);
             }}
           />
         </div>
@@ -1821,7 +1914,7 @@ export default function App() {
               if (tab === 'disputes') fetchAdminDisputes();
               if (tab === 'audit') fetchAuditLogs();
             }}
-            counts={{ schools: adminSchools.length, documents: adminDocuments.length, adminDisputes: adminDisputes.length }}
+            counts={{ schools: adminSchools.length, documents: adminDocuments.filter((d) => !d.verifiedAt).length, adminDisputes: adminDisputes.length }}
           />
           <div className="flex-1 space-y-6 overflow-y-auto">
             {adminTab === 'analytics' && <AdminAnalyticsTab />}

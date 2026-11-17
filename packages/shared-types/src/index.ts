@@ -87,7 +87,7 @@ export interface DailyLogDto {
   childId: string;
   tutorId: string;
   isPresent: boolean;
-  mood: DailyLogMood;
+  mood: DailyLogMood | null;
   achievements: string[];
   milestones: string[];
   allergiesSpotted: string | null;
@@ -101,7 +101,12 @@ export interface DailyLogDto {
   hospitalName: string | null;
   hospitalNotes: string | null;
   parentSmsSentAt: string | Date | null;
+  pickupAcknowledgedAt?: string | Date | null;
+  pickedUpAt?: string | Date | null;
   createdAt: string | Date;
+  updatedAt?: string | Date;
+  tutor?: { id?: string; email: string; phone: string; name?: string | null } | null;
+  child?: { id: string; name: string; school?: { name: string } | null } | null;
 }
 
 export interface AuthResponseDto {
@@ -366,6 +371,7 @@ export interface SchoolFinancialSummaryDto {
   totalEnrolledChildrenCount: number;
   fullyPaidEnrollmentsCount: number;
   enrollmentsInArrearsCount: number;
+  monthlyTrend?: { month: string; revenue: number; newEnrollments: number }[];
   studentRosterLedger: {
     enrollmentId: string;
     childName: string;
@@ -455,6 +461,9 @@ export interface SchoolDocumentDto {
   id: string;
   schoolId: string;
   type: SchoolDocumentType;
+  title?: string | null;
+  fileName?: string | null;
+  fileSize?: number | null;
   fileUrl: string;
   uploadedAt: string | Date;
   verifiedByAdminId: string | null;
@@ -465,6 +474,9 @@ export interface SchoolDocumentDto {
 export interface UploadDocumentDto {
   type: SchoolDocumentType;
   fileUrl: string;
+  title?: string;
+  fileName?: string;
+  fileSize?: number;
 }
 
 export interface VerifyDocumentDto {
@@ -510,15 +522,3 @@ export interface AIReportDto {
   content: ExecutiveSummaryReportDto | DraftProfileResponseDto | any;
 }
 
-export interface DailyLogDto {
-  id: string;
-  childId: string;
-  tutorId: string;
-  isPresent: boolean;
-  mood: DailyLogMood;
-  achievements: string[];
-  milestones: string[];
-  allergiesSpotted: string | null;
-  assignments: string | null;
-  createdAt: string | Date;
-}

@@ -21,6 +21,7 @@ import { SchoolDocumentsModule } from './school-documents/school-documents.modul
 import { DisputesModule } from './disputes/disputes.module';
 import { UploadthingModule } from './uploadthing/uploadthing.module';
 import { DailyLogsModule } from './daily-logs/daily-logs.module';
+import { AdminAnalyticsModule } from './admin-analytics/admin-analytics.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 
@@ -65,6 +66,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
     DisputesModule,
     UploadthingModule,
     DailyLogsModule,
+    AdminAnalyticsModule,
   ],
   providers: [
     {

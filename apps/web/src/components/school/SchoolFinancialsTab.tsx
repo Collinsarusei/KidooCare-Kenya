@@ -18,24 +18,14 @@ export const SchoolFinancialsTab: React.FC<SchoolFinancialsTabProps> = ({
   isGeneratingAi,
   onGenerateAiReport,
 }) => {
-  const totalEnrolled = schoolFinancials?.totalEnrolledChildrenCount || 142;
-  const revenueMonth = schoolFinancials?.totalRevenueCollected
-    ? `KES ${(schoolFinancials.totalRevenueCollected / 1000).toFixed(0)}K`
-    : 'KES 450K';
-  const totalArrears = schoolFinancials?.totalOutstandingArrears
-    ? `KES ${(schoolFinancials.totalOutstandingArrears / 1000).toFixed(0)}K`
-    : 'KES 35K';
+  const totalEnrolled = schoolFinancials?.totalEnrolledChildrenCount ?? 0;
+  const revenueMonth = `KES ${Math.round(schoolFinancials?.totalRevenueCollected ?? 0).toLocaleString()}`;
+  const totalArrears = `KES ${Math.round(schoolFinancials?.totalOutstandingArrears ?? 0).toLocaleString()}`;
 
   // --- RECHARTS DATA PREPARATION ---
-  
-  // 1. Mock Time Series Data for Revenue Area Chart
-  const revenueTrendData = [
-    { name: 'Jan', revenue: 200000 },
-    { name: 'Feb', revenue: 250000 },
-    { name: 'Mar', revenue: 220000 },
-    { name: 'Apr', revenue: 300000 },
-    { name: 'May', revenue: schoolFinancials?.totalRevenueCollected || 450000 },
-  ];
+
+  // 1. Real monthly revenue from completed payments (last 6 months)
+  const revenueTrendData = (schoolFinancials?.monthlyTrend ?? []).map((t) => ({ name: t.month, revenue: Math.round(t.revenue) }));
 
   // 2. Program Revenue Data (Computed from Ledger)
   const programRevenueData = useMemo(() => {
@@ -53,8 +43,8 @@ export const SchoolFinancialsTab: React.FC<SchoolFinancialsTabProps> = ({
 
   // 3. Payment Status Pie Chart Data
   const pieData = [
-    { name: 'Fully Paid', value: schoolFinancials?.fullyPaidEnrollmentsCount || 10 },
-    { name: 'In Arrears', value: schoolFinancials?.enrollmentsInArrearsCount || 2 },
+    { name: 'Fully Paid', value: schoolFinancials?.fullyPaidEnrollmentsCount ?? 0 },
+    { name: 'In Arrears', value: schoolFinancials?.enrollmentsInArrearsCount ?? 0 },
   ];
   const COLORS = ['#16a34a', '#c2410c'];
 

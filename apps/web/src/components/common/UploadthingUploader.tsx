@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 
+export interface UploadedFileMeta {
+  name: string;
+  size: number;
+  type: string;
+}
+
 interface UploadthingUploaderProps {
-  onUploadComplete: (url: string) => void;
+  onUploadComplete: (url: string, meta?: UploadedFileMeta) => void;
+  /** Bump this value to clear the uploader after the parent form is submitted */
+  resetKey?: number;
   accept?: string;
   maxSizeMb?: number;
   label?: string;
@@ -16,12 +24,21 @@ export const UploadthingUploader: React.FC<UploadthingUploaderProps> = ({
   label = 'Drag and drop your file here, or',
   sublabel = 'Supports PDF, JPG, PNG (Max 5MB)',
   buttonText = 'browse',
+  resetKey,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    setUploadedUrl(null);
+    setFileName(null);
+    setProgress(0);
+    setErrorMsg(null);
+  }, [resetKey]);
 
   const handleFileSelect = async (file: File) => {
     if (!file) return;
@@ -31,56 +48,56 @@ export const UploadthingUploader: React.FC<UploadthingUploaderProps> = ({
       return;
     }
 
+    const allowed = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+    if (file.type && !allowed.includes(file.type)) {
+      setErrorMsg('Only PDF, JPG, PNG, WEBP or GIF files are allowed.');
+      return;
+    }
+
+    setErrorMsg(null);
+    setUploadedUrl(null);
     setUploading(true);
     setProgress(20);
     setFileName(file.name);
 
-    try {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const fileData = e.target?.result as string;
-        setProgress(50);
-
-        try {
-          const res = await fetch('/api/uploadthing/upload', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              fileName: file.name,
-              fileData,
-              fileType: file.type,
-            }),
-          });
-
-          setProgress(85);
-          if (res.ok) {
-            const data = await res.json();
-            const finalUrl = data.url;
-            setUploadedUrl(finalUrl);
-            setProgress(100);
-            onUploadComplete(finalUrl);
-          } else {
-            // Fallback base64 URL
-            setUploadedUrl(fileData);
-            setProgress(100);
-            onUploadComplete(fileData);
-          }
-        } catch (err) {
-          // Local data URL fallback
-          setUploadedUrl(fileData);
-          setProgress(100);
-          onUploadComplete(fileData);
-        } finally {
-          setUploading(false);
-        }
-      };
-      reader.readAsDataURL(file);
-    } catch (err) {
+    const reader = new FileReader();
+    reader.onerror = () => {
       setUploading(false);
       setProgress(0);
-    }
+      setErrorMsg('Could not read the selected file.');
+    };
+    reader.onload = async (e) => {
+      const fileData = e.target?.result as string;
+      setProgress(50);
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('/api/uploadthing/upload', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ fileName: file.name, fileData, fileType: file.type }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.url) {
+          throw new Error(
+            (Array.isArray(data.message) ? data.message.join(', ') : data.message) ||
+              `Upload failed (HTTP ${res.status})`,
+          );
+        }
+        setProgress(100);
+        setUploadedUrl(data.url);
+        onUploadComplete(data.url, { name: file.name, size: file.size, type: file.type });
+      } catch (err: any) {
+        setProgress(0);
+        setFileName(null);
+        setErrorMsg(err.message || 'Upload failed. Is the API server running?');
+      } finally {
+        setUploading(false);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -128,7 +145,7 @@ export const UploadthingUploader: React.FC<UploadthingUploaderProps> = ({
 
           {uploading ? (
             <div className="space-y-2 w-full max-w-xs mx-auto">
-              <p className="text-xs font-bold text-[#121c2a]">Uploading to Uploadthing...</p>
+              <p className="text-xs font-bold text-[#121c2a]">Uploading file...</p>
               <div className="w-full h-2 bg-[#e6eeff] rounded-full overflow-hidden">
                 <div className="bg-[#004ac6] h-full transition-all duration-300" style={{ width: `${progress}%` }} />
               </div>
@@ -138,7 +155,7 @@ export const UploadthingUploader: React.FC<UploadthingUploaderProps> = ({
             <div className="space-y-1">
               <p className="text-xs font-extrabold text-emerald-800 flex items-center justify-center gap-1">
                 <span className="material-symbols-outlined text-sm">verified</span>
-                Uploaded to Uploadthing
+                File uploaded
               </p>
               <p className="text-[11px] text-emerald-700 truncate max-w-xs font-mono">
                 {fileName || uploadedUrl}
@@ -157,6 +174,12 @@ export const UploadthingUploader: React.FC<UploadthingUploaderProps> = ({
           )}
         </div>
       </div>
+      {errorMsg && (
+        <p className="mt-2 text-xs font-bold text-[#ba1a1a] flex items-center gap-1">
+          <span className="material-symbols-outlined text-sm">error</span>
+          {errorMsg}
+        </p>
+      )}
     </div>
   );
 };

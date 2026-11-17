@@ -1,60 +1,70 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { join, extname } from 'path';
+import { randomBytes } from 'crypto';
+
+/** Absolute folder where uploaded files are stored (apps/api/uploads). */
+export const UPLOADS_DIR = join(process.cwd(), 'uploads');
+
+const ALLOWED_TYPES: Record<string, string> = {
+  'application/pdf': '.pdf',
+  'image/png': '.png',
+  'image/jpeg': '.jpg',
+  'image/jpg': '.jpg',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+};
+
+const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 
 @Injectable()
 export class UploadthingService {
   private readonly logger = new Logger(UploadthingService.name);
 
-  constructor(private configService: ConfigService) {}
+  /**
+   * Persists a base64 / data-URL encoded file to disk and returns a URL the
+   * frontend can open directly (served by express static at /api/uploads).
+   */
+  async uploadFile(
+    fileName: string,
+    fileData: string,
+    fileType: string,
+  ): Promise<{ url: string; key: string; name: string; size: number; type: string }> {
+    if (!fileData) throw new BadRequestException('No file data received');
 
-  async uploadFile(fileName: string, fileData: string, fileType: string): Promise<{ url: string; key: string; name: string }> {
-    const uploadthingToken = this.configService.get<string>('UPLOADTHING_TOKEN') || process.env.UPLOADTHING_TOKEN;
-
-    if (uploadthingToken) {
-      try {
-        const response = await fetch('https://api.uploadthing.com/v6/uploadFiles', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-uploadthing-token': uploadthingToken,
-            'x-uploadthing-api-key': uploadthingToken,
-          },
-          body: JSON.stringify({
-            files: [
-              {
-                name: fileName,
-                size: fileData.length,
-                type: fileType || 'image/png',
-              },
-            ],
-          }),
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          if (result && result.data && result.data[0]) {
-            this.logger.log(`Uploaded file to Uploadthing: ${result.data[0].url}`);
-            return {
-              url: result.data[0].url || `https://utfs.io/f/${result.data[0].key}`,
-              key: result.data[0].key || `ut-${Date.now()}`,
-              name: fileName,
-            };
-          }
-        }
-      } catch (err: any) {
-        this.logger.warn(`Uploadthing API call failed: ${err.message}. Falling back to Uploadthing URL generation.`);
-      }
+    let mime = fileType;
+    let base64 = fileData;
+    const match = /^data:([^;]+);base64,(.*)$/s.exec(fileData);
+    if (match) {
+      mime = mime || match[1];
+      base64 = match[2];
     }
 
-    // Fallback or simulated Uploadthing CDN URL
-    const fileId = `ut-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-    const cdnUrl = fileData.startsWith('data:') ? fileData : `https://utfs.io/f/${fileId}-${encodeURIComponent(fileName)}`;
-    
-    this.logger.log(`Generated Uploadthing CDN URL for ${fileName}: ${cdnUrl.substring(0, 60)}...`);
+    const ext = ALLOWED_TYPES[mime] || extname(fileName).toLowerCase();
+    if (!Object.values(ALLOWED_TYPES).includes(ext)) {
+      throw new BadRequestException('Only PDF, JPG, PNG, WEBP or GIF files are allowed');
+    }
+
+    const buffer = Buffer.from(base64, 'base64');
+    if (buffer.length === 0) throw new BadRequestException('Uploaded file is empty');
+    if (buffer.length > MAX_BYTES) throw new BadRequestException('File exceeds the 10MB limit');
+
+    if (!existsSync(UPLOADS_DIR)) mkdirSync(UPLOADS_DIR, { recursive: true });
+
+    const safeBase = fileName
+      .replace(extname(fileName), '')
+      .replace(/[^a-zA-Z0-9_-]+/g, '_')
+      .slice(0, 50) || 'file';
+    const key = `${Date.now()}-${randomBytes(4).toString('hex')}-${safeBase}${ext}`;
+    writeFileSync(join(UPLOADS_DIR, key), buffer);
+
+    this.logger.log(`Stored upload ${key} (${buffer.length} bytes)`);
     return {
-      url: cdnUrl,
-      key: fileId,
+      url: `/api/uploads/${key}`,
+      key,
       name: fileName,
+      size: buffer.length,
+      type: mime,
     };
   }
 }

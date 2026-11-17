@@ -162,6 +162,9 @@ model SchoolDocument {
   schoolId           String
   school             School             @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   type               SchoolDocumentType
+  title              String?
+  fileName           String?
+  fileSize           Int?
   fileUrl            String
   uploadedAt         DateTime           @default(now())
   verifiedByAdminId  String?
@@ -316,7 +319,7 @@ model DailyLog {
   tutorId          String
   tutor            User         @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   isPresent        Boolean      @default(true)
-  mood             DailyLogMood
+  mood             DailyLogMood?
   achievements     String[]     @default([])
   milestones       String[]     @default([])
   allergiesSpotted String?
@@ -330,5 +333,8 @@ model DailyLog {
   hospitalName     String?
   hospitalNotes    String?
   parentSmsSentAt  DateTime?
+  pickupAcknowledgedAt DateTime?
+  pickedUpAt       DateTime?
   createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @default(now()) @updatedAt
 }
