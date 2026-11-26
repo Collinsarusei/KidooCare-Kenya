@@ -26,6 +26,7 @@ import { EnrollmentModal, EnrollingService } from './components/common/Enrollmen
 import { AuthBox } from './components/auth/AuthBox';
 import { TutorInvitationAccept } from './components/auth/TutorInvitationAccept';
 import { LandingView } from './components/landing/LandingView';
+import { ContactView, ContactTopic } from './components/contact/ContactView';
 import { Sidebar } from './components/common/Sidebar';
 import { ConfirmationModal } from './components/common/ConfirmationModal';
 import { MarketplaceView } from './components/parent/MarketplaceView';
@@ -1567,7 +1568,14 @@ export default function App() {
     localStorage.removeItem('refreshToken');
   };
 
-  const [activeView, setActiveView] = useState<'landing' | 'marketplace' | 'auth'>('landing');
+  const [activeView, setActiveView] = useState<'landing' | 'marketplace' | 'auth' | 'contact'>('landing');
+  const [contactTopic, setContactTopic] = useState<ContactTopic>('PARENT');
+  const handleNavigateContact = (topic?: ContactTopic) => {
+    setSelectedSchool(null);
+    setContactTopic(topic || (currentUser?.role === UserRole.SCHOOL ? 'TECHNICAL' : 'PARENT'));
+    setActiveView('contact');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   const [authPreset, setAuthPreset] = useState<{ role: UserRole; isRegistering: boolean }>({
     role: UserRole.PARENT,
     isRegistering: false,
@@ -1648,7 +1656,8 @@ export default function App() {
           onLogout={handleLogout} 
           onNavigateHome={() => setActiveView('landing')}
           onNavigateAbout={handleNavigateAbout}
-          onNavigateMarketplace={() => setActiveView('marketplace')}
+ onNavigateMarketplace={() => setActiveView('marketplace')}
+          onNavigateContact={handleNavigateContact}
           onOpenAuth={handleOpenAuth} 
           activeView={activeView}
         />
@@ -1690,15 +1699,33 @@ export default function App() {
           
           {/* Horizontal tabs removed in favor of Sidebar */}
 
+          <div className="flex items-center gap-4 shrink-0">
+          <button
+            onClick={() => (activeView === 'contact' ? setActiveView('landing') : handleNavigateContact('TECHNICAL'))}
+            className="text-[#004ac6] hover:underline transition-all flex items-center gap-1 text-sm font-bold"
+          >
+            <span className="material-symbols-outlined text-lg">{activeView === 'contact' ? 'dashboard' : 'support_agent'}</span>
+            <span className="hidden md:inline">{activeView === 'contact' ? 'Back to dashboard' : 'Help & Contact'}</span>
+          </button>
           <button onClick={handleLogout} className="text-[#737686] hover:text-[#e11d48] transition-all flex items-center gap-1 text-sm font-bold shrink-0">
             <span className="material-symbols-outlined text-lg">logout</span>
             <span className="hidden md:inline">Logout</span>
           </button>
           </div>
+          </div>
         </header>
       )}
 
       <div className="flex-1 w-full mx-auto px-4 py-6 md:px-8 space-y-6">
+
+      {activeView === 'contact' ? (
+        <ContactView
+          currentUser={currentUser}
+          initialTopic={contactTopic}
+          onBack={() => setActiveView(currentUser ? 'landing' : 'landing')}
+        />
+      ) : (
+      <>
 
       {/* Notifications handled by react-hot-toast */}
 
@@ -1722,6 +1749,7 @@ export default function App() {
               onBrowseMarketplace={() => setActiveView('marketplace')}
               onOpenLogin={() => handleOpenAuth(UserRole.PARENT, false)}
               onOpenRegister={(role) => handleOpenAuth(role === 'SCHOOL' ? UserRole.SCHOOL : UserRole.PARENT, true)}
+              onContact={handleNavigateContact}
             />
           )}
 
@@ -2050,6 +2078,9 @@ export default function App() {
       )}
 
       {/* MODALS */}
+      </>
+      )}
+
       {enrollingService && (
         <EnrollmentModal
           enrollingService={enrollingService}

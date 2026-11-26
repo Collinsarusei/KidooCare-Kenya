@@ -4,12 +4,14 @@ interface LandingViewProps {
   onBrowseMarketplace: () => void;
   onOpenLogin: () => void;
   onOpenRegister: (role: 'PARENT' | 'SCHOOL') => void;
+  onContact?: (topic: 'DAYCARE' | 'PARENT') => void;
 }
 
 export const LandingView: React.FC<LandingViewProps> = ({
   onBrowseMarketplace,
   onOpenLogin,
   onOpenRegister,
+  onContact,
 }) => {
   return (
     <div className="space-y-16 py-4">
@@ -159,12 +161,15 @@ export const LandingView: React.FC<LandingViewProps> = ({
               Reach thousands of parents in your neighborhood, streamline child intake, and automate M-Pesa tuition collection. Contact us to get your center verified and listed.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 pt-1">
-              <span
-                className="inline-flex items-center gap-2 bg-white/15 text-white font-bold text-xs px-5 py-2.5 rounded-full border border-white/30 select-all"
-              >
-                <span className="material-symbols-outlined text-base">mail</span>
-                admin@kiddocare.co.ke
-              </span>
+              {onContact && (
+                <button
+                  onClick={() => onContact('DAYCARE')}
+                  className="inline-flex items-center justify-center gap-2 bg-white text-[#004ac6] hover:bg-blue-50 transition-colors font-extrabold text-xs px-5 py-2.5 rounded-full shadow-md"
+                >
+                  <span className="material-symbols-outlined text-base">mail</span>
+                  Contact us to get listed
+                </button>
+              )}
               <a
                 href="https://wa.me/254700000000"
                 target="_blank"

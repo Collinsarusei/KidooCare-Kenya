@@ -7,8 +7,9 @@ interface HeaderProps {
   onNavigateHome: () => void;
   onNavigateAbout: () => void;
   onNavigateMarketplace: () => void;
+  onNavigateContact?: (topic?: 'DAYCARE' | 'PARENT') => void;
   onOpenAuth: (role?: UserRole, isRegistering?: boolean) => void;
-  activeView?: 'landing' | 'marketplace' | 'dashboard' | 'auth';
+  activeView?: 'landing' | 'marketplace' | 'dashboard' | 'auth' | 'contact';
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,6 +18,7 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigateHome,
   onNavigateAbout,
   onNavigateMarketplace,
+  onNavigateContact,
   onOpenAuth,
   activeView = 'landing',
 }) => {
@@ -69,11 +71,21 @@ export const Header: React.FC<HeaderProps> = ({
             About KiddoCare
           </button>
           <button
-            onClick={onNavigateAbout}
+            onClick={() => (onNavigateContact ? onNavigateContact('DAYCARE') : onNavigateAbout())}
             className="px-4 py-2 rounded-full hover:text-[#004ac6] transition-all text-[#006c49]"
           >
             For Daycares
           </button>
+          {onNavigateContact && (
+            <button
+              onClick={() => onNavigateContact()}
+              className={`px-4 py-2 rounded-full transition-all ${
+                activeView === 'contact' ? 'bg-[#004ac6] text-white shadow-xs' : 'hover:text-[#004ac6]'
+              }`}
+            >
+              Contact Us
+            </button>
+          )}
         </nav>
 
         {/* User Status / Action Buttons (Right) */}
@@ -92,6 +104,15 @@ export const Header: React.FC<HeaderProps> = ({
                   {currentUser.role}
                 </span>
               </div>
+              {onNavigateContact && (
+                <button
+                  onClick={() => (activeView === 'contact' ? onNavigateHome() : onNavigateContact())}
+                  className="btn text-xs px-3.5 py-2 rounded-xl text-[#004ac6] hover:bg-[#eff4ff] flex items-center gap-1.5"
+                >
+                  <span className="material-symbols-outlined text-base">{activeView === 'contact' ? 'dashboard' : 'support_agent'}</span>
+                  {activeView === 'contact' ? 'Dashboard' : 'Help'}
+                </button>
+              )}
               <button 
                 onClick={onLogout}
                 className="btn btn-secondary text-xs px-3.5 py-2 rounded-xl hover:bg-[#eff4ff] flex items-center gap-1.5"
@@ -158,14 +179,23 @@ export const Header: React.FC<HeaderProps> = ({
                 About KiddoCare
               </button>
             )}
-            {onNavigateAbout && (
-              <button
-                onClick={() => { onNavigateAbout(); setMobileMenuOpen(false); }}
-                className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f8f9ff] text-[#006c49] flex items-center gap-2"
-              >
-                <span className="material-symbols-outlined text-lg text-[#006c49]">domain_add</span>
-                For Daycares — Contact Us
-              </button>
+            {onNavigateContact && (
+              <>
+                <button
+                  onClick={() => { onNavigateContact('DAYCARE'); setMobileMenuOpen(false); }}
+                  className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f8f9ff] text-[#006c49] flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-lg text-[#006c49]">domain_add</span>
+                  For Daycares
+                </button>
+                <button
+                  onClick={() => { onNavigateContact(); setMobileMenuOpen(false); }}
+                  className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f8f9ff] text-[#121c2a] flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-lg text-[#004ac6]">support_agent</span>
+                  Contact Us
+                </button>
+              </>
             )}
           </div>
 

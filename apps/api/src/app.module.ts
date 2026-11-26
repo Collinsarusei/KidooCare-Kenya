@@ -22,6 +22,7 @@ import { DisputesModule } from './disputes/disputes.module';
 import { UploadthingModule } from './uploadthing/uploadthing.module';
 import { DailyLogsModule } from './daily-logs/daily-logs.module';
 import { AdminAnalyticsModule } from './admin-analytics/admin-analytics.module';
+import { ContactModule } from './contact/contact.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 
@@ -67,6 +68,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
     UploadthingModule,
     DailyLogsModule,
     AdminAnalyticsModule,
+    ContactModule,
   ],
   providers: [
     {
