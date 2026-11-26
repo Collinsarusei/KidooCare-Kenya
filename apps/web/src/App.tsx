@@ -853,7 +853,7 @@ export default function App() {
     }
   };
 
-  const handleCreateReview = async (schoolId: string, rating: number, comment: string) => {
+  const handleCreateReview = async (schoolId: string, rating: number, comment: string): Promise<boolean> => {
     setError(null);
     setSubmittingReview(true);
 
@@ -868,12 +868,15 @@ export default function App() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to submit review');
+      if (!res.ok) throw new Error(Array.isArray(data?.message) ? data.message.join(', ') : data?.message || 'Failed to submit review');
 
-      setSuccessMsg('Thank you! Your review has been published.');
+      setSuccessMsg(data.updated ? 'Your review has been updated.' : 'Thank you! Your review has been published.');
       fetchSchoolReviews(schoolId);
+      fetchPublicMarketplace();
+      return true;
     } catch (err: any) {
       setError(err.message);
+      return false;
     } finally {
       setSubmittingReview(false);
     }
@@ -1832,6 +1835,11 @@ export default function App() {
               onEndEnrollment={handleEndEnrollment}
               onCancelEnrollment={handleCancelPendingEnrollment}
               onNavigateToMarketplace={() => setParentTab('marketplace')}
+              onRateSchool={(schoolId) => {
+                const school = publicSchools.find((s) => s.id === schoolId);
+                if (school) setSelectedSchool(school);
+                setParentTab('marketplace');
+              }}
             />
           )}
 

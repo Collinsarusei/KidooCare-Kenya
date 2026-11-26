@@ -6,6 +6,7 @@ interface ParentEnrollmentsViewProps {
   onEndEnrollment: (id: string) => void;
   onCancelEnrollment?: (id: string) => void;
   onNavigateToMarketplace: () => void;
+  onRateSchool?: (schoolId: string) => void;
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -27,7 +28,8 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
   myEnrollments, 
   onEndEnrollment,
   onCancelEnrollment, 
-  onNavigateToMarketplace 
+  onNavigateToMarketplace,
+  onRateSchool,
 }) => {
   return (
     <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
@@ -117,6 +119,15 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
                     >
                       <span className="material-symbols-outlined text-sm">delete</span>
                       Delete program
+                    </button>
+                  )}
+ {(enr.status === 'ACTIVE' || enr.status === 'ENDED') && onRateSchool && enr.service?.schoolId && (
+                    <button
+                      onClick={() => onRateSchool(enr.service!.schoolId)}
+                      className="mt-2 text-xs font-bold flex items-center justify-end gap-1 ml-auto text-[#004ac6] hover:underline"
+                    >
+                      <span className="material-symbols-outlined text-sm fill text-amber-400">star</span>
+                      Rate this daycare
                     </button>
                   )}
                   {enr.status === 'ACTIVE' && (

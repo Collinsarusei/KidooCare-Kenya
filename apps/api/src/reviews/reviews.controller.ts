@@ -15,6 +15,13 @@ export class ReviewsController {
     return this.reviewsService.createReview(req.user.id, dto);
   }
 
+  /** Parent: can I review this daycare, and what did I write before? */
+  @Roles(UserRole.PARENT)
+  @Get('school/:schoolId/me')
+  async getMyReviewStatus(@Req() req: any, @Param('schoolId') schoolId: string) {
+    return this.reviewsService.getMyReviewStatus(req.user.id, schoolId);
+  }
+
   @Public()
   @Get('school/:schoolId')
   async getSchoolReviews(@Param('schoolId') schoolId: string) {
