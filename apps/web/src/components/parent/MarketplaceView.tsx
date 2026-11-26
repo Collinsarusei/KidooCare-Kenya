@@ -95,9 +95,9 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
   return (
     <div className="space-y-8">
       {/* Search Header Banner (Screen 03 Hero) */}
-      <div className="bg-gradient-to-br from-[#004ac6] via-[#2563eb] to-[#00714d] text-white p-8 md:p-10 rounded-3xl shadow-xl text-center relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#0b6e99] via-[#1188c2] to-[#00876f] text-white p-8 md:p-10 rounded-3xl shadow-xl text-center relative overflow-hidden">
         <div className="max-w-3xl mx-auto space-y-4 relative z-10">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-[#6cf8bb]">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-[#4fe8c9]">
             <span className="material-symbols-outlined text-sm">verified</span>
             Kenya Daycare Marketplace Platform
           </div>
@@ -105,7 +105,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
             Find Safe & Verified Daycares Near You
           </h2>
           <p className="text-sm md:text-base text-white/90 font-medium max-w-xl mx-auto">
-            Explore trusted daycare centers with flexible weekly payments (<span className="text-[#6cf8bb] font-bold">Lipa Mdogo Mdogo</span>) & M-Pesa automated receipts.
+            Explore trusted daycare centers with flexible weekly payments (<span className="text-[#4fe8c9] font-bold">Lipa Mdogo Mdogo</span>) & M-Pesa automated receipts.
           </p>
 
           <form 
@@ -121,7 +121,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 placeholder="Search daycare name or location (e.g. Westlands, Kilimani, Nairobi)..."
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl border-0 text-sm text-[#121c2a] bg-white shadow-inner focus:ring-2 focus:ring-[#004ac6] outline-none"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl border-0 text-sm text-[#0b2a3c] bg-white shadow-inner focus:ring-2 focus:ring-[#0b6e99] outline-none"
               />
             </div>
             <button 
@@ -136,20 +136,20 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
       </div>
 
       {/* Filter Chips Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#e6eeff] pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#dcf0f8] pb-4">
         <div>
-          <h3 className="text-xl font-bold text-[#121c2a] font-display flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#004ac6]">storefront</span>
+          <h3 className="text-xl font-bold text-[#0b2a3c] font-display flex items-center gap-2">
+            <span className="material-symbols-outlined text-[#0b6e99]">storefront</span>
             Available Daycare Centers ({filteredSchools.length})
           </h3>
           <p className="text-xs text-[#737686]">Verified licensed centers in Kenya</p>
         </div>
 
-        <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-[#e6eeff]">
+        <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-[#dcf0f8]">
           <button
             onClick={() => setActiveFilter('all')}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-              activeFilter === 'all' ? 'bg-[#004ac6] text-white shadow-sm' : 'text-[#737686] hover:text-[#121c2a]'
+              activeFilter === 'all' ? 'bg-[#0b6e99] text-white shadow-sm' : 'text-[#737686] hover:text-[#0b2a3c]'
             }`}
           >
             All Daycares
@@ -157,7 +157,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
           <button
             onClick={() => setActiveFilter('verified')}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1 ${
-              activeFilter === 'verified' ? 'bg-[#006c49] text-white shadow-sm' : 'text-[#737686] hover:text-[#121c2a]'
+              activeFilter === 'verified' ? 'bg-[#009c84] text-white shadow-sm' : 'text-[#737686] hover:text-[#0b2a3c]'
             }`}
           >
             <span className="material-symbols-outlined text-xs">verified</span>
@@ -172,7 +172,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
           <div
             key={school.id}
             onClick={() => setSelectedSchool(school)}
-            className="bg-white rounded-3xl border border-[#e6eeff] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-200 cursor-pointer flex flex-col group"
+            className="bg-white rounded-3xl border border-[#dcf0f8] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-200 cursor-pointer flex flex-col group"
           >
             <div className="relative h-32 bg-slate-200">
               <img 
@@ -182,7 +182,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 onError={(e) => { const img = e.currentTarget as HTMLImageElement; if (!img.dataset.fallback) { img.dataset.fallback = '1'; img.src = 'https://images.unsplash.com/photo-1576495199011-eb94736d05d6?auto=format&fit=crop&w=800&q=80'; } }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
-                <h4 className="text-lg font-bold text-white group-hover:text-[#6cf8bb] transition-colors font-display">
+                <h4 className="text-lg font-bold text-white group-hover:text-[#4fe8c9] transition-colors font-display">
                   {school.name}
                 </h4>
                 <p className="text-xs text-white/80 flex items-center gap-1 mt-0.5">
@@ -204,17 +204,17 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 {school.about || 'Trusted daycare provider offering early childhood education & intake services.'}
               </p>
 
-              <div className="pt-3 border-t border-[#f8f9ff] flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-[#f3fafd] flex items-center justify-between text-xs">
                 <span className="text-[#737686] font-medium flex items-center gap-1">
                   <span className="material-symbols-outlined text-sm">school</span>
                   {school.servicesCount} Program(s)
                 </span>
-                <span className="font-bold text-[#006c49]">
+                <span className="font-bold text-[#009c84]">
                   From KES {school.startingPrice ? school.startingPrice.toLocaleString() : 'N/A'} / mo
                 </span>
               </div>
 
-              <button className="w-full btn btn-secondary text-xs py-2.5 rounded-xl group-hover:bg-[#004ac6] group-hover:text-white transition-all">
+              <button className="w-full btn btn-secondary text-xs py-2.5 rounded-xl group-hover:bg-[#0b6e99] group-hover:text-white transition-all">
                 View Programs & Reviews
               </button>
             </div>
@@ -227,13 +227,13 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-0 md:p-6 animate-fadeIn">
           {/* Floating Close Button */}
           <button 
-            className="fixed top-4 right-4 md:top-8 md:right-8 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-[#121c2a] shadow-xl hover:bg-white hover:text-red-600 transition-all z-[60]"
+            className="fixed top-4 right-4 md:top-8 md:right-8 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-[#0b2a3c] shadow-xl hover:bg-white hover:text-red-600 transition-all z-[60]"
             onClick={() => setSelectedSchool(null)}
           >
             <span className="material-symbols-outlined text-xl">close</span>
           </button>
 
-          <div className="bg-[#f8f9ff] w-full md:w-[600px] lg:w-[800px] h-full md:h-[90vh] md:rounded-3xl overflow-y-auto shadow-2xl relative flex flex-col">
+          <div className="bg-[#f3fafd] w-full md:w-[600px] lg:w-[800px] h-full md:h-[90vh] md:rounded-3xl overflow-y-auto shadow-2xl relative flex flex-col">
             
             {/* Banner Section */}
             <div className="relative h-64 shrink-0 bg-slate-300">
@@ -266,7 +266,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               
               {/* About Us */}
               <div className="bg-white p-5 rounded-3xl shadow-sm space-y-4">
-                <h3 className="text-lg font-extrabold font-display text-[#121c2a]">About Us</h3>
+                <h3 className="text-lg font-extrabold font-display text-[#0b2a3c]">About Us</h3>
                 <p className="text-sm text-[#434655] leading-relaxed">
                   {selectedSchool.about || `At ${selectedSchool.name}, we provide a nurturing, safe, and stimulating environment for your little ones. Our play-based curriculum is designed to foster creativity, social skills, and early cognitive development. We believe every child deserves a warm, home-like atmosphere where they can explore and grow with confidence.`}
                 </p>
@@ -283,9 +283,9 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                   return (
                     <div className="grid grid-cols-2 gap-3 pt-2">
                       {chips.map((c, i) => (
-                        <div key={i} className="bg-[#f8f9ff] rounded-2xl p-3 flex flex-col items-center justify-center gap-1 text-[#004ac6] border border-[#e6eeff] text-center">
+                        <div key={i} className="bg-[#f3fafd] rounded-2xl p-3 flex flex-col items-center justify-center gap-1 text-[#0b6e99] border border-[#dcf0f8] text-center">
                           <span className="material-symbols-outlined text-2xl">{c.icon}</span>
-                          <span className="text-xs font-bold text-[#121c2a]">{c.label}</span>
+                          <span className="text-xs font-bold text-[#0b2a3c]">{c.label}</span>
                         </div>
                       ))}
                     </div>
@@ -296,7 +296,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               {/* Gallery — photos uploaded by the school */}
               {((selectedSchool as any).coverImages || []).length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="text-lg font-extrabold font-display text-[#121c2a] px-1">Gallery</h3>
+                  <h3 className="text-lg font-extrabold font-display text-[#0b2a3c] px-1">Gallery</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {((selectedSchool as any).coverImages as string[]).map((url, i) => (
                       <a key={url + i} href={url} target="_blank" rel="noreferrer" className="h-32 rounded-3xl overflow-hidden bg-slate-200 block">
@@ -311,9 +311,9 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               <div className="bg-white p-5 rounded-3xl shadow-sm space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <h3 className="text-lg font-extrabold font-display text-[#121c2a]">Reviews & Ratings</h3>
+                    <h3 className="text-lg font-extrabold font-display text-[#0b2a3c]">Reviews & Ratings</h3>
                     <div className="flex items-center gap-3">
-                      <span className="text-4xl font-light text-[#121c2a]">
+                      <span className="text-4xl font-light text-[#0b2a3c]">
                         {selectedSchoolReviews?.totalReviews ? selectedSchoolReviews.averageRating.toFixed(1) : '–'}
                       </span>
                       <div className="flex flex-col">
@@ -325,7 +325,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     </div>
                   </div>
                   {(selectedSchoolReviews?.reviews.length || 0) > 3 && (
-                    <button onClick={() => setShowAllReviews((v) => !v)} className="text-sm font-bold text-[#004ac6]">
+                    <button onClick={() => setShowAllReviews((v) => !v)} className="text-sm font-bold text-[#0b6e99]">
                       {showAllReviews ? 'Show less' : `See all (${selectedSchoolReviews?.reviews.length})`}
                     </button>
                   )}
@@ -335,9 +335,9 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 {selectedSchoolReviews && selectedSchoolReviews.reviews.length > 0 ? (
                   <div className="space-y-3">
                     {(showAllReviews ? selectedSchoolReviews.reviews : selectedSchoolReviews.reviews.slice(0, 3)).map((r) => (
-                      <div key={r.id} className="border border-[#e6eeff] bg-[#f8f9ff] rounded-2xl p-3 space-y-1">
+                      <div key={r.id} className="border border-[#dcf0f8] bg-[#f3fafd] rounded-2xl p-3 space-y-1">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-bold text-[#121c2a]">{r.parentName}</span>
+                          <span className="text-sm font-bold text-[#0b2a3c]">{r.parentName}</span>
                           <span className="text-[10px] text-[#737686]">{new Date(r.createdAt).toLocaleDateString()}</span>
                         </div>
                         <Stars value={r.rating} size="text-sm" />
@@ -351,15 +351,15 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
 
                 {/* Write / edit review (parents only) */}
                 {!currentUser ? (
-                  <p className="text-xs text-[#737686] border-t border-[#e6eeff] pt-3">Sign in as a parent to leave a review.</p>
+                  <p className="text-xs text-[#737686] border-t border-[#dcf0f8] pt-3">Sign in as a parent to leave a review.</p>
                 ) : isParent && reviewStatus && !reviewStatus.canReview ? (
-                  <p className="text-xs text-[#737686] border-t border-[#e6eeff] pt-3 flex items-start gap-1">
+                  <p className="text-xs text-[#737686] border-t border-[#dcf0f8] pt-3 flex items-start gap-1">
                     <span className="material-symbols-outlined text-sm">info</span>
                     {reviewStatus.reason}
                   </p>
                 ) : isParent && reviewStatus?.canReview ? (
-                  <form onSubmit={handleReviewFormSubmit} className="border-t border-[#e6eeff] pt-4 space-y-3">
-                    <h4 className="text-sm font-extrabold text-[#121c2a]">
+                  <form onSubmit={handleReviewFormSubmit} className="border-t border-[#dcf0f8] pt-4 space-y-3">
+                    <h4 className="text-sm font-extrabold text-[#0b2a3c]">
                       {reviewStatus.myReview ? 'Update your review' : 'Rate this daycare'}
                     </h4>
                     <div className="flex items-center gap-1" onMouseLeave={() => setHoverRating(0)}>
@@ -387,12 +387,12 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                       onChange={(e) => setNewComment(e.target.value)}
                       maxLength={1000}
                       placeholder="How has your child's experience been? Staff, safety, meals, communication..."
-                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#c3c6d7] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none"
                     />
                     <button
                       type="submit"
                       disabled={submittingReview || newComment.trim().length < 3}
-                      className="w-full btn bg-[#004ac6] text-white py-2.5 rounded-full font-bold disabled:opacity-50"
+                      className="w-full btn bg-[#0b6e99] text-white py-2.5 rounded-full font-bold disabled:opacity-50"
                     >
                       {submittingReview ? 'Submitting...' : reviewStatus.myReview ? 'Update review' : 'Submit review'}
                     </button>
@@ -402,26 +402,26 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
 
               {/* Available Services */}
               <div className="space-y-3">
-                <h3 className="text-lg font-extrabold font-display text-[#121c2a] px-1">Available Services</h3>
+                <h3 className="text-lg font-extrabold font-display text-[#0b2a3c] px-1">Available Services</h3>
                 {selectedSchool.services.map((svc) => (
                   <div key={svc.id} className="bg-white p-5 rounded-3xl shadow-sm space-y-4">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="text-base font-bold text-[#121c2a] font-display">{svc.name}</h4>
+                        <h4 className="text-base font-bold text-[#0b2a3c] font-display">{svc.name}</h4>
                         {svc.description && <p className="text-xs text-[#737686] mt-1">{svc.description}</p>}
                         <p className="text-[11px] text-[#737686] mt-1">
                           {Math.max(0, svc.capacity - svc.currentEnrollmentCount)} of {svc.capacity} places available
                         </p>
                       </div>
                       <div className="text-right">
-                        <div className="text-base font-medium text-[#004ac6]">KES {svc.price.toLocaleString()}</div>
+                        <div className="text-base font-medium text-[#0b6e99]">KES {svc.price.toLocaleString()}</div>
                         <div className="text-[10px] text-[#737686]">/ month</div>
                       </div>
                     </div>
                     
 
                     <button 
-                      className="w-full btn bg-[#004ac6] text-white py-3 rounded-full font-bold shadow-md hover:bg-[#003ea8] transition-colors"
+                      className="w-full btn btn-orange text-white py-3 rounded-full font-bold transition-all"
                       onClick={() => {
                         if (!currentUser || currentUser.role !== UserRole.PARENT) {
                           alert('Please sign in as a Parent to enroll.');

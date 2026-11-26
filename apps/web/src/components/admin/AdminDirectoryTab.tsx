@@ -217,7 +217,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
   const getStatusBadge = (status?: string) => {
     switch (status) {
       case 'ACTIVE':
-        return { label: 'Active', badgeClass: 'bg-[#dbeafe] text-[#1d4ed8]' };
+        return { label: 'Active', badgeClass: 'bg-[#d2ecf7] text-[#085a7e]' };
       case 'SUSPENDED':
         return { label: 'Suspended', badgeClass: 'bg-[#f1f5f9] text-[#475569]' };
       case 'PENDING_PROFILE':
@@ -240,7 +240,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
     <div className="max-w-7xl mx-auto space-y-6 font-sans">
       {/* Toast Notification */}
       {reportToast && (
-        <div className="fixed top-4 right-4 z-50 bg-[#004ac6] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-fadeIn">
+        <div className="fixed top-4 right-4 z-50 bg-[#0b6e99] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-fadeIn">
           <span className="material-symbols-outlined text-xl">analytics</span>
           <div>
             <p className="font-bold text-xs">Real-Time Platform Report</p>
@@ -259,10 +259,10 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
         <div className="space-y-6">
 
           {/* Title & Action Header */}
-          <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-7 shadow-sm space-y-4">
+          <div className="bg-white border border-[#dcf0f8] rounded-3xl p-6 md:p-7 shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <h2 className="text-2xl md:text-3xl font-extrabold text-[#121c2a] font-display tracking-tight">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-[#0b2a3c] font-display tracking-tight">
                   Platform Overview
                 </h2>
                 <p className="text-xs md:text-sm text-[#737686] mt-1 font-medium">
@@ -274,14 +274,14 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 <button
                   onClick={handleGenerateReport}
                   disabled={generatingReport}
-                  className="btn bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs md:text-sm font-bold py-2.5 px-5 rounded-full shadow-md transition-all flex items-center gap-2 whitespace-nowrap"
+                  className="btn bg-[#1188c2] hover:bg-[#085a7e] text-white text-xs md:text-sm font-bold py-2.5 px-5 rounded-full shadow-md transition-all flex items-center gap-2 whitespace-nowrap"
                 >
                   <span className="material-symbols-outlined text-lg">assessment</span>
                   {generatingReport ? 'Generating...' : 'Generate Report'}
                 </button>
                 <button
                   onClick={() => setView('add_school')}
-                  className="btn bg-[#004ac6] hover:bg-[#003ea8] text-white text-xs md:text-sm font-bold py-2.5 px-5 rounded-full shadow-md transition-all flex items-center gap-2 whitespace-nowrap"
+                  className="btn bg-[#0b6e99] hover:bg-[#085a7e] text-white text-xs md:text-sm font-bold py-2.5 px-5 rounded-full shadow-md transition-all flex items-center gap-2 whitespace-nowrap"
                 >
                   <span className="material-symbols-outlined text-lg">add</span>
                   Add School
@@ -293,9 +293,9 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
               
               {/* Total Users (Dynamic) */}
-              <div className="bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] border border-[#e2e8f0] rounded-2xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex flex-col justify-between space-y-4 hover:-translate-y-1 hover:shadow-[0_8px_20px_-6px_rgba(6,81,237,0.15)] transition-all duration-300">
+              <div className="bg-gradient-to-br from-[#f4fafc] to-[#f1f5f9] border border-[#e2e8f0] rounded-2xl p-5 shadow-[0_2px_10px_-3px_rgba(11,110,153,0.1)] flex flex-col justify-between space-y-4 hover:-translate-y-1 hover:shadow-[0_8px_20px_-6px_rgba(11,110,153,0.15)] transition-all duration-300">
                 <div className="flex justify-between items-start">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] text-white flex items-center justify-center font-bold shadow-lg shadow-blue-500/30">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1ea0d8] to-[#085a7e] text-white flex items-center justify-center font-bold shadow-lg shadow-sky-500/30">
                     <span className="material-symbols-outlined text-2xl">group</span>
                   </div>
                   <span className="text-[10px] font-bold text-[#16a34a] bg-[#dcfce7] border border-[#bbf7d0] px-2.5 py-1 rounded-full flex items-center gap-0.5 shadow-sm">
@@ -305,14 +305,14 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-[#64748b] uppercase tracking-wider">Total Users</p>
-                  <p className="text-3xl font-extrabold text-[#0f172a] font-display mt-0.5">
+                  <p className="text-3xl font-extrabold text-[#082233] font-display mt-0.5">
                     {totalUsers}
                   </p>
                 </div>
               </div>
 
               {/* Total Daycare Centres */}
-              <div className="bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] border border-[#e2e8f0] rounded-2xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex flex-col justify-between space-y-4 hover:-translate-y-1 hover:shadow-[0_8px_20px_-6px_rgba(6,81,237,0.15)] transition-all duration-300">
+              <div className="bg-gradient-to-br from-[#f4fafc] to-[#f1f5f9] border border-[#e2e8f0] rounded-2xl p-5 shadow-[0_2px_10px_-3px_rgba(11,110,153,0.1)] flex flex-col justify-between space-y-4 hover:-translate-y-1 hover:shadow-[0_8px_20px_-6px_rgba(11,110,153,0.15)] transition-all duration-300">
                 <div className="flex justify-between items-start">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#f59e0b] to-[#d97706] text-white flex items-center justify-center font-bold shadow-lg shadow-amber-500/30">
                     <span className="material-symbols-outlined text-2xl">school</span>
@@ -324,16 +324,16 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-[#64748b] uppercase tracking-wider">Total Daycare Centres</p>
-                  <p className="text-3xl font-extrabold text-[#0f172a] font-display mt-0.5">
+                  <p className="text-3xl font-extrabold text-[#082233] font-display mt-0.5">
                     {totalSchools}
                   </p>
                 </div>
               </div>
 
               {/* Active Programs */}
-              <div className="bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] border border-[#e2e8f0] rounded-2xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex flex-col justify-between space-y-4 hover:-translate-y-1 hover:shadow-[0_8px_20px_-6px_rgba(6,81,237,0.15)] transition-all duration-300">
+              <div className="bg-gradient-to-br from-[#f4fafc] to-[#f1f5f9] border border-[#e2e8f0] rounded-2xl p-5 shadow-[0_2px_10px_-3px_rgba(11,110,153,0.1)] flex flex-col justify-between space-y-4 hover:-translate-y-1 hover:shadow-[0_8px_20px_-6px_rgba(11,110,153,0.15)] transition-all duration-300">
                 <div className="flex justify-between items-start">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#10b981] to-[#047857] text-white flex items-center justify-center font-bold shadow-lg shadow-emerald-500/30">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#14c9a6] to-[#00876f] text-white flex items-center justify-center font-bold shadow-lg shadow-emerald-500/30">
                     <span className="material-symbols-outlined text-2xl">widgets</span>
                   </div>
                   <span className="text-[10px] font-bold text-[#16a34a] bg-[#dcfce7] border border-[#bbf7d0] px-2.5 py-1 rounded-full flex items-center gap-0.5 shadow-sm">
@@ -343,7 +343,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-[#64748b] uppercase tracking-wider">Active Programs</p>
-                  <p className="text-3xl font-extrabold text-[#0f172a] font-display mt-0.5">
+                  <p className="text-3xl font-extrabold text-[#082233] font-display mt-0.5">
                     {totalActivePrograms}
                   </p>
                 </div>
@@ -353,12 +353,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
           </div>
 
           {/* Interactive School Directory */}
-          <div className="bg-white border border-[#e6eeff] rounded-3xl shadow-sm overflow-hidden">
+          <div className="bg-white border border-[#dcf0f8] rounded-3xl shadow-sm overflow-hidden">
             
             {/* Search & Filter Header */}
-            <div className="p-5 md:p-6 border-b border-[#e6eeff] bg-gradient-to-b from-[#f8f9ff] to-white space-y-4">
+            <div className="p-5 md:p-6 border-b border-[#dcf0f8] bg-gradient-to-b from-[#f3fafd] to-white space-y-4">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h3 className="text-lg md:text-xl font-extrabold text-[#121c2a] font-display">
+                <h3 className="text-lg md:text-xl font-extrabold text-[#0b2a3c] font-display">
                   School Directory ({displayedSchools.length})
                 </h3>
                 
@@ -371,7 +371,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                     placeholder="Search schools..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 text-sm rounded-full border border-[#cbd5e1] bg-white focus:ring-2 focus:ring-[#2563eb] outline-none transition-all"
+                    className="w-full pl-9 pr-4 py-2 text-sm rounded-full border border-[#cbd5e1] bg-white focus:ring-2 focus:ring-[#1188c2] outline-none transition-all"
                   />
                 </div>
               </div>
@@ -390,7 +390,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                     onClick={() => setStatusFilter(filter.id as any)}
                     className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
                       statusFilter === filter.id
-                        ? 'bg-[#121c2a] text-white shadow-md'
+                        ? 'bg-[#0b2a3c] text-white shadow-md'
                         : 'bg-[#f1f5f9] text-[#64748b] hover:bg-[#e2e8f0]'
                     }`}
                   >
@@ -400,14 +400,14 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
               </div>
             </div>
 
-            <div className="p-5 md:p-6 bg-[#f8f9ff]">
+            <div className="p-5 md:p-6 bg-[#f3fafd]">
               {displayedSchools.length === 0 ? (
                 <div className="py-16 text-center space-y-4">
                   <div className="w-20 h-20 rounded-full bg-white shadow-sm border border-[#e2e8f0] text-[#94a3b8] mx-auto flex items-center justify-center font-bold">
                     <span className="material-symbols-outlined text-4xl">search_off</span>
                   </div>
                   <div>
-                    <p className="font-bold text-[#121c2a] text-lg font-display">No Schools Found</p>
+                    <p className="font-bold text-[#0b2a3c] text-lg font-display">No Schools Found</p>
                     <p className="text-sm text-[#64748b] max-w-sm mx-auto mt-1">
                       {totalSchools === 0 
                         ? "There are no childcare schools in the database yet." 
@@ -417,7 +417,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   {totalSchools === 0 && (
                     <button
                       onClick={() => setView('add_school')}
-                      className="btn bg-[#004ac6] hover:bg-[#003ea8] text-white text-sm font-bold py-2.5 px-6 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all inline-flex items-center gap-2 mt-4"
+                      className="btn bg-[#0b6e99] hover:bg-[#085a7e] text-white text-sm font-bold py-2.5 px-6 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all inline-flex items-center gap-2 mt-4"
                     >
                       <span className="material-symbols-outlined text-lg">add_business</span>
                       Onboard First School
@@ -435,7 +435,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                         className="bg-white rounded-2xl shadow-sm border border-[#e2e8f0] overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group relative"
                       >
                         {/* Card Header Gradient Banner */}
-                        <div className="h-20 bg-gradient-to-r from-[#e0e7ff] via-[#dbeafe] to-[#e0e7ff] relative">
+                        <div className="h-20 bg-gradient-to-r from-[#d6eef7] via-[#d2ecf7] to-[#d6eef7] relative">
                           <span className={`absolute top-3 right-3 text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-sm ${badge.badgeClass}`}>
                             {badge.label}
                           </span>
@@ -443,12 +443,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                         
                         <div className="p-5 pt-0 flex-1 flex flex-col">
                           {/* Floating Avatar */}
-                          <div className="w-16 h-16 rounded-2xl bg-white border-4 border-white shadow-md text-[#2563eb] flex items-center justify-center font-bold -mt-8 mb-3 shrink-0 relative z-10">
+                          <div className="w-16 h-16 rounded-2xl bg-white border-4 border-white shadow-md text-[#1188c2] flex items-center justify-center font-bold -mt-8 mb-3 shrink-0 relative z-10">
                             <span className="material-symbols-outlined text-3xl">domain</span>
                           </div>
                           
                           <div className="mb-4">
-                            <h4 className="font-extrabold text-[#0f172a] text-lg truncate font-display group-hover:text-[#2563eb] transition-colors">
+                            <h4 className="font-extrabold text-[#082233] text-lg truncate font-display group-hover:text-[#1188c2] transition-colors">
                               {item.name}
                             </h4>
                             <p className="text-xs text-[#64748b] flex items-center gap-1 mt-1 truncate">
@@ -479,14 +479,14 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                           <div className="mt-auto pt-4 border-t border-[#f1f5f9] grid grid-cols-4 gap-2">
                             <button 
                               onClick={() => { setEditModalSchool(item); setEditSchoolName(item.name); setEditCityRegion(item.location || ''); }}
-                              className="w-full flex items-center justify-center py-2 rounded-xl hover:bg-[#f1f5f9] text-[#475569] hover:text-[#2563eb] transition-colors"
+                              className="w-full flex items-center justify-center py-2 rounded-xl hover:bg-[#f1f5f9] text-[#475569] hover:text-[#1188c2] transition-colors"
                               title="Edit Profile"
                             >
                               <span className="material-symbols-outlined text-[20px]">edit</span>
                             </button>
                             <button 
                               onClick={() => openCredentialsModal(item)}
-                              className="w-full flex items-center justify-center py-2 rounded-xl hover:bg-[#f1f5f9] text-[#475569] hover:text-[#10b981] transition-colors"
+                              className="w-full flex items-center justify-center py-2 rounded-xl hover:bg-[#f1f5f9] text-[#475569] hover:text-[#14c9a6] transition-colors"
                               title="Payment Credentials"
                             >
                               <span className="material-symbols-outlined text-[20px]">vpn_key</span>
@@ -537,12 +537,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
             <button
               type="button"
               onClick={() => setView('overview')}
-              className="text-xs md:text-sm font-bold text-[#2563eb] hover:underline inline-flex items-center gap-1.5 mb-2 focus:outline-none"
+              className="text-xs md:text-sm font-bold text-[#1188c2] hover:underline inline-flex items-center gap-1.5 mb-2 focus:outline-none"
             >
               <span className="material-symbols-outlined text-base">arrow_back</span>
               Back to Dashboard
             </button>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-[#121c2a] font-display tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-[#0b2a3c] font-display tracking-tight">
               Add New School
             </h2>
             <p className="text-xs md:text-sm text-[#737686] mt-1 font-medium">
@@ -551,19 +551,19 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
           </div>
 
           {/* CARD 1: Basic Details */}
-          <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-7 shadow-sm space-y-5">
+          <div className="bg-white border border-[#dcf0f8] rounded-3xl p-6 md:p-7 shadow-sm space-y-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#2563eb] text-white flex items-center justify-center font-bold shadow-xs">
+              <div className="w-10 h-10 rounded-2xl bg-[#1188c2] text-white flex items-center justify-center font-bold shadow-xs">
                 <span className="material-symbols-outlined text-2xl">domain</span>
               </div>
-              <h3 className="text-lg md:text-xl font-extrabold text-[#121c2a] font-display">
+              <h3 className="text-lg md:text-xl font-extrabold text-[#0b2a3c] font-display">
                 Basic Details
               </h3>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5">
                   Daycare Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -572,12 +572,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   placeholder="e.g. Sunshine Daycare"
                   value={schoolName}
                   onChange={(e) => setSchoolName(e.target.value)}
-                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#2563eb] outline-none transition-all placeholder:text-[#94a3b8]"
+                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#1188c2] outline-none transition-all placeholder:text-[#94a3b8]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5">
                   City/Region <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -586,12 +586,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   placeholder="e.g. Nairobi"
                   value={cityRegion}
                   onChange={(e) => setCityRegion(e.target.value)}
-                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#2563eb] outline-none transition-all placeholder:text-[#94a3b8]"
+                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#1188c2] outline-none transition-all placeholder:text-[#94a3b8]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5">
                   Primary Contact Number
                 </label>
                 <input
@@ -599,12 +599,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   placeholder="+254 XXX XXX XXX"
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
-                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#2563eb] outline-none transition-all placeholder:text-[#94a3b8]"
+                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#1188c2] outline-none transition-all placeholder:text-[#94a3b8]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5">
                   Administrator Email
                 </label>
                 <input
@@ -613,12 +613,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   placeholder="admin@school.com"
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
-                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#2563eb] outline-none transition-all placeholder:text-[#94a3b8]"
+                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#1188c2] outline-none transition-all placeholder:text-[#94a3b8]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5">
                   Administrator Password <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -628,12 +628,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   placeholder="At least 6 characters"
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
-                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#2563eb] outline-none transition-all placeholder:text-[#94a3b8]"
+                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#1188c2] outline-none transition-all placeholder:text-[#94a3b8]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5">
                   Confirm Administrator Password <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -643,7 +643,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   placeholder="Re-enter the password"
                   value={confirmAdminPassword}
                   onChange={(e) => setConfirmAdminPassword(e.target.value)}
-                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#2563eb] outline-none transition-all placeholder:text-[#94a3b8]"
+                  className="w-full px-4 py-3 text-sm rounded-xl border border-[#cbd5e1] bg-[#ffffff] focus:ring-2 focus:ring-[#1188c2] outline-none transition-all placeholder:text-[#94a3b8]"
                 />
                 {confirmAdminPassword && adminPassword !== confirmAdminPassword && (
                   <p className="text-xs text-red-600 mt-1.5">Passwords do not match.</p>
@@ -653,13 +653,13 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
           </div>
 
           {/* CARD 2: M-Pesa Integration (STARTS BLANK - NOT PRE-FILLED) */}
-          <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-7 shadow-sm space-y-5">
+          <div className="bg-white border border-[#dcf0f8] rounded-3xl p-6 md:p-7 shadow-sm space-y-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#10b981] text-white flex items-center justify-center font-bold shadow-xs">
+              <div className="w-10 h-10 rounded-2xl bg-[#14c9a6] text-white flex items-center justify-center font-bold shadow-xs">
                 <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
               </div>
               <div>
-                <h3 className="text-lg md:text-xl font-extrabold text-[#121c2a] font-display">
+                <h3 className="text-lg md:text-xl font-extrabold text-[#0b2a3c] font-display">
                   M-Pesa Integration
                 </h3>
               </div>
@@ -671,9 +671,9 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
             <div className="space-y-4">
               
               {/* Sub-Card 1: M-Pesa Paybill / Till Number */}
-              <div className="border border-[#e2e8f0] bg-[#f8fafc] rounded-2xl p-5 space-y-3">
+              <div className="border border-[#e2e8f0] bg-[#f4fafc] rounded-2xl p-5 space-y-3">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                  <h4 className="font-bold text-[#121c2a] text-sm md:text-base font-display">
+                  <h4 className="font-bold text-[#0b2a3c] text-sm md:text-base font-display">
                     M-Pesa Paybill / Till Number
                   </h4>
                   <span className={`text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shrink-0 ${
@@ -701,7 +701,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                         placeholder="e.g. 174379 or 247247"
                         value={paybillNumber}
                         onChange={(e) => setPaybillNumber(e.target.value)}
-                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-white outline-none focus:ring-2 focus:ring-[#2563eb]"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-white outline-none focus:ring-2 focus:ring-[#1188c2]"
                       />
                     </div>
                     <div>
@@ -713,7 +713,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                         placeholder="M-Pesa Passkey"
                         value={passkey}
                         onChange={(e) => setPasskey(e.target.value)}
-                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-white outline-none focus:ring-2 focus:ring-[#2563eb]"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-white outline-none focus:ring-2 focus:ring-[#1188c2]"
                       />
                     </div>
                   </div>
@@ -722,16 +722,16 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowPaybillInputs(!showPaybillInputs)}
-                  className="w-full sm:w-auto btn bg-[#dbeafe] hover:bg-[#bfdbfe] text-[#2563eb] text-xs font-bold py-2.5 px-6 rounded-xl transition-all"
+                  className="w-full sm:w-auto btn bg-[#d2ecf7] hover:bg-[#b5dcee] text-[#1188c2] text-xs font-bold py-2.5 px-6 rounded-xl transition-all"
                 >
                   {showPaybillInputs ? 'Close Panel' : paybillNumber ? 'Edit Paybill' : 'Configure'}
                 </button>
               </div>
 
               {/* Sub-Card 2: Daraja API Credentials */}
-              <div className="border border-[#e2e8f0] bg-[#f8fafc] rounded-2xl p-5 space-y-3">
+              <div className="border border-[#e2e8f0] bg-[#f4fafc] rounded-2xl p-5 space-y-3">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                  <h4 className="font-bold text-[#121c2a] text-sm md:text-base font-display">
+                  <h4 className="font-bold text-[#0b2a3c] text-sm md:text-base font-display">
                     Daraja API Credentials
                   </h4>
                   <span className={`text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shrink-0 ${
@@ -747,13 +747,13 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 {consumerKey && (
                   <div className="flex items-center gap-2 text-xs text-[#475569]">
                     <span>Consumer Key:</span>
-                    <code className="bg-[#e2e8f0] px-2 py-0.5 rounded text-[11px] font-mono text-[#0f172a]">
+                    <code className="bg-[#e2e8f0] px-2 py-0.5 rounded text-[11px] font-mono text-[#082233]">
                       {showConsumerKey ? consumerKey : 'ck_••••••••••••'}
                     </code>
                     <button
                       type="button"
                       onClick={() => setShowConsumerKey(!showConsumerKey)}
-                      className="text-[#2563eb] hover:text-[#1d4ed8] text-xs font-semibold focus:outline-none"
+                      className="text-[#1188c2] hover:text-[#085a7e] text-xs font-semibold focus:outline-none"
                     >
                       <span className="material-symbols-outlined text-base">
                         {showConsumerKey ? 'visibility_off' : 'visibility'}
@@ -773,7 +773,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                         placeholder="Consumer Key"
                         value={consumerKey}
                         onChange={(e) => setConsumerKey(e.target.value)}
-                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-white outline-none focus:ring-2 focus:ring-[#2563eb]"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-white outline-none focus:ring-2 focus:ring-[#1188c2]"
                       />
                     </div>
                     <div>
@@ -785,7 +785,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                         placeholder="Consumer Secret"
                         value={consumerSecret}
                         onChange={(e) => setConsumerSecret(e.target.value)}
-                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-white outline-none focus:ring-2 focus:ring-[#2563eb]"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-white outline-none focus:ring-2 focus:ring-[#1188c2]"
                       />
                     </div>
                   </div>
@@ -794,7 +794,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowDarajaInputs(!showDarajaInputs)}
-                  className="w-full sm:w-auto btn bg-[#dbeafe] hover:bg-[#bfdbfe] text-[#2563eb] text-xs font-bold py-2.5 px-6 rounded-xl transition-all mt-2"
+                  className="w-full sm:w-auto btn bg-[#d2ecf7] hover:bg-[#b5dcee] text-[#1188c2] text-xs font-bold py-2.5 px-6 rounded-xl transition-all mt-2"
                 >
                   {showDarajaInputs ? 'Close Panel' : consumerKey ? 'Update Keys' : 'Configure Credentials'}
                 </button>
@@ -807,7 +807,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full btn bg-[#004ac6] hover:bg-[#003ea8] text-white text-base font-extrabold py-4 px-8 rounded-full shadow-xl transition-all flex items-center justify-center gap-2.5 active:scale-[0.99]"
+              className="w-full btn bg-[#0b6e99] hover:bg-[#085a7e] text-white text-base font-extrabold py-4 px-8 rounded-full shadow-xl transition-all flex items-center justify-center gap-2.5 active:scale-[0.99]"
             >
               <span className="material-symbols-outlined text-xl">save</span>
               Save &amp; Complete
@@ -822,24 +822,24 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl w-[520px] max-w-full p-6 md:p-8 shadow-2xl space-y-5 animate-fadeIn">
             
-            <div className="flex justify-between items-start border-b border-[#e6eeff] pb-4">
+            <div className="flex justify-between items-start border-b border-[#dcf0f8] pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#004ac6] text-white flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-2xl bg-[#0b6e99] text-white flex items-center justify-center font-bold">
                   <span className="material-symbols-outlined text-xl">vpn_key</span>
                 </div>
                 <div>
-                  <h3 className="text-lg md:text-xl font-extrabold text-[#121c2a] font-display">
+                  <h3 className="text-lg md:text-xl font-extrabold text-[#0b2a3c] font-display">
                     M-Pesa Credentials
                   </h3>
                   <p className="text-xs text-[#737686]">
-                    Assign or Update for <strong className="text-[#004ac6]">{credModalSchool.name}</strong>
+                    Assign or Update for <strong className="text-[#0b6e99]">{credModalSchool.name}</strong>
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setCredModalSchool(null)}
-                className="w-8 h-8 rounded-full bg-[#f8f9ff] text-[#737686] hover:bg-[#e6eeff] flex items-center justify-center"
+                className="w-8 h-8 rounded-full bg-[#f3fafd] text-[#737686] hover:bg-[#dcf0f8] flex items-center justify-center"
               >
                 <span className="material-symbols-outlined text-lg">close</span>
               </button>
@@ -847,7 +847,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
 
             <form onSubmit={handleSaveExistingCredentials} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1">
                   Paybill / Business Shortcode *
                 </label>
                 <input
@@ -856,12 +856,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   placeholder="e.g. 174379 or 247247"
                   value={editPaybill}
                   onChange={(e) => setEditPaybill(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1">
                   Lipa Na M-Pesa Passkey *
                 </label>
                 <input
@@ -870,12 +870,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   placeholder="M-Pesa Passkey"
                   value={editPasskey}
                   onChange={(e) => setEditPasskey(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1">
                   Safaricom Consumer Key *
                 </label>
                 <input
@@ -884,12 +884,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   placeholder="Consumer Key"
                   value={editConsumerKey}
                   onChange={(e) => setEditConsumerKey(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1">
                   Safaricom Consumer Secret *
                 </label>
                 <input
@@ -898,11 +898,11 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   placeholder="Consumer Secret"
                   value={editConsumerSecret}
                   onChange={(e) => setEditConsumerSecret(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none"
                 />
               </div>
 
-              <div className="flex gap-3 justify-end pt-3 border-t border-[#e6eeff]">
+              <div className="flex gap-3 justify-end pt-3 border-t border-[#dcf0f8]">
                 <button
                   type="button"
                   className="btn btn-secondary text-xs px-4 py-2.5 rounded-xl"
@@ -930,24 +930,24 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl w-[520px] max-w-full p-6 md:p-8 shadow-2xl space-y-5 animate-fadeIn">
             
-            <div className="flex justify-between items-start border-b border-[#e6eeff] pb-4">
+            <div className="flex justify-between items-start border-b border-[#dcf0f8] pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#2563eb] text-white flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-2xl bg-[#1188c2] text-white flex items-center justify-center font-bold">
                   <span className="material-symbols-outlined text-xl">edit</span>
                 </div>
                 <div>
-                  <h3 className="text-lg md:text-xl font-extrabold text-[#121c2a] font-display">
+                  <h3 className="text-lg md:text-xl font-extrabold text-[#0b2a3c] font-display">
                     Edit School Profile
                   </h3>
                   <p className="text-xs text-[#737686]">
-                    Update details for <strong className="text-[#2563eb]">{editModalSchool.name}</strong>
+                    Update details for <strong className="text-[#1188c2]">{editModalSchool.name}</strong>
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setEditModalSchool(null)}
-                className="w-8 h-8 rounded-full bg-[#f8f9ff] text-[#737686] hover:bg-[#e6eeff] flex items-center justify-center"
+                className="w-8 h-8 rounded-full bg-[#f3fafd] text-[#737686] hover:bg-[#dcf0f8] flex items-center justify-center"
               >
                 <span className="material-symbols-outlined text-lg">close</span>
               </button>
@@ -955,7 +955,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
 
             <form onSubmit={handleSaveSchoolProfile} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1">
                   Daycare Name *
                 </label>
                 <input
@@ -963,12 +963,12 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   required
                   value={editSchoolName}
                   onChange={(e) => setEditSchoolName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f8f9ff] focus:ring-2 focus:ring-[#2563eb] outline-none"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f3fafd] focus:ring-2 focus:ring-[#1188c2] outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1">
                   City/Region *
                 </label>
                 <input
@@ -976,11 +976,11 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                   required
                   value={editCityRegion}
                   onChange={(e) => setEditCityRegion(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f8f9ff] focus:ring-2 focus:ring-[#2563eb] outline-none"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f3fafd] focus:ring-2 focus:ring-[#1188c2] outline-none"
                 />
               </div>
 
-              <div className="flex gap-3 justify-end pt-3 border-t border-[#e6eeff]">
+              <div className="flex gap-3 justify-end pt-3 border-t border-[#dcf0f8]">
                 <button
                   type="button"
                   className="btn btn-secondary text-xs px-4 py-2.5 rounded-xl"
@@ -991,7 +991,7 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 <button
                   type="submit"
                   disabled={submittingProfile}
-                  className="btn bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs px-5 py-2.5 rounded-xl shadow-md flex items-center gap-1.5"
+                  className="btn bg-[#1188c2] hover:bg-[#085a7e] text-white text-xs px-5 py-2.5 rounded-xl shadow-md flex items-center gap-1.5"
                 >
                   <span className="material-symbols-outlined text-base">save</span>
                   {submittingProfile ? 'Saving...' : 'Save Profile'}
@@ -1012,14 +1012,14 @@ export const AdminDirectoryTab: React.FC<AdminDirectoryTabProps> = ({
                 <span className="material-symbols-outlined text-2xl text-red-600">delete_forever</span>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-[#121c2a] font-display">Delete School?</h3>
+                <h3 className="text-lg font-bold text-[#0b2a3c] font-display">Delete School?</h3>
                 <p className="text-xs text-[#737686] mt-0.5">This action cannot be undone.</p>
               </div>
             </div>
 
             <p className="text-sm text-[#434655] leading-relaxed">
               You are about to permanently delete{' '}
-              <span className="font-bold text-[#121c2a]">{deleteConfirmName}</span> and all
+              <span className="font-bold text-[#0b2a3c]">{deleteConfirmName}</span> and all
               associated data, including the admin account, from the platform. Are you sure?
             </p>
 

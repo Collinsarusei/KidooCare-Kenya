@@ -52,14 +52,14 @@ export const openPlatformReport = (a: PlatformAnalytics, schools: any[]) => {
 
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>KiddoCare Platform Report</title>
 <style>
-  body{font-family:Segoe UI,Arial,sans-serif;color:#121c2a;margin:32px;font-size:13px}
-  h1{color:#004ac6;margin:0} h2{color:#004ac6;font-size:16px;margin:28px 0 8px;border-bottom:2px solid #e6eeff;padding-bottom:4px}
+  body{font-family:Segoe UI,Arial,sans-serif;color:#0b2a3c;margin:32px;font-size:13px}
+  h1{color:#0b6e99;margin:0} h2{color:#0b6e99;font-size:16px;margin:28px 0 8px;border-bottom:2px solid #dcf0f8;padding-bottom:4px}
   .muted{color:#737686} .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
-  .kpi{border:1px solid #e6eeff;border-radius:10px;padding:10px;background:#f8f9ff}
+  .kpi{border:1px solid #dcf0f8;border-radius:10px;padding:10px;background:#f3fafd}
   .kpi b{display:block;font-size:18px;margin-top:4px}
-  table{width:100%;border-collapse:collapse;margin-top:6px} th,td{text-align:left;padding:6px 8px;border-bottom:1px solid #e6eeff}
-  th{background:#eff4ff;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
-  .actions{margin:16px 0} button{background:#004ac6;color:#fff;border:0;padding:8px 16px;border-radius:999px;font-weight:600;cursor:pointer}
+  table{width:100%;border-collapse:collapse;margin-top:6px} th,td{text-align:left;padding:6px 8px;border-bottom:1px solid #dcf0f8}
+  th{background:#e8f6fb;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  .actions{margin:16px 0} button{background:#0b6e99;color:#fff;border:0;padding:8px 16px;border-radius:999px;font-weight:600;cursor:pointer}
   @media print{.actions{display:none} body{margin:12mm}}
 </style></head><body>
 <div class="actions"><button onclick="window.print()">Print / Save as PDF</button></div>

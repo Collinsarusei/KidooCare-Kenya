@@ -1646,7 +1646,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-[#f8f9ff]">
+    <div className="min-h-screen flex flex-col font-sans bg-[#f3fafd]">
       <Toaster position="top-center" />
 
       {/* Global Header Bar */}
@@ -1676,15 +1676,16 @@ export default function App() {
 
       {/* Custom School Header */}
       {currentUser && currentUser.role === UserRole.SCHOOL && (
-        <header className="bg-[#ebf0fa] border-b border-[#d3e0fc] px-4 md:px-8 py-3.5 shadow-sm sticky top-0 z-50 w-full">
+        <header className="bg-[#e4f3f9] border-b border-[#c3e3f1] px-4 md:px-8 py-3.5 shadow-sm sticky top-0 z-50 w-full">
+          <div className="accent-bar absolute inset-x-0 bottom-0 h-[3px]" />
           <div className="w-full mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-[#004ac6] text-white flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-[#0b6e99] text-white flex items-center justify-center font-bold">
               <span className="material-symbols-outlined text-xl">domain</span>
             </div>
             <div className="hidden sm:block">
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-[#004ac6] font-display">
+                <h2 className="text-lg font-bold text-[#0b6e99] font-display">
                   {mySchool?.name || 'My Daycare'}
                 </h2>
                 {mySchool?.verifiedBadge && (
@@ -1702,7 +1703,7 @@ export default function App() {
           <div className="flex items-center gap-4 shrink-0">
           <button
             onClick={() => (activeView === 'contact' ? setActiveView('landing') : handleNavigateContact('TECHNICAL'))}
-            className="text-[#004ac6] hover:underline transition-all flex items-center gap-1 text-sm font-bold"
+            className="text-[#0b6e99] hover:underline transition-all flex items-center gap-1 text-sm font-bold"
           >
             <span className="material-symbols-outlined text-lg">{activeView === 'contact' ? 'dashboard' : 'support_agent'}</span>
             <span className="hidden md:inline">{activeView === 'contact' ? 'Back to dashboard' : 'Help & Contact'}</span>
@@ -2130,13 +2131,13 @@ export default function App() {
       {disputeModalPayment && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl w-[500px] max-w-full p-6 md:p-8 shadow-2xl space-y-5">
-            <div className="flex justify-between items-center border-b border-[#e6eeff] pb-4">
+            <div className="flex justify-between items-center border-b border-[#dcf0f8] pb-4">
               <h3 className="text-lg font-bold text-[#c2410c] font-display flex items-center gap-2">
                 <span className="material-symbols-outlined text-xl">flag</span>
                 Flag Payment Dispute
               </h3>
               <button 
-                className="w-8 h-8 rounded-full bg-[#f8f9ff] text-[#737686] flex items-center justify-center" 
+                className="w-8 h-8 rounded-full bg-[#f3fafd] text-[#737686] flex items-center justify-center" 
                 onClick={() => setDisputeModalPayment(null)}
               >
                 ✕
@@ -2144,12 +2145,12 @@ export default function App() {
             </div>
 
             <p className="text-xs text-[#737686]">
-              Flagging payment for <strong className="text-[#121c2a]">Week {disputeModalPayment.weekNumber}</strong> (KES {disputeModalPayment.amount.toLocaleString()}) for <strong className="text-[#004ac6]">{disputeModalPayment.childName}</strong>.
+              Flagging payment for <strong className="text-[#0b2a3c]">Week {disputeModalPayment.weekNumber}</strong> (KES {disputeModalPayment.amount.toLocaleString()}) for <strong className="text-[#0b6e99]">{disputeModalPayment.childName}</strong>.
             </p>
 
             <form onSubmit={handleCreateDispute} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1">
                   Reason for Dispute *
                 </label>
                 <textarea 
@@ -2158,7 +2159,7 @@ export default function App() {
                   placeholder="Explain issue (e.g. Overpayment, school closure, duplicate M-Pesa push)..." 
                   value={disputeReason} 
                   onChange={(e) => setDisputeReason(e.target.value)} 
-                  className="w-full text-xs p-3 rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none" 
+                  className="w-full text-xs p-3 rounded-xl border border-[#c3c6d7] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none" 
                 />
               </div>
 

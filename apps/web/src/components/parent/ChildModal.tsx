@@ -28,13 +28,13 @@ export const ChildModal: React.FC<ChildModalProps> = ({ initialData, onSave, onC
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-[60] p-4">
       <div className="bg-white rounded-3xl w-[480px] max-w-full p-6 md:p-8 shadow-2xl space-y-6">
-        <div className="flex justify-between items-start border-b border-[#e6eeff] pb-4">
+        <div className="flex justify-between items-start border-b border-[#dcf0f8] pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#004ac6] text-white flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-[#0b6e99] text-white flex items-center justify-center font-bold">
               <span className="material-symbols-outlined text-xl">{initialData ? 'edit' : 'person_add'}</span>
             </div>
             <div>
-              <h3 className="text-xl font-extrabold text-[#004ac6] font-display">
+              <h3 className="text-xl font-extrabold text-[#0b6e99] font-display">
                 {initialData ? 'Edit Child Profile' : 'Add Child Profile'}
               </h3>
               <p className="text-xs text-[#737686]">
@@ -44,7 +44,7 @@ export const ChildModal: React.FC<ChildModalProps> = ({ initialData, onSave, onC
           </div>
           <button 
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-[#f8f9ff] text-[#737686] hover:bg-[#e6eeff] flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-full bg-[#f3fafd] text-[#737686] hover:bg-[#dcf0f8] flex items-center justify-center transition-colors"
           >
             <span className="material-symbols-outlined text-lg">close</span>
           </button>
@@ -52,7 +52,7 @@ export const ChildModal: React.FC<ChildModalProps> = ({ initialData, onSave, onC
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1">
               Child Full Name *
             </label>
             <input 
@@ -61,12 +61,12 @@ export const ChildModal: React.FC<ChildModalProps> = ({ initialData, onSave, onC
               placeholder="e.g. Liam Mwangi" 
               value={name} 
               onChange={(e) => setName(e.target.value)} 
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none transition-all"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1">
               Date of Birth *
             </label>
             <input 
@@ -74,12 +74,12 @@ export const ChildModal: React.FC<ChildModalProps> = ({ initialData, onSave, onC
               required 
               value={dob} 
               onChange={(e) => setDob(e.target.value)} 
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none transition-all"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1">
               Medical / Dietary / Care Notes
             </label>
             <textarea 
@@ -87,7 +87,7 @@ export const ChildModal: React.FC<ChildModalProps> = ({ initialData, onSave, onC
               placeholder="Allergies, emergency contacts, special care needs..." 
               value={notes} 
               onChange={(e) => setNotes(e.target.value)} 
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none transition-all"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none transition-all"
             />
           </div>
 

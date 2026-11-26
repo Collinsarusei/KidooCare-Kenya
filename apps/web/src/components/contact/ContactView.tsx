@@ -37,8 +37,8 @@ const FAQS = [
 ];
 
 const inputCls =
-  'w-full px-4 py-3 text-sm rounded-xl border border-[#c3c6d7] bg-white focus:ring-2 focus:ring-[#004ac6] focus:border-transparent outline-none transition-all';
-const labelCls = 'block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5';
+  'w-full px-4 py-3 text-sm rounded-xl border border-[#c3c6d7] bg-white focus:ring-2 focus:ring-[#0b6e99] focus:border-transparent outline-none transition-all';
+const labelCls = 'block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5';
 
 export const ContactView: React.FC<ContactViewProps> = ({ currentUser, initialTopic = 'PARENT', onBack }) => {
   const [topic, setTopic] = useState<ContactTopic>(initialTopic);
@@ -101,16 +101,17 @@ export const ContactView: React.FC<ContactViewProps> = ({ currentUser, initialTo
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-12 animate-fadeIn">
       {/* HERO */}
-      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#004ac6] via-[#1d4ed8] to-[#006c49] text-white p-8 md:p-12">
+      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#0b6e99] via-[#085a7e] to-[#009c84] text-white p-8 md:p-12">
         <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-white/10" />
         <div className="absolute right-24 -bottom-20 w-48 h-48 rounded-full bg-white/10" />
+        <div className="absolute right-1/3 top-6 w-28 h-28 rounded-full bg-[#ffa24c]/30 blur-2xl" />
         <div className="relative max-w-2xl space-y-3">
           {onBack && (
             <button onClick={onBack} className="text-xs font-bold text-blue-100 hover:text-white flex items-center gap-1 mb-2">
               <span className="material-symbols-outlined text-sm">arrow_back</span> Back
             </button>
           )}
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-white/15 px-3 py-1 rounded-full">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-[#ff7a1a] px-3 py-1 rounded-full shadow-md">
             <span className="material-symbols-outlined text-sm">support_agent</span> We're here to help
           </span>
           <h1 className="text-3xl md:text-4xl font-extrabold font-display leading-tight">Get in touch with KiddoCare</h1>
@@ -128,28 +129,28 @@ export const ContactView: React.FC<ContactViewProps> = ({ currentUser, initialTo
             { icon: 'call', title: 'Phone / WhatsApp', value: '+254 700 000 000', note: 'Mon – Fri, 8:00 AM – 6:00 PM' },
             { icon: 'location_on', title: 'Office', value: 'Nairobi, Kenya', note: 'Serving daycares countrywide' },
           ].map((c) => (
-            <div key={c.title} className="bg-white border border-[#e6eeff] rounded-2xl p-4 flex items-start gap-3 shadow-xs">
-              <div className="w-11 h-11 rounded-xl bg-[#eff4ff] text-[#004ac6] flex items-center justify-center shrink-0">
+            <div key={c.title} className="bg-white border border-[#dcf0f8] rounded-2xl p-4 flex items-start gap-3 shadow-xs">
+              <div className="w-11 h-11 rounded-xl bg-[#e8f6fb] text-[#0b6e99] flex items-center justify-center shrink-0">
                 <span className="material-symbols-outlined">{c.icon}</span>
               </div>
               <div className="min-w-0">
                 <p className="text-[11px] font-bold text-[#737686] uppercase tracking-wider">{c.title}</p>
-                <p className="text-sm font-extrabold text-[#121c2a] select-all break-words">{c.value}</p>
+                <p className="text-sm font-extrabold text-[#0b2a3c] select-all break-words">{c.value}</p>
                 <p className="text-[11px] text-[#737686]">{c.note}</p>
               </div>
             </div>
           ))}
 
-          <div className="bg-white border border-[#e6eeff] rounded-2xl p-4 shadow-xs">
-            <h3 className="text-sm font-extrabold text-[#121c2a] mb-2 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[#004ac6] text-lg">quiz</span> Quick answers
+          <div className="bg-white border border-[#dcf0f8] rounded-2xl p-4 shadow-xs">
+            <h3 className="text-sm font-extrabold text-[#0b2a3c] mb-2 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[#0b6e99] text-lg">quiz</span> Quick answers
             </h3>
-            <div className="divide-y divide-[#e6eeff]">
+            <div className="divide-y divide-[#dcf0f8]">
               {FAQS.map((f, i) => (
                 <div key={f.q}>
                   <button
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    className="w-full flex justify-between items-center py-2.5 text-left text-xs font-bold text-[#121c2a]"
+                    className="w-full flex justify-between items-center py-2.5 text-left text-xs font-bold text-[#0b2a3c]"
                   >
                     {f.q}
                     <span className="material-symbols-outlined text-base text-[#737686]">{openFaq === i ? 'expand_less' : 'expand_more'}</span>
@@ -162,13 +163,13 @@ export const ContactView: React.FC<ContactViewProps> = ({ currentUser, initialTo
         </div>
 
         {/* RIGHT: form */}
-        <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm">
+        <div className="bg-white border border-[#dcf0f8] rounded-3xl p-6 md:p-8 shadow-sm">
           {sent ? (
             <div className="text-center py-12 space-y-4">
               <div className="w-20 h-20 mx-auto rounded-full bg-[#dcfce7] text-[#166534] flex items-center justify-center">
                 <span className="material-symbols-outlined text-4xl">mark_email_read</span>
               </div>
-              <h2 className="text-2xl font-extrabold text-[#121c2a] font-display">Message sent</h2>
+              <h2 className="text-2xl font-extrabold text-[#0b2a3c] font-display">Message sent</h2>
               <p className="text-sm text-[#434655] max-w-sm mx-auto">{sent.message}</p>
               <button onClick={() => setSent(null)} className="btn btn-secondary text-sm px-5 py-2.5 rounded-full">
                 Send another message
@@ -177,7 +178,7 @@ export const ContactView: React.FC<ContactViewProps> = ({ currentUser, initialTo
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <h2 className="text-xl font-extrabold text-[#121c2a] font-display">Send us a message</h2>
+                <h2 className="text-xl font-extrabold text-[#0b2a3c] font-display">Send us a message</h2>
                 <p className="text-xs text-[#737686] mt-0.5">Fields marked * are required.</p>
               </div>
 
@@ -192,12 +193,12 @@ export const ContactView: React.FC<ContactViewProps> = ({ currentUser, initialTo
                       title={t.hint}
                       className={`p-3 rounded-2xl border text-left transition-all ${
                         topic === t.id
-                          ? 'border-[#004ac6] bg-[#eff4ff] ring-2 ring-[#004ac6]/20'
-                          : 'border-[#e2e8f0] hover:border-[#b4c5ff] bg-white'
+                          ? 'border-[#0b6e99] bg-[#e8f6fb] ring-2 ring-[#0b6e99]/20'
+                          : 'border-[#e2e8f0] hover:border-[#a9d6ea] bg-white'
                       }`}
                     >
-                      <span className={`material-symbols-outlined text-xl ${topic === t.id ? 'text-[#004ac6]' : 'text-[#737686]'}`}>{t.icon}</span>
-                      <p className="text-xs font-bold text-[#121c2a] mt-1">{t.label}</p>
+                      <span className={`material-symbols-outlined text-xl ${topic === t.id ? 'text-[#0b6e99]' : 'text-[#737686]'}`}>{t.icon}</span>
+                      <p className="text-xs font-bold text-[#0b2a3c] mt-1">{t.label}</p>
                       <p className="text-[10px] text-[#737686] leading-tight hidden sm:block">{t.hint}</p>
                     </button>
                   ))}
@@ -265,7 +266,7 @@ export const ContactView: React.FC<ContactViewProps> = ({ currentUser, initialTo
               <button
                 type="submit"
                 disabled={sending}
-                className="w-full btn bg-[#004ac6] hover:bg-[#003ea8] text-white text-sm font-extrabold py-3.5 rounded-full shadow-lg flex items-center justify-center gap-2 disabled:opacity-60"
+                className="w-full btn btn-orange text-sm font-extrabold py-3.5 rounded-full flex items-center justify-center gap-2 disabled:opacity-60"
               >
                 <span className="material-symbols-outlined text-lg">{sending ? 'hourglass_top' : 'send'}</span>
                 {sending ? 'Sending...' : 'Send message'}

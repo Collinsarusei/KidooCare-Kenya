@@ -15,21 +15,21 @@ export const DocumentVerifyTab: React.FC<DocumentVerifyTabProps> = ({ adminDocum
     filter === 'PENDING' ? pending : filter === 'VERIFIED' ? adminDocuments.filter((d) => d.verifiedAt) : adminDocuments;
 
   return (
-    <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-[#e6eeff] pb-4">
+    <div className="bg-white border border-[#dcf0f8] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-[#dcf0f8] pb-4">
         <div>
-          <h3 className="text-xl font-bold text-[#004ac6] font-display flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#004ac6]">verified</span>
+          <h3 className="text-xl font-bold text-[#0b6e99] font-display flex items-center gap-2">
+            <span className="material-symbols-outlined text-[#0b6e99]">verified</span>
             Verification Queue ({pending.length} pending)
           </h3>
           <p className="text-xs text-[#737686]">Open each document, review it, then approve or revoke.</p>
         </div>
-        <div className="flex gap-1 bg-[#f8f9ff] border border-[#e6eeff] rounded-full p-1 text-xs font-bold">
+        <div className="flex gap-1 bg-[#f3fafd] border border-[#dcf0f8] rounded-full p-1 text-xs font-bold">
           {(['PENDING', 'VERIFIED', 'ALL'] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 rounded-full ${filter === f ? 'bg-[#004ac6] text-white' : 'text-[#434655]'}`}
+              className={`px-3 py-1.5 rounded-full ${filter === f ? 'bg-[#0b6e99] text-white' : 'text-[#434655]'}`}
             >
               {f === 'PENDING' ? 'Pending' : f === 'VERIFIED' ? 'Verified' : 'All'}
             </button>
@@ -38,9 +38,9 @@ export const DocumentVerifyTab: React.FC<DocumentVerifyTabProps> = ({ adminDocum
       </div>
 
       {shown.length === 0 ? (
-        <div className="text-center py-10 bg-[#f8f9ff] rounded-2xl border border-dashed border-[#c3c6d7] space-y-2">
+        <div className="text-center py-10 bg-[#f3fafd] rounded-2xl border border-dashed border-[#c3c6d7] space-y-2">
           <span className="material-symbols-outlined text-4xl text-[#737686]">task_alt</span>
-          <p className="text-sm font-semibold text-[#121c2a]">Nothing here</p>
+          <p className="text-sm font-semibold text-[#0b2a3c]">Nothing here</p>
           <p className="text-xs text-[#737686]">
             {filter === 'PENDING' ? 'All submitted documents have been reviewed.' : 'No documents match this filter.'}
           </p>
@@ -52,17 +52,17 @@ export const DocumentVerifyTab: React.FC<DocumentVerifyTabProps> = ({ adminDocum
             return (
               <div
                 key={doc.id}
-                className="border border-[#e6eeff] bg-[#f8f9ff] rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-[#b4c5ff] transition-all"
+                className="border border-[#dcf0f8] bg-[#f3fafd] rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-[#a9d6ea] transition-all"
               >
                 <div className="flex items-start gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-[#e6eeff] text-[#004ac6] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-10 h-10 rounded-xl bg-[#dcf0f8] text-[#0b6e99] flex items-center justify-center shrink-0 mt-0.5">
                     <span className="material-symbols-outlined text-xl">description</span>
                   </div>
                   <div className="min-w-0">
-                    <h4 className="font-bold text-[#004ac6] text-sm font-display">{doc.school?.name}</h4>
-                    <p className="text-xs text-[#121c2a] font-semibold mt-0.5">
+                    <h4 className="font-bold text-[#0b6e99] text-sm font-display">{doc.school?.name}</h4>
+                    <p className="text-xs text-[#0b2a3c] font-semibold mt-0.5">
                       {doc.title || doc.type}{' '}
-                      <span className="text-[10px] font-bold text-[#006c49] uppercase ml-1">{doc.type}</span>
+                      <span className="text-[10px] font-bold text-[#009c84] uppercase ml-1">{doc.type}</span>
                     </p>
                     <p className="text-[11px] text-[#737686] mt-0.5 truncate">
                       Uploaded {new Date(doc.uploadedAt).toLocaleString()}

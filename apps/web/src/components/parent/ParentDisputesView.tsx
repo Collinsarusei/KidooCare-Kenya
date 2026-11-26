@@ -8,11 +8,11 @@ interface ParentDisputesViewProps {
 
 export const ParentDisputesView: React.FC<ParentDisputesViewProps> = ({ parentDisputes, onEscalateDispute }) => {
   return (
-    <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
-      <div className="flex justify-between items-center border-b border-[#e6eeff] pb-4">
+    <div className="bg-white border border-[#dcf0f8] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+      <div className="flex justify-between items-center border-b border-[#dcf0f8] pb-4">
         <div>
-          <h3 className="text-xl font-bold text-[#004ac6] font-display flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#004ac6]">flag</span>
+          <h3 className="text-xl font-bold text-[#0b6e99] font-display flex items-center gap-2">
+            <span className="material-symbols-outlined text-[#0b6e99]">flag</span>
             My Raised Payment Disputes ({parentDisputes.length})
           </h3>
           <p className="text-xs text-[#737686]">Track support tickets & M-Pesa refund status</p>
@@ -24,9 +24,9 @@ export const ParentDisputesView: React.FC<ParentDisputesViewProps> = ({ parentDi
       </div>
 
       {parentDisputes.length === 0 ? (
-        <div className="text-center py-10 bg-[#f8f9ff] rounded-2xl border border-dashed border-[#c3c6d7] space-y-2">
+        <div className="text-center py-10 bg-[#f3fafd] rounded-2xl border border-dashed border-[#c3c6d7] space-y-2">
           <span className="material-symbols-outlined text-4xl text-[#737686]">verified</span>
-          <p className="text-sm font-semibold text-[#121c2a]">No Payment Disputes Raised Yet</p>
+          <p className="text-sm font-semibold text-[#0b2a3c]">No Payment Disputes Raised Yet</p>
           <p className="text-xs text-[#737686]">
             You can flag payment issues directly from your Financial Ledger tab.
           </p>
@@ -36,7 +36,7 @@ export const ParentDisputesView: React.FC<ParentDisputesViewProps> = ({ parentDi
           {parentDisputes.map((d) => (
             <div 
               key={d.id} 
-              className="border border-[#e6eeff] bg-[#f8f9ff] rounded-2xl p-5 hover:border-[#b4c5ff] transition-all space-y-3"
+              className="border border-[#dcf0f8] bg-[#f3fafd] rounded-2xl p-5 hover:border-[#a9d6ea] transition-all space-y-3"
             >
               <div className="flex justify-between items-center text-xs">
                 <span className={`badge ${d.status === 'OPEN' ? 'badge-orange' : 'badge-green'}`}>
@@ -47,19 +47,19 @@ export const ParentDisputesView: React.FC<ParentDisputesViewProps> = ({ parentDi
                 </span>
               </div>
 
-              <p className="text-xs text-[#121c2a] font-semibold">
+              <p className="text-xs text-[#0b2a3c] font-semibold">
                 Reason: <span className="font-normal italic text-[#434655]">"{d.reason}"</span>
               </p>
 
               {d.resolutionNote && (
-                <div className="bg-[#e6f7ef] border border-[#6cf8bb] p-3 rounded-xl text-xs text-[#00714d] flex items-center gap-1.5">
+                <div className="bg-[#e1faf4] border border-[#4fe8c9] p-3 rounded-xl text-xs text-[#00876f] flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-base">task_alt</span>
                   <span><strong>Admin Resolution:</strong> {d.resolutionNote}</span>
                 </div>
               )}
 
               {d.status === 'OPEN' && !d.isEscalatedToAdmin && (
-                <div className="pt-3 border-t border-[#e6eeff] flex justify-end">
+                <div className="pt-3 border-t border-[#dcf0f8] flex justify-end">
                   <button 
                     onClick={() => onEscalateDispute(d.id)}
                     className="btn btn-secondary text-xs px-4 py-1.5 rounded-xl border-[#c2410c] text-[#c2410c] hover:bg-[#fff7ed] flex items-center gap-1"
@@ -70,7 +70,7 @@ export const ParentDisputesView: React.FC<ParentDisputesViewProps> = ({ parentDi
                 </div>
               )}
               {d.isEscalatedToAdmin && (
-                <div className="pt-3 border-t border-[#e6eeff]">
+                <div className="pt-3 border-t border-[#dcf0f8]">
                   <p className="text-xs text-[#c2410c] font-bold flex items-center gap-1">
                     <span className="material-symbols-outlined text-[14px]">admin_panel_settings</span>
                     Escalated to Platform Admin

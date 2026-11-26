@@ -34,8 +34,8 @@ interface TutorDashboardProps {
 type Attendance = 'PRESENT' | 'ABSENT';
 
 const inputCls =
-  'w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#c3c6d7] bg-white focus:ring-2 focus:ring-[#004ac6] outline-none';
-const labelCls = 'block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5';
+  'w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#c3c6d7] bg-white focus:ring-2 focus:ring-[#0b6e99] outline-none';
+const labelCls = 'block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5';
 
 export const TutorDashboard: React.FC<TutorDashboardProps> = ({
   schoolRoster,
@@ -187,11 +187,11 @@ export const TutorDashboard: React.FC<TutorDashboardProps> = ({
         />
       )}
 
-      <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
-        <div className="flex justify-between items-center border-b border-[#e6eeff] pb-4">
+      <div className="bg-white border border-[#dcf0f8] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+        <div className="flex justify-between items-center border-b border-[#dcf0f8] pb-4">
           <div>
-            <h2 className="text-2xl font-bold text-[#004ac6] font-display flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#004ac6]">edit_note</span>
+            <h2 className="text-2xl font-bold text-[#0b6e99] font-display flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#0b6e99]">edit_note</span>
               Tutor Dashboard
             </h2>
             <p className="text-xs text-[#737686]">
@@ -215,7 +215,7 @@ export const TutorDashboard: React.FC<TutorDashboardProps> = ({
             {openPickups.map((l) => (
               <div key={l.id} className="bg-white rounded-xl border border-[#fed7aa] p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <p className="font-bold text-sm text-[#121c2a]">{childName(l.childId)}</p>
+                  <p className="font-bold text-sm text-[#0b2a3c]">{childName(l.childId)}</p>
                   {l.healthNotes && <p className="text-xs text-[#9a3412]">{l.healthNotes}</p>}
                   <p className="text-[11px] mt-0.5 font-semibold">
                     {l.pickupAcknowledgedAt ? (
@@ -240,8 +240,8 @@ export const TutorDashboard: React.FC<TutorDashboardProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* LOG FORM */}
           <div>
-            <h3 className="font-bold text-[#121c2a] mb-4">Log a Child's Day</h3>
-            <form onSubmit={handleSubmit} className="space-y-4 border border-[#e6eeff] bg-[#f8f9ff] rounded-2xl p-5">
+            <h3 className="font-bold text-[#0b2a3c] mb-4">Log a Child's Day</h3>
+            <form onSubmit={handleSubmit} className="space-y-4 border border-[#dcf0f8] bg-[#f3fafd] rounded-2xl p-5">
               <div>
                 <label className={labelCls}>Select Child *</label>
                 <select required value={selectedChildId} onChange={(e) => setSelectedChildId(e.target.value)} className={inputCls}>
@@ -279,7 +279,7 @@ export const TutorDashboard: React.FC<TutorDashboardProps> = ({
               </div>
 
               {!isPresent ? (
-                <p className="text-xs text-[#737686] bg-white border border-[#e6eeff] rounded-xl p-3">
+                <p className="text-xs text-[#737686] bg-white border border-[#dcf0f8] rounded-xl p-3">
                   The child will be recorded as <strong>absent</strong> today. The parent sees this in their Daily Logs.
                 </p>
               ) : (
@@ -342,7 +342,7 @@ export const TutorDashboard: React.FC<TutorDashboardProps> = ({
                     <label className="flex items-start gap-2 cursor-pointer">
                       <input type="checkbox" checked={requiresPickup} onChange={(e) => setRequiresPickup(e.target.checked)} className="w-4 h-4 mt-0.5" />
                       <span>
-                        <span className="text-sm font-bold text-[#121c2a]">Parent should pick up the child</span>
+                        <span className="text-sm font-bold text-[#0b2a3c]">Parent should pick up the child</span>
                         <span className="block text-[11px] text-[#737686]">
                           The parent sees an alert at the top of their dashboard (and gets an SMS if SMS is configured), can reply
                           "I'm on my way", and you mark the child as picked up here.
@@ -366,7 +366,7 @@ export const TutorDashboard: React.FC<TutorDashboardProps> = ({
           {/* ATTENDANCE ROSTER */}
           <div>
             <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-              <h3 className="font-bold text-[#121c2a]">Today's Attendance ({activeChildren.length})</h3>
+              <h3 className="font-bold text-[#0b2a3c]">Today's Attendance ({activeChildren.length})</h3>
               <div className="flex gap-1">
                 <button onClick={() => markAll('PRESENT')} className="text-[11px] font-bold px-2.5 py-1 rounded-lg border border-[#86efac] text-[#166534] bg-[#f0fdf4]">All present</button>
                 <button onClick={() => markAll('ABSENT')} className="text-[11px] font-bold px-2.5 py-1 rounded-lg border border-[#fca5a5] text-[#b91c1c] bg-[#fef2f2]">All absent</button>
@@ -374,26 +374,26 @@ export const TutorDashboard: React.FC<TutorDashboardProps> = ({
             </div>
 
             {activeChildren.length === 0 ? (
-              <div className="text-center py-10 bg-[#f8f9ff] rounded-2xl border border-dashed border-[#c3c6d7] text-xs text-[#737686]">
+              <div className="text-center py-10 bg-[#f3fafd] rounded-2xl border border-dashed border-[#c3c6d7] text-xs text-[#737686]">
                 No actively enrolled children at your school yet.
               </div>
             ) : (
-              <div className="bg-white border border-[#e6eeff] rounded-2xl overflow-hidden shadow-xs">
+              <div className="bg-white border border-[#dcf0f8] rounded-2xl overflow-hidden shadow-xs">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-[#f8f9ff] text-[#737686] font-bold text-xs uppercase tracking-wider">
+                  <thead className="bg-[#f3fafd] text-[#737686] font-bold text-xs uppercase tracking-wider">
                     <tr>
                       <th className="px-4 py-3">Child</th>
                       <th className="px-4 py-3 text-center">Attendance</th>
                       <th className="px-4 py-3 text-right">Saved</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#e6eeff]">
+                  <tbody className="divide-y divide-[#dcf0f8]">
                     {activeChildren.map((enr) => {
                       const status = attendance[enr.childId] || 'PRESENT';
                       const saved = logByChild.get(enr.childId);
                       return (
-                        <tr key={enr.childId} className="hover:bg-[#f8f9ff] transition-colors">
-                          <td className="px-4 py-3 font-semibold text-[#121c2a]">{enr.child?.name}</td>
+                        <tr key={enr.childId} className="hover:bg-[#f3fafd] transition-colors">
+                          <td className="px-4 py-3 font-semibold text-[#0b2a3c]">{enr.child?.name}</td>
                           <td className="px-4 py-3">
                             <div className="flex justify-center gap-1">
                               {(['PRESENT', 'ABSENT'] as const).map((a) => (
@@ -429,7 +429,7 @@ export const TutorDashboard: React.FC<TutorDashboardProps> = ({
                     })}
                   </tbody>
                 </table>
-                <div className="p-3 border-t border-[#e6eeff] flex items-center justify-between gap-2 bg-[#f8f9ff]">
+                <div className="p-3 border-t border-[#dcf0f8] flex items-center justify-between gap-2 bg-[#f3fafd]">
                   <span className="text-xs text-[#737686]">
                     {presentCount} present • {absentCount} absent
                   </span>
