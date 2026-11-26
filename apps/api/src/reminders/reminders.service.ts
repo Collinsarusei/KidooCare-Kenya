@@ -17,6 +17,8 @@ export class RemindersService {
       where: {
         status: { in: [WeeklyInstallmentStatus.PENDING, WeeklyInstallmentStatus.OVERDUE] },
         weekStart: { lte: now },
+        // Never chase payment for rejected / ended / waitlisted applications
+        billingCycle: { enrollment: { status: { in: ['ACTIVE', 'PENDING_PAYMENT', 'PENDING_APPROVAL'] } } },
         OR: [
           { reminderSentAt: null },
           { reminderSentAt: { lte: sevenDaysAgo } },

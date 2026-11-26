@@ -8,6 +8,21 @@ interface ParentEnrollmentsViewProps {
   onNavigateToMarketplace: () => void;
 }
 
+const STATUS_LABEL: Record<string, string> = {
+  PENDING_PAYMENT: 'Awaiting payment',
+  PENDING_APPROVAL: 'Awaiting school approval',
+  ACTIVE: 'Active',
+  WAITLISTED: 'Waitlisted',
+  REJECTED: 'Not approved',
+  ENDED: 'Ended',
+};
+
+/** Parent may delete a program that was never paid for and never admitted. */
+const canDelete = (enr: EnrollmentDto) =>
+  ['PENDING_PAYMENT', 'WAITLISTED', 'REJECTED', 'ENDED'].includes(enr.status) &&
+  (enr.totalPaid || 0) === 0 &&
+  (!enr.admissionApprovedAt || enr.status === 'REJECTED');
+
 export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({ 
   myEnrollments, 
   onEndEnrollment,
@@ -20,7 +35,7 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
         <div>
           <h3 className="text-xl font-bold text-[#004ac6] font-display flex items-center gap-2">
             <span className="material-symbols-outlined text-[#004ac6]">assignment_turned_in</span>
-            My Active Program Enrollments ({myEnrollments.length})
+            My Program Enrollments ({myEnrollments.length})
           </h3>
           <p className="text-xs text-[#737686]">Daycare placements & weekly billing schedules</p>
         </div>
@@ -70,13 +85,15 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
                         {enr.child?.name}
                       </h4>
                       <span className={`badge ${
-                        enr.status === 'ACTIVE' 
-                          ? 'badge-green' 
-                          : enr.status === 'WAITLISTED' 
-                            ? 'badge-orange' 
-                            : 'badge-blue'
+                        enr.status === 'ACTIVE'
+                          ? 'badge-green'
+                          : enr.status === 'WAITLISTED' || enr.status === 'PENDING_APPROVAL'
+                            ? 'badge-orange'
+                            : enr.status === 'REJECTED' || enr.status === 'ENDED'
+                              ? 'badge-gray'
+                              : 'badge-blue'
                       }`}>
-                        {enr.status}
+                        {STATUS_LABEL[enr.status] || enr.status}
                       </span>
                     </div>
                     <p className="text-xs font-semibold text-[#121c2a] mt-0.5">
@@ -92,16 +109,17 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
                   <div className="text-base font-extrabold text-[#006c49]">
                     KES {enr.agreedMonthlyPrice.toLocaleString()} / mo
                   </div>
-                  {enr.status === 'PENDING_PAYMENT' && onCancelEnrollment && (
-                    <button 
+                  {canDelete(enr) && onCancelEnrollment && (
+                    <button
                       onClick={() => onCancelEnrollment(enr.id)}
                       className="mt-2 text-xs font-bold flex items-center justify-end gap-1 ml-auto text-red-500 hover:text-red-700"
+                      title="Nothing has been paid and the school has not admitted your child"
                     >
-                      <span className="material-symbols-outlined text-sm">cancel</span>
-                      Cancel Enrollment
+                      <span className="material-symbols-outlined text-sm">delete</span>
+                      Delete program
                     </button>
                   )}
-                  {(enr.status === 'ACTIVE' || enr.status === 'WAITLISTED') && (
+                  {enr.status === 'ACTIVE' && (
                     <button 
                       onClick={() => onEndEnrollment(enr.id)}
                       disabled={enr.status === 'ACTIVE' && ((enr as any).balance?.totalArrears || 0) > 0}
@@ -119,8 +137,40 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
                 </div>
               </div>
 
+              {/* Admission status notices */}
+              {enr.status === 'PENDING_PAYMENT' && (
+                <p className="text-xs bg-white border border-[#e6eeff] rounded-xl p-3 text-[#434655]">
+                  {enr.admissionApprovedAt
+                    ? '✓ The school has approved this admission. Pay the first installment in the Financial Ledger to activate it.'
+                    : 'Pay the first installment in the Financial Ledger. The school will then review and approve the admission.'}
+                </p>
+              )}
+              {enr.status === 'PENDING_APPROVAL' && (
+                <p className="text-xs bg-[#fff7ed] border border-[#fdba74] rounded-xl p-3 text-[#9a3412]">
+                  Payment received ({`KES ${(enr.totalPaid || 0).toLocaleString()}`}). Waiting for <strong>{enr.service?.school?.name}</strong> to approve the
+                  admission. If they cannot admit your child, you will be notified to collect a refund.
+                </p>
+              )}
+              {enr.status === 'REJECTED' && (
+                <div className="text-xs bg-[#fef2f2] border border-[#fecaca] rounded-xl p-3 text-[#991b1b] space-y-1">
+                  <p className="font-bold">The school did not approve this admission.</p>
+                  {enr.rejectionReason && <p>Reason: {enr.rejectionReason}</p>}
+                  {enr.refundStatus === 'PENDING' && (
+                    <p className="font-bold">
+                      Refund due: KES {(enr.refundAmount || 0).toLocaleString()} — please contact or visit {enr.service?.school?.name} to collect it.
+                    </p>
+                  )}
+                  {enr.refundStatus === 'REFUNDED' && (
+                    <p className="text-[#166534] font-bold">
+                      ✓ Refund of KES {(enr.refundAmount || 0).toLocaleString()} recorded by the school
+                      {enr.refundedAt ? ` on ${new Date(enr.refundedAt).toLocaleDateString()}` : ''}{enr.refundNote ? ` (${enr.refundNote})` : ''}.
+                    </p>
+                  )}
+                </div>
+              )}
+
               {/* Weekly Installments Grid */}
-              {enr.billingCycles && enr.billingCycles.length > 0 && (
+              {enr.status !== 'REJECTED' && enr.billingCycles && enr.billingCycles.length > 0 && (
                 <div className="space-y-2">
                   <h5 className="text-xs font-bold text-[#004ac6] uppercase tracking-wider flex items-center gap-1">
                     <span className="material-symbols-outlined text-sm">calendar_month</span>

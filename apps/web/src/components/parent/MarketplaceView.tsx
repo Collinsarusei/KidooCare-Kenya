@@ -203,7 +203,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
                   <span className="flex items-center text-amber-400 gap-1">
                     <span className="material-symbols-outlined text-base fill">star</span>
-                    {selectedSchoolReviews ? selectedSchoolReviews.averageRating : '4.9'} ({selectedSchoolReviews ? selectedSchoolReviews.totalReviews : '120'} reviews)
+                    {selectedSchoolReviews?.totalReviews ? `${selectedSchoolReviews.averageRating} (${selectedSchoolReviews.totalReviews} reviews)` : 'No reviews yet'}
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1">
@@ -224,53 +224,55 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                   {selectedSchool.about || `At ${selectedSchool.name}, we provide a nurturing, safe, and stimulating environment for your little ones. Our play-based curriculum is designed to foster creativity, social skills, and early cognitive development. We believe every child deserves a warm, home-like atmosphere where they can explore and grow with confidence.`}
                 </p>
                 
-                {/* Feature Chips */}
-                <div className="grid grid-cols-2 gap-3 pt-2">
-                  <div className="bg-[#f8f9ff] rounded-2xl p-3 flex flex-col items-center justify-center gap-1 text-[#004ac6] border border-[#e6eeff]">
-                    <span className="material-symbols-outlined text-2xl">child_care</span>
-                    <span className="text-xs font-bold text-[#121c2a]">Ages 1-5</span>
-                  </div>
-                  <div className="bg-[#f8f9ff] rounded-2xl p-3 flex flex-col items-center justify-center gap-1 text-[#004ac6] border border-[#e6eeff]">
-                    <span className="material-symbols-outlined text-2xl">restaurant</span>
-                    <span className="text-xs font-bold text-[#121c2a]">Meals Included</span>
-                  </div>
-                  <div className="bg-[#f8f9ff] rounded-2xl p-3 flex flex-col items-center justify-center gap-1 text-[#004ac6] border border-[#e6eeff]">
-                    <span className="material-symbols-outlined text-2xl">verified_user</span>
-                    <span className="text-xs font-bold text-[#121c2a]">Certified Staff</span>
-                  </div>
-                  <div className="bg-[#f8f9ff] rounded-2xl p-3 flex flex-col items-center justify-center gap-1 text-[#004ac6] border border-[#e6eeff]">
-                    <span className="material-symbols-outlined text-2xl">park</span>
-                    <span className="text-xs font-bold text-[#121c2a]">Outdoor Play</span>
-                  </div>
-                </div>
+                {/* Feature chips from the school's own profile */}
+                {(() => {
+                  const sch: any = selectedSchool;
+                  const chips: { icon: string; label: string }[] = [
+                    ...(sch.ageRange ? [{ icon: 'child_care', label: `Ages ${sch.ageRange}` }] : []),
+                    ...(sch.capacity ? [{ icon: 'groups', label: `Up to ${sch.capacity} children` }] : []),
+                    ...((sch.keyHighlights || []) as string[]).slice(0, 6).map((h) => ({ icon: 'check_circle', label: h })),
+                  ];
+                  if (!chips.length) return null;
+                  return (
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                      {chips.map((c, i) => (
+                        <div key={i} className="bg-[#f8f9ff] rounded-2xl p-3 flex flex-col items-center justify-center gap-1 text-[#004ac6] border border-[#e6eeff] text-center">
+                          <span className="material-symbols-outlined text-2xl">{c.icon}</span>
+                          <span className="text-xs font-bold text-[#121c2a]">{c.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
 
-              {/* Gallery */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-extrabold font-display text-[#121c2a] px-1">Gallery</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="h-32 rounded-3xl overflow-hidden bg-slate-200">
-                     <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=400&q=80" alt="Gallery 1" className="w-full h-full object-cover" />
-                  </div>
-                  <div className="h-32 rounded-3xl overflow-hidden bg-slate-200">
-                     <img src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=400&q=80" alt="Gallery 2" className="w-full h-full object-cover" />
+              {/* Gallery — photos uploaded by the school */}
+              {((selectedSchool as any).coverImages || []).length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-lg font-extrabold font-display text-[#121c2a] px-1">Gallery</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {((selectedSchool as any).coverImages as string[]).map((url, i) => (
+                      <a key={url + i} href={url} target="_blank" rel="noreferrer" className="h-32 rounded-3xl overflow-hidden bg-slate-200 block">
+                        <img src={url} alt={`${selectedSchool.name} photo ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform" />
+                      </a>
+                    ))}
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Reviews */}
               <div className="bg-white p-5 rounded-3xl shadow-sm space-y-3 flex items-center justify-between">
                 <div className="space-y-1">
                   <h3 className="text-lg font-extrabold font-display text-[#121c2a]">Reviews</h3>
                   <div className="flex items-center gap-3">
-                    <span className="text-4xl font-light text-[#121c2a]">{selectedSchoolReviews ? selectedSchoolReviews.averageRating : '4.9'}</span>
+                    <span className="text-4xl font-light text-[#121c2a]">{selectedSchoolReviews?.totalReviews ? selectedSchoolReviews.averageRating : '–'}</span>
                     <div className="flex flex-col">
                       <div className="flex text-amber-400">
                         {[...Array(5)].map((_, i) => (
                            <span key={i} className="material-symbols-outlined text-lg fill">star</span>
                         ))}
                       </div>
-                      <span className="text-[10px] text-[#737686]">Based on {selectedSchoolReviews ? selectedSchoolReviews.totalReviews : '120'} ratings</span>
+                      <span className="text-[10px] text-[#737686]">Based on {selectedSchoolReviews?.totalReviews || 0} ratings</span>
                     </div>
                   </div>
                 </div>

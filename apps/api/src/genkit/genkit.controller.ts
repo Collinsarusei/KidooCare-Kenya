@@ -11,7 +11,11 @@ export class GenkitController {
   @Roles(UserRole.SCHOOL, UserRole.ADMIN)
   @Post('draft-profile')
   async draftProfile(@Body() dto: DraftProfileDto) {
-    return this.genkitService.draftSchoolProfile(dto.schoolName, dto.location, dto.highlights);
+    return this.genkitService.draftSchoolProfile(dto.schoolName, dto.location, dto.highlights, {
+      details: dto.details,
+      ageRange: dto.ageRange,
+      capacity: dto.capacity,
+    });
   }
 
   @Roles(UserRole.SCHOOL, UserRole.ADMIN)

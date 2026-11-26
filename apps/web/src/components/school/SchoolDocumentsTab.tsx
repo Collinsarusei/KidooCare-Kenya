@@ -281,12 +281,9 @@ export const SchoolDocumentsTab: React.FC<SchoolDocumentsTabProps> = ({
         <p className="text-xs text-slate-300 leading-relaxed">
           Having trouble uploading your documents or not sure which ones are required? Our support team is here to guide you.
         </p>
-        <a
-          href="mailto:admin@kiddocare.co.ke?subject=Document%20verification%20help"
-          className="inline-block btn bg-[#dbeafe] hover:bg-[#bfdbfe] text-[#004ac6] text-xs font-bold py-3 px-6 rounded-xl transition-all"
-        >
-          Contact Support
-        </a>
+        <p className="text-xs text-slate-200">
+          Email <strong className="select-all">admin@kiddocare.co.ke</strong> or WhatsApp <strong>+254 700 000 000</strong>
+        </p>
       </div>
     </div>
   );

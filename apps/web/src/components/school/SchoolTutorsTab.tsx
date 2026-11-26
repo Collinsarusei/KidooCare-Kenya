@@ -6,6 +6,9 @@ interface SchoolTutorsTabProps {
   onAddTutor: (data: { name: string; email: string; phone: string; password: string }) => void;
   onUpdateTutor: (tutorId: string, data: { name: string; email: string; phone: string }) => void;
   onRemoveTutor: (tutorId: string) => void;
+  onResendInvite: (tutorId: string) => void;
+  inviteNotice: { email: string; sent: boolean; message: string; url?: string } | null;
+  onDismissInviteNotice: () => void;
 }
 
 export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
@@ -13,7 +16,20 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
   onAddTutor,
   onUpdateTutor,
   onRemoveTutor,
+  onResendInvite,
+  inviteNotice,
+  onDismissInviteNotice,
 }) => {
+  const [copied, setCopied] = useState(false);
+  const copyLink = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.prompt('Copy this invitation link:', url);
+    }
+  };
   const [isAdding, setIsAdding] = useState(false);
   const [editingTutorId, setEditingTutorId] = useState<string | null>(null);
   const [name, setName] = useState('');
@@ -56,6 +72,34 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
 
   return (
     <div className="bg-white border border-[#e6eeff] rounded-3xl p-4 md:p-5 shadow-sm space-y-4">
+      {inviteNotice && (
+        <div
+          className={`rounded-2xl border p-4 text-xs space-y-2 ${
+            inviteNotice.sent ? 'border-[#bbf7d0] bg-[#f0fdf4] text-[#166534]' : 'border-[#fdba74] bg-[#fff7ed] text-[#9a3412]'
+          }`}
+        >
+          <div className="flex justify-between items-start gap-2">
+            <p className="font-bold">
+              {inviteNotice.sent
+                ? `Invitation email sent to ${inviteNotice.email}.`
+                : `The invitation email to ${inviteNotice.email} was NOT sent.`}
+            </p>
+            <button onClick={onDismissInviteNotice} className="font-bold opacity-70 hover:opacity-100">✕</button>
+          </div>
+          {!inviteNotice.sent && inviteNotice.message && <p>{inviteNotice.message}</p>}
+          {inviteNotice.url && !inviteNotice.sent && (
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input readOnly value={inviteNotice.url} className="flex-1 px-3 py-2 rounded-lg border border-[#fdba74] bg-white text-[11px] font-mono" />
+              <button onClick={() => copyLink(inviteNotice.url!)} className="btn btn-primary text-xs px-4 py-2 rounded-lg">
+                {copied ? 'Copied!' : 'Copy link'}
+              </button>
+            </div>
+          )}
+          {!inviteNotice.sent && (
+            <p className="text-[11px] opacity-80">Send this link to the tutor (WhatsApp/SMS). They can also log in with the temporary password you set.</p>
+          )}
+        </div>
+      )}
       <div className="flex justify-between items-center border-b border-[#e6eeff] pb-4">
         <div>
           <h3 className="text-xl font-bold text-[#004ac6] font-display flex items-center gap-2">
@@ -193,19 +237,39 @@ export const SchoolTutorsTab: React.FC<SchoolTutorsTabProps> = ({
                   </span>
 
                   <div className="space-y-2 w-full text-xs text-[#64748b] mb-6">
-                    <a href={`mailto:${tutor.email}`} className="flex items-center justify-center gap-2 hover:text-[#2563eb] transition-colors truncate">
+                    <span className="flex items-center justify-center gap-2 truncate select-all">
                       <span className="material-symbols-outlined text-[16px]">mail</span>
                       {tutor.email}
-                    </a>
+                    </span>
                     <a href={`tel:${tutor.phone}`} className="flex items-center justify-center gap-2 hover:text-[#2563eb] transition-colors">
                       <span className="material-symbols-outlined text-[16px]">call</span>
                       {tutor.phone || 'No phone provided'}
                     </a>
                   </div>
 
-                  {/* Primary Action Button (Bottom) */}
-                  <div className="mt-auto w-full pt-4 border-t border-[#f1f5f9]">
-                    <p className="text-center text-[11px] text-[#64748b]">Direct login enabled. Tutor must change the temporary password after login.</p>
+                  {/* Invitation status + resend */}
+                  <div className="mt-auto w-full pt-4 border-t border-[#f1f5f9] space-y-2">
+                    {(() => {
+                      const inv = (tutor as any).tutorInvitation as { acceptedAt?: string | null; expiresAt?: string } | null;
+                      const active = (tutor as any).mustChangePassword === false || !!inv?.acceptedAt;
+                      if (active) {
+                        return <p className="text-center text-[11px] font-bold text-[#166534]">✓ Account active</p>;
+                      }
+                      const expired = inv?.expiresAt && new Date(inv.expiresAt) < new Date();
+                      return (
+                        <>
+                          <p className={`text-center text-[11px] font-bold ${inv && !expired ? 'text-[#b45309]' : 'text-[#b91c1c]'}`}>
+                            {!inv ? 'No invitation sent yet' : expired ? 'Invitation expired' : 'Invitation pending'}
+                          </p>
+                          <button
+                            onClick={() => onResendInvite(tutor.id)}
+                            className="w-full text-xs font-bold text-[#004ac6] border border-[#c3c6d7] rounded-xl py-2 hover:bg-[#eff4ff]"
+                          >
+                            {inv ? 'Resend invitation' : 'Send invitation'}
+                          </button>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>

@@ -1,9 +1,24 @@
-import { Controller, Post, Get, Param, Body } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Param, Body } from '@nestjs/common';
+import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { EnrollmentsService } from './enrollments.service';
 import { CreateEnrollmentDto } from './dto/create-enrollment.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '@prisma/client';
+
+class RejectAdmissionDto {
+  @IsString()
+  @MinLength(3)
+  @MaxLength(500)
+  reason: string;
+}
+
+class RefundIssuedDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  note?: string;
+}
 
 @Controller()
 export class EnrollmentsController {
@@ -37,6 +52,31 @@ export class EnrollmentsController {
   @Post('enrollments/:id/end')
   async endEnrollment(@Param('id') id: string, @CurrentUser() user: any) {
     return this.enrollmentsService.endEnrollment(id, user.id, user.role);
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.SCHOOL)
+  @Post('enrollments/:id/approve')
+  async approveAdmission(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.enrollmentsService.approveAdmission(id, user.id, user.role);
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.SCHOOL)
+  @Post('enrollments/:id/reject')
+  async rejectAdmission(@Param('id') id: string, @Body() dto: RejectAdmissionDto, @CurrentUser() user: any) {
+    return this.enrollmentsService.rejectAdmission(id, user.id, user.role, dto.reason);
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.SCHOOL)
+  @Post('enrollments/:id/refund-issued')
+  async markRefundIssued(@Param('id') id: string, @Body() dto: RefundIssuedDto, @CurrentUser() user: any) {
+    return this.enrollmentsService.markRefundIssued(id, user.id, user.role, dto.note);
+  }
+
+  /** Parent deletes a program that was never paid for and not admitted by a school. */
+  @Roles(UserRole.PARENT)
+  @Delete('enrollments/:id')
+  async deleteUnpaidEnrollment(@Param('id') id: string, @CurrentUser('id') parentId: string) {
+    return this.enrollmentsService.deleteUnpaidEnrollment(id, parentId);
   }
 
   @Roles(UserRole.PARENT)

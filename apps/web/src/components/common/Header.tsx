@@ -68,12 +68,12 @@ export const Header: React.FC<HeaderProps> = ({
           >
             About KiddoCare
           </button>
-          <a
-            href="mailto:admin@kiddocare.co.ke"
-            className="px-4 py-2 rounded-full hover:text-[#004ac6] transition-all text-[#006c49] no-underline"
+          <button
+            onClick={onNavigateAbout}
+            className="px-4 py-2 rounded-full hover:text-[#004ac6] transition-all text-[#006c49]"
           >
             For Daycares
-          </a>
+          </button>
         </nav>
 
         {/* User Status / Action Buttons (Right) */}
@@ -158,13 +158,15 @@ export const Header: React.FC<HeaderProps> = ({
                 About KiddoCare
               </button>
             )}
-            <a
-              href="mailto:admin@kiddocare.co.ke"
-              className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f8f9ff] text-[#006c49] flex items-center gap-2 no-underline"
-            >
-              <span className="material-symbols-outlined text-lg text-[#006c49]">domain_add</span>
-              For Daycares — Contact Us
-            </a>
+            {onNavigateAbout && (
+              <button
+                onClick={() => { onNavigateAbout(); setMobileMenuOpen(false); }}
+                className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f8f9ff] text-[#006c49] flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-lg text-[#006c49]">domain_add</span>
+                For Daycares — Contact Us
+              </button>
+            )}
           </div>
 
           {!currentUser && (

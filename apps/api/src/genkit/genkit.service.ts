@@ -17,12 +17,17 @@ export class GenkitService {
    * Call the KiddoCare AI service to draft a school profile.
    * Falls back to static template if the AI service is unavailable.
    */
-  async draftSchoolProfile(schoolName: string, location?: string, highlights: string[] = []) {
+  async draftSchoolProfile(
+    schoolName: string,
+    location?: string,
+    highlights: string[] = [],
+    extra: { details?: string; ageRange?: string; capacity?: number } = {},
+  ) {
     try {
       const response = await fetch(`${this.aiServiceUrl}/draftDaycareProfile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schoolName, location, highlights }),
+        body: JSON.stringify({ schoolName, location, highlights, ...extra }),
         signal: AbortSignal.timeout(15000), // 15-second timeout
       });
 
@@ -46,7 +51,9 @@ export class GenkitService {
         'Flexible Lipa Mdogo Mdogo Weekly Billing',
       ];
       return {
-        generatedAbout: `Welcome to ${schoolName}${locationText}! We are a premier, trusted early childhood development and daycare center committed to providing a safe, nurturing, and stimulating environment for your child. Key highlights: ${defaultHighlights.join(', ')}.`,
+        generatedAbout: extra.details?.trim()
+          ? `Welcome to ${schoolName}${locationText}! ${extra.details.trim()}${extra.ageRange ? ` We care for children aged ${extra.ageRange}.` : ''} Key highlights: ${defaultHighlights.join(', ')}.`
+          : `Welcome to ${schoolName}${locationText}! We are a trusted early childhood development and daycare center committed to providing a safe, nurturing, and stimulating environment for your child. Key highlights: ${defaultHighlights.join(', ')}.`,
         suggestedTagline: `${schoolName} — Safe, Nurturing & Affordable Early Childhood Care in ${location || 'Kenya'}`,
         keyFeatures: defaultHighlights,
       };

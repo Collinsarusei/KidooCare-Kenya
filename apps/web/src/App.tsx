@@ -42,7 +42,7 @@ import { SchoolRosterTab } from './components/school/SchoolRosterTab';
 import { SchoolDocumentsTab } from './components/school/SchoolDocumentsTab';
 import { SchoolFinancialsTab } from './components/school/SchoolFinancialsTab';
 import { SchoolProfileTab } from './components/school/SchoolProfileTab';
-import { SchoolProfileWizard } from './components/school/SchoolProfileWizard';
+import { SchoolProfileWizard, AiProfileDraftInput, AiProfileDraftResult } from './components/school/SchoolProfileWizard';
 import { SchoolOverviewTab } from './components/school/SchoolOverviewTab';
 import { SchoolDisputesTab } from './components/school/SchoolDisputesTab';
 import { SchoolTutorsTab } from './components/school/SchoolTutorsTab';
@@ -155,6 +155,7 @@ export default function App() {
   const [schoolDocuments, setSchoolDocuments] = useState<SchoolDocumentDto[]>([]);
   const [schoolDisputes, setSchoolDisputes] = useState<any[]>([]);
   const [schoolTutors, setSchoolTutors] = useState<UserDto[]>([]);
+  const [tutorInviteNotice, setTutorInviteNotice] = useState<{ email: string; sent: boolean; message: string; url?: string } | null>(null);
   const [submittingDoc, setSubmittingDoc] = useState(false);
 
   // Tutor State
@@ -709,7 +710,7 @@ export default function App() {
           setStkPhone(currentUser?.phone || '');
           setEnrollingService(null);
         } else {
-          setSuccessMsg(`Enrollment created! Please navigate to your Ledger to pay the first installment and activate the enrollment.`);
+          setSuccessMsg(`Application created! Pay the first installment in your Ledger — the school will then review and approve the admission.`);
           setEnrollingService(null);
         }
       }
@@ -984,28 +985,90 @@ export default function App() {
 
   const handleCancelPendingEnrollment = async (enrollmentId: string) => {
     setConfirmConfig({
-      title: 'Cancel Enrollment',
-      message: 'Are you sure you want to cancel this pending enrollment?',
+      title: 'Delete program',
+      message: 'Remove this program from your list? This is only possible because nothing has been paid and the school has not admitted your child.',
       isDestructive: true,
       onConfirm: async () => {
         setConfirmConfig(null);
         setError(null);
         try {
-          const res = await fetch(`/api/enrollments/${enrollmentId}/cancel`, {
-            method: 'POST',
+          const res = await fetch(`/api/enrollments/${enrollmentId}`, {
+            method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` },
           });
-
           const data = await res.json();
-          if (!res.ok) throw new Error(data.message || 'Failed to cancel enrollment');
-
-          setSuccessMsg('Pending enrollment has been cancelled and removed.');
-          if (currentUser?.role === UserRole.PARENT) fetchMyEnrollments();
+          if (!res.ok) throw new Error(data?.message || 'Failed to delete program');
+          setSuccessMsg('Program removed.');
+          fetchMyEnrollments();
+          fetchParentLedger();
         } catch (err: any) {
           setError(err.message);
         }
-      }
+      },
     });
+  };
+
+  const refreshSchoolAfterAdmission = () => {
+    if (mySchool) {
+      fetchSchoolRoster(mySchool.id);
+      fetchSchoolServices(mySchool.id);
+      fetchSchoolFinancials(mySchool.id);
+    }
+  };
+
+  const handleApproveAdmission = async (enrollmentId: string) => {
+    try {
+      const res = await fetch(`/api/enrollments/${enrollmentId}/approve`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Failed to approve admission');
+      setSuccessMsg(
+        data.status === 'ACTIVE'
+          ? `${data.child?.name || 'Child'} admitted. The parent has been notified.`
+          : `Approved in advance — the enrollment activates as soon as the parent pays.`,
+      );
+      refreshSchoolAfterAdmission();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleRejectAdmission = async (enrollmentId: string, reason: string) => {
+    try {
+      const res = await fetch(`/api/enrollments/${enrollmentId}/reject`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ reason }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(Array.isArray(data?.message) ? data.message.join(', ') : data?.message || 'Failed to reject');
+      setSuccessMsg(
+        data.refundAmount > 0
+          ? `Application rejected. The parent was told to collect a refund of KES ${Number(data.refundAmount).toLocaleString()}.`
+          : 'Application rejected. The parent has been notified.',
+      );
+      refreshSchoolAfterAdmission();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleMarkRefundIssued = async (enrollmentId: string, note: string) => {
+    try {
+      const res = await fetch(`/api/enrollments/${enrollmentId}/refund-issued`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(note ? { note } : {}),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Failed to record refund');
+      setSuccessMsg('Refund recorded and the parent has been notified.');
+      refreshSchoolAfterAdmission();
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   const handleCreateDispute = async (e: React.FormEvent) => {
@@ -1147,7 +1210,17 @@ export default function App() {
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.message || 'Failed to add tutor');
 
-      setSuccessMsg(`Tutor '${resData.email}' added successfully. Give the tutor the temporary password and ask them to change it after login.`);
+      setTutorInviteNotice({
+        email: resData.email,
+        sent: !!resData.invitationSent,
+        message: resData.invitationMessage || '',
+        url: resData.invitationUrl,
+      });
+      if (resData.invitationSent) {
+        setSuccessMsg(`Tutor '${resData.email}' added and an invitation email was sent.`);
+      } else {
+        toast.error(`Tutor added, but the invitation email was not sent. Copy the invitation link shown on the Tutors page.`);
+      }
       fetchSchoolTutors(mySchool.id);
     } catch (err: any) {
       setError(err.message);
@@ -1193,11 +1266,14 @@ export default function App() {
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.message || 'Failed to resend invite');
 
+      const tutorEmail = schoolTutors.find((t) => t.id === tutorId)?.email || 'tutor';
+      setTutorInviteNotice({ email: tutorEmail, sent: !!resData.invitationSent, message: resData.message || '', url: resData.invitationUrl });
       if (resData.invitationSent) {
-        setSuccessMsg(`Invitation resent successfully to the tutor.`);
+        setSuccessMsg(`Invitation resent to ${tutorEmail}.`);
       } else {
-        setSuccessMsg(`${resData.message || 'Invitation link created.'} Open this link: ${resData.invitationUrl || 'No invitation link was generated.'}`);
+        toast.error('Invitation email could not be sent. Copy the invitation link shown on the Tutors page.');
       }
+      fetchSchoolTutors(mySchool.id);
     } catch (err: any) {
       setError(err.message);
     }
@@ -1251,16 +1327,18 @@ export default function App() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Profile update failed');
 
-      setMySchool(data);
+      setMySchool((prev) => (prev ? { ...prev, ...data } : data));
       setSuccessMsg('School profile updated successfully!');
       fetchPublicMarketplace();
+      return true;
     } catch (err: any) {
       setError(err.message);
+      return false;
     }
   };
 
-  const handleDraftProfileWithAi = async (name: string, location: string) => {
-    if (!name) return;
+  const handleDraftProfileWithAi = async (input: AiProfileDraftInput): Promise<AiProfileDraftResult | undefined> => {
+    if (!input.name) return;
     setError(null);
     setIsGeneratingAi(true);
 
@@ -1272,9 +1350,12 @@ export default function App() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          schoolName: name,
-          location,
-          highlights: ['Infant Care (3-12m)', 'CCTV Security Monitoring', 'Nutritious Meals', 'Lipa Mdogo Mdogo Weekly Billing'],
+          schoolName: input.name,
+          location: input.location,
+          details: input.details,
+          ageRange: input.ageRange,
+          capacity: input.capacity,
+          highlights: input.highlights?.length ? input.highlights : undefined,
         }),
       });
 
@@ -1282,7 +1363,7 @@ export default function App() {
       if (!res.ok) throw new Error(data.message || 'AI Drafting failed');
 
       setSuccessMsg('✨ AI Profile overview drafted successfully!');
-      return data.generatedAbout;
+      return { about: data.generatedAbout, keyFeatures: data.keyFeatures };
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -1689,6 +1770,25 @@ export default function App() {
             counts={{ children: myChildren.length, enrollments: myEnrollments.length, parentDisputes: parentDisputes.length }}
           />
           <div className="flex-1 space-y-6 overflow-y-auto">
+          {myEnrollments
+            .filter((e) => e.status === 'REJECTED' && e.refundStatus === 'PENDING')
+            .map((e) => (
+              <div key={e.id} className="border-2 border-[#fca5a5] bg-[#fef2f2] rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <p className="font-extrabold text-[#991b1b] text-sm">
+                    {e.service?.school?.name} did not approve {e.child?.name}'s admission
+                  </p>
+                  <p className="text-xs text-[#434655] mt-0.5">
+                    Please collect your refund of <strong>KES {(e.refundAmount || 0).toLocaleString()}</strong> from the school.
+                    {e.rejectionReason ? ` Reason: ${e.rejectionReason}` : ''}
+                  </p>
+                </div>
+                <button onClick={() => { setParentTab('enrollments'); fetchMyEnrollments(); }} className="btn btn-secondary text-xs py-1.5 px-3 rounded-xl shrink-0">
+                  View details
+                </button>
+              </div>
+            ))}
+
           <PickupAlertBanner
             requests={pickupRequests}
             onAcknowledge={handleAcknowledgePickup}
@@ -1855,6 +1955,9 @@ export default function App() {
               schoolRoster={schoolRoster} 
               onPromoteWaitlist={handlePromoteWaitlist} 
               onEndEnrollment={handleEndEnrollment} 
+              onApproveAdmission={handleApproveAdmission}
+              onRejectAdmission={handleRejectAdmission}
+              onMarkRefundIssued={handleMarkRefundIssued}
               onWalkinEnrollmentClick={() => setIsWalkinModalOpen(true)}
             />
           )}
@@ -1864,6 +1967,9 @@ export default function App() {
               onAddTutor={handleAddTutor}
               onUpdateTutor={handleUpdateTutor}
               onRemoveTutor={handleRemoveTutor}
+              onResendInvite={handleResendTutorInvite}
+              inviteNotice={tutorInviteNotice}
+              onDismissInviteNotice={() => setTutorInviteNotice(null)}
             />
           )}
           {schoolTab === 'documents' && <SchoolDocumentsTab schoolDocuments={schoolDocuments} onUploadDocument={handleUploadDocument} submittingDoc={submittingDoc} schoolName={mySchool?.name} verifiedBadge={(mySchool as any)?.verifiedBadge} />}

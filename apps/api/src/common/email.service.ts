@@ -189,42 +189,133 @@ export class EmailService {
     }
   }
 
-  async sendTutorInvitation(schoolName: string, recipientEmail: string, token: string): Promise<EmailSendResult> {
+  async sendTutorInvitation(
+    schoolName: string,
+    recipientEmail: string,
+    token: string,
+    tutorName?: string | null,
+    temporaryPassword?: string,
+  ): Promise<EmailSendResult & { invitationUrl: string }> {
     const apiKey = this.configService.get<string>('RESEND_API_KEY') || process.env.RESEND_API_KEY;
     const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL') || 'onboarding@resend.dev';
-    const appUrl = this.configService.get<string>('WEB_APP_URL') || 'http://localhost:5173';
+    const appUrl = (this.configService.get<string>('WEB_APP_URL') || 'http://localhost:5173').replace(/\/$/, '');
     const isPlaceholder = !apiKey || apiKey.trim() === '' || apiKey === 'YOUR_RESEND_API_KEY_HERE' || /^re_x+$/.test(apiKey.trim());
     const invitationUrl = `${appUrl}/?tutorInvite=${encodeURIComponent(token)}`;
 
     if (isPlaceholder) {
       this.logger.warn(`[INVITE NOT SENT] RESEND_API_KEY is not configured. Invitation URL for ${recipientEmail}: ${invitationUrl}`);
-      return { sent: false, message: 'Invitation link created for local use.', invitationUrl };
+      return {
+        sent: false,
+        message: 'Email is not configured on the server (RESEND_API_KEY). Share the invitation link with the tutor manually.',
+        invitationUrl,
+      };
     }
+
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e6eeff; border-radius: 16px; background-color: #ffffff;">
+        <div style="background-color: #004ac6; padding: 16px; border-radius: 12px; text-align: center; color: #ffffff;">
+          <h2 style="margin: 0;">KiddoCare Kenya</h2>
+        </div>
+        <div style="padding: 20px 0; color: #434655; line-height: 1.5;">
+          <h3 style="color: #121c2a;">Hello${tutorName ? ` ${tutorName}` : ''},</h3>
+          <p><strong>${schoolName}</strong> has added you as a tutor on KiddoCare Kenya.</p>
+          <p>Click the button below to accept the invitation and set your own password:</p>
+          <div style="text-align: center; margin: 24px 0;">
+            <a href="${invitationUrl}" style="background-color: #004ac6; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 999px; font-weight: bold; display: inline-block;">Accept invitation &rarr;</a>
+          </div>
+          ${
+            temporaryPassword
+              ? `<p>Or log in directly at <a href="${appUrl}">${appUrl}</a> with:</p>
+                 <div style="background-color: #f8f9ff; border: 1px solid #c3c6d7; padding: 12px 16px; border-radius: 12px;">
+                   <p style="margin: 0 0 6px 0;"><strong>Email:</strong> ${recipientEmail}</p>
+                   <p style="margin: 0;"><strong>Temporary password:</strong> <code>${temporaryPassword}</code></p>
+                 </div>
+                 <p style="font-size: 13px; color: #c2410c;">You will be asked to change this password after your first login.</p>`
+              : ''
+          }
+          <p style="font-size: 12px; color: #737686;">The invitation link expires in 48 hours.</p>
+        </div>
+      </div>`;
 
     try {
       const response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({
           from: fromEmail,
           to: [recipientEmail],
           subject: `You are invited to join ${schoolName} on KiddoCare`,
-          html: `<p>You have been invited to join <strong>${schoolName}</strong> as a tutor.</p><p><a href="${invitationUrl}">Accept your tutor invitation</a></p><p>This invitation expires in 48 hours.</p>`,
+          html,
         }),
       });
 
       if (!response.ok) {
-        this.logger.error(`Tutor invitation email failed (HTTP ${response.status})`);
-        return { sent: false, message: `Email provider rejected the invitation (HTTP ${response.status}).`, invitationUrl };
+        const detail = await response.text();
+        this.logger.error(`Tutor invitation email failed (HTTP ${response.status}): ${detail}`);
+        let reason = `HTTP ${response.status}`;
+        try {
+          reason = JSON.parse(detail).message || reason;
+        } catch {
+          // keep status text
+        }
+        return {
+          sent: false,
+          message: `Email provider rejected the invitation: ${reason}. Share the invitation link with the tutor manually.`,
+          invitationUrl,
+        };
       }
 
+      this.logger.log(`📧 Tutor invitation sent to ${recipientEmail}`);
       return { sent: true, message: `Tutor invitation sent to ${recipientEmail}.`, invitationUrl };
     } catch (error: any) {
       this.logger.error(`Tutor invitation email failed: ${error.message}`);
       return { sent: false, message: `Invitation email failed: ${error.message}`, invitationUrl };
+    }
+  }
+
+
+  /** Generic notification email (admission decisions, refunds, etc.). Never throws. */
+  async sendNotificationEmail(to: string, subject: string, heading: string, bodyHtml: string): Promise<EmailSendResult> {
+    const apiKey = this.configService.get<string>('RESEND_API_KEY') || process.env.RESEND_API_KEY;
+    const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL') || 'onboarding@resend.dev';
+    const appUrl = this.configService.get<string>('WEB_APP_URL') || 'http://localhost:5173';
+    if (!apiKey || apiKey.trim() === '' || apiKey === 'YOUR_RESEND_API_KEY_HERE' || /^re_x+$/.test(apiKey.trim())) {
+      this.logger.warn(`[EMAIL NOT SENT] RESEND_API_KEY not configured. Notification to ${to}: ${subject}`);
+      return { sent: false, message: 'RESEND_API_KEY not configured' };
+    }
+    if (to.endsWith('@kiddocare.local')) {
+      return { sent: false, message: 'Placeholder walk-in email address' };
+    }
+
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e6eeff; border-radius: 16px; background-color: #ffffff;">
+        <div style="background-color: #004ac6; padding: 16px; border-radius: 12px; text-align: center; color: #ffffff;">
+          <h2 style="margin: 0;">KiddoCare Kenya</h2>
+        </div>
+        <div style="padding: 20px 0; color: #434655; line-height: 1.5;">
+          <h3 style="color: #121c2a;">${heading}</h3>
+          ${bodyHtml}
+          <div style="text-align: center; margin-top: 24px;">
+            <a href="${appUrl}" style="background-color: #004ac6; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 999px; font-weight: bold; display: inline-block;">Open KiddoCare &rarr;</a>
+          </div>
+        </div>
+      </div>`;
+
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({ from: fromEmail, to: [to], subject, html }),
+      });
+      if (!response.ok) {
+        this.logger.error(`Notification email failed (HTTP ${response.status}): ${await response.text()}`);
+        return { sent: false, message: `Email provider rejected the request (HTTP ${response.status})` };
+      }
+      this.logger.log(`📧 "${subject}" sent to ${to}`);
+      return { sent: true, message: `Email sent to ${to}` };
+    } catch (err: any) {
+      this.logger.error(`Notification email failed: ${err.message}`);
+      return { sent: false, message: err.message };
     }
   }
 }

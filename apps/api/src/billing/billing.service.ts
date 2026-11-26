@@ -19,7 +19,11 @@ export class BillingService {
       throw new NotFoundException(`Enrollment with ID '${enrollmentId}' not found`);
     }
 
-    if (enrollment.status !== EnrollmentStatus.ACTIVE && enrollment.status !== EnrollmentStatus.PENDING_PAYMENT) {
+    if (
+      enrollment.status !== EnrollmentStatus.ACTIVE &&
+      enrollment.status !== EnrollmentStatus.PENDING_PAYMENT &&
+      enrollment.status !== EnrollmentStatus.PENDING_APPROVAL
+    ) {
       throw new BadRequestException(`Cannot generate billing cycle for non-active enrollment (${enrollment.status})`);
     }
 

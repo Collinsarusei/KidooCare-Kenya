@@ -26,9 +26,17 @@ enum ServiceBillingCycle {
 
 enum EnrollmentStatus {
   PENDING_PAYMENT
+  PENDING_APPROVAL
   ACTIVE
   WAITLISTED
+  REJECTED
   ENDED
+}
+
+enum RefundStatus {
+  NOT_REQUIRED
+  PENDING
+  REFUNDED
 }
 
 enum WeeklyInstallmentStatus {
@@ -211,6 +219,16 @@ model Enrollment {
   status             EnrollmentStatus @default(ACTIVE)
   agreedMonthlyPrice Float
   createdAt          DateTime         @default(now())
+
+  // Admission decision by the school
+  admissionApprovedAt DateTime?
+  decidedById         String?
+  rejectedAt          DateTime?
+  rejectionReason     String?
+  refundAmount        Float        @default(0)
+  refundStatus        RefundStatus @default(NOT_REQUIRED)
+  refundedAt          DateTime?
+  refundNote          String?
 
   billingCycles BillingCycle[]
   balance       Balance?

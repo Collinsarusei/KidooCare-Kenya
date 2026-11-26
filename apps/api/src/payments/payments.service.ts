@@ -30,6 +30,9 @@ export class PaymentsService {
     if (installment.status === WeeklyInstallmentStatus.PAID) {
       throw new BadRequestException('This installment has already been paid');
     }
+    if (['REJECTED', 'ENDED'].includes(installment.billingCycle.enrollment.status)) {
+      throw new BadRequestException('This program is no longer active, so no further payments are accepted');
+    }
 
     const testCheckoutRequestId = `test-card-${Date.now()}`;
     const payment = await this.prisma.payment.create({
@@ -87,6 +90,9 @@ export class PaymentsService {
 
     if (installment.status === WeeklyInstallmentStatus.PAID) {
       throw new BadRequestException('This weekly installment has already been fully paid');
+    }
+    if (enrollment.status === 'REJECTED' || enrollment.status === 'ENDED') {
+      throw new BadRequestException('This program is no longer active, so no further payments are accepted');
     }
 
     // Format phone number to 2547XXXXXXXX or 2541XXXXXXXX
@@ -366,38 +372,38 @@ export class PaymentsService {
           },
         });
 
-        // 3.5. Activate PENDING_PAYMENT enrollment and link child to school
-        const enrollment = await tx.enrollment.findUnique({ 
+        // 3.5. First payment on a new application:
+        //   - school already approved (or walk-in) → ACTIVE, child linked to school
+        //   - otherwise → PENDING_APPROVAL, the school must approve the admission
+        const enrollment = await tx.enrollment.findUnique({
           where: { id: enrollmentId },
-          include: { service: true }
+          include: { service: true },
         });
-        if (enrollment) {
-          if (enrollment.status === 'PENDING_PAYMENT') {
-            await tx.enrollment.update({
-              where: { id: enrollmentId },
-              data: { status: 'ACTIVE' },
-            });
-            
-            // Increment capacity
+        if (enrollment && enrollment.status === 'PENDING_PAYMENT') {
+          const nextStatus = enrollment.admissionApprovedAt ? 'ACTIVE' : 'PENDING_APPROVAL';
+          await tx.enrollment.update({
+            where: { id: enrollmentId },
+            data: { status: nextStatus },
+          });
+
+          if (nextStatus === 'ACTIVE') {
             await tx.service.update({
               where: { id: enrollment.serviceId },
               data: { currentEnrollmentCount: { increment: 1 } },
             });
+            await tx.child.update({
+              where: { id: enrollment.childId },
+              data: { schoolId: enrollment.service.schoolId },
+            });
           }
-
-          // Always ensure child is assigned to school
-          await tx.child.update({
-            where: { id: enrollment.childId },
-            data: { schoolId: enrollment.service.schoolId },
-          });
 
           await tx.auditLog.create({
             data: {
               entityType: 'Enrollment',
               entityId: enrollmentId,
-              action: 'PAYMENT_ACTIVATED_ENROLLMENT',
+              action: nextStatus === 'ACTIVE' ? 'PAYMENT_ACTIVATED_ENROLLMENT' : 'PAYMENT_RECEIVED_AWAITING_APPROVAL',
               actorId: 'MPESA_DARAJA_WEBHOOK',
-              afterState: { status: 'ACTIVE', schoolId: enrollment.service.schoolId },
+              afterState: { status: nextStatus, schoolId: enrollment.service.schoolId },
             },
           });
         }

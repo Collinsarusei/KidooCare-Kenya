@@ -159,13 +159,12 @@ export const LandingView: React.FC<LandingViewProps> = ({
               Reach thousands of parents in your neighborhood, streamline child intake, and automate M-Pesa tuition collection. Contact us to get your center verified and listed.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 pt-1">
-              <a
-                href="mailto:admin@kiddocare.co.ke"
-                className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 transition-colors text-white font-bold text-xs px-5 py-2.5 rounded-full border border-white/30"
+              <span
+                className="inline-flex items-center gap-2 bg-white/15 text-white font-bold text-xs px-5 py-2.5 rounded-full border border-white/30 select-all"
               >
                 <span className="material-symbols-outlined text-base">mail</span>
                 admin@kiddocare.co.ke
-              </a>
+              </span>
               <a
                 href="https://wa.me/254700000000"
                 target="_blank"

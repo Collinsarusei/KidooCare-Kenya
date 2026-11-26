@@ -11,6 +11,8 @@ export const draftProfileInputSchema = z.object({
   location: z.string().optional().describe('Nairobi neighbourhood or county location'),
   highlights: z.array(z.string()).optional().describe('Key features/services to mention'),
   capacity: z.number().optional().describe('Total child capacity of the center'),
+  ageRange: z.string().optional().describe('Age range of children cared for, e.g. "1 - 5 years"'),
+  details: z.string().optional().describe('Free-text description from the owner; use these facts, do not invent others'),
 });
 
 export const draftProfileOutputSchema = z.object({

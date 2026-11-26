@@ -278,6 +278,10 @@ export class SchoolsService {
           name: school.name,
           about: school.about,
           logoUrl: school.logoUrl,
+          coverImages: school.coverImages,
+          keyHighlights: school.keyHighlights,
+          ageRange: school.ageRange,
+          capacity: school.capacity,
           location: school.location,
           verifiedBadge: school.verifiedBadge,
           servicesCount: school.services.length,
@@ -313,6 +317,9 @@ export class SchoolsService {
       about: school.about,
       logoUrl: school.logoUrl,
       coverImages: school.coverImages,
+      keyHighlights: school.keyHighlights,
+      ageRange: school.ageRange,
+      capacity: school.capacity,
       location: school.location,
       status: school.status,
       verifiedBadge: school.verifiedBadge,
@@ -409,11 +416,29 @@ export class SchoolsService {
       },
     });
 
+    // Create the TutorInvitation row and email the tutor (link + temporary password)
+    const invitation = await this.createTutorInvitation(schoolId, tutor.id, dto.password);
+
+    await this.prisma.auditLog.create({
+      data: {
+        entityType: 'User',
+        entityId: tutor.id,
+        action: 'ADD_TUTOR',
+        actorId: school.userId,
+        afterState: { email: tutor.email, schoolId, invitationEmailed: invitation.sent },
+      },
+    });
+
     const { passwordHash: _, refreshTokenHash: __, ...safeTutor } = tutor;
-    return safeTutor;
+    return {
+      ...safeTutor,
+      invitationSent: invitation.sent,
+      invitationMessage: invitation.message,
+      invitationUrl: invitation.invitationUrl,
+    };
   }
 
-  private async createTutorInvitation(schoolId: string, tutorId: string) {
+  private async createTutorInvitation(schoolId: string, tutorId: string, temporaryPassword?: string) {
     const [school, tutor] = await Promise.all([
       this.prisma.school.findUnique({ where: { id: schoolId } }),
       this.prisma.user.findUnique({ where: { id: tutorId } }),
@@ -428,7 +453,7 @@ export class SchoolsService {
       update: { tokenHash, expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000), acceptedAt: null },
     });
 
-    return this.emailService.sendTutorInvitation(school.name, tutor.email, token);
+    return this.emailService.sendTutorInvitation(school.name, tutor.email, token, tutor.name, temporaryPassword);
   }
 
   async updateTutor(schoolId: string, tutorId: string, dto: { email?: string; phone?: string }) {
@@ -491,7 +516,10 @@ export class SchoolsService {
         email: true,
         phone: true,
         createdAt: true,
-      }
+        mustChangePassword: true,
+        tutorInvitation: { select: { acceptedAt: true, expiresAt: true, createdAt: true } },
+      },
+      orderBy: { createdAt: 'desc' },
     });
   }
 

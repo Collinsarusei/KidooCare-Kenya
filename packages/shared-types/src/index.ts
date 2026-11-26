@@ -17,9 +17,17 @@ export enum ServiceBillingCycle {
 
 export enum EnrollmentStatus {
   PENDING_PAYMENT = 'PENDING_PAYMENT',
+  PENDING_APPROVAL = 'PENDING_APPROVAL',
   ACTIVE = 'ACTIVE',
   WAITLISTED = 'WAITLISTED',
+  REJECTED = 'REJECTED',
   ENDED = 'ENDED',
+}
+
+export enum RefundStatus {
+  NOT_REQUIRED = 'NOT_REQUIRED',
+  PENDING = 'PENDING',
+  REFUNDED = 'REFUNDED',
 }
 
 export enum WeeklyInstallmentStatus {
@@ -223,6 +231,10 @@ export interface PublicSchoolListingDto {
   name: string;
   about: string | null;
   logoUrl: string | null;
+  coverImages?: string[];
+  keyHighlights?: string[];
+  ageRange?: string | null;
+  capacity?: number | null;
   location: string | null;
   verifiedBadge: boolean;
   servicesCount: number;
@@ -261,7 +273,16 @@ export interface EnrollmentDto {
   status: EnrollmentStatus;
   agreedMonthlyPrice: number;
   createdAt: string | Date;
-  child?: ChildDto;
+  admissionApprovedAt?: string | Date | null;
+  rejectedAt?: string | Date | null;
+  rejectionReason?: string | null;
+  refundAmount?: number;
+  refundStatus?: RefundStatus;
+  refundedAt?: string | Date | null;
+  refundNote?: string | null;
+  /** Sum of completed payments on this enrollment (computed by the API) */
+  totalPaid?: number;
+  child?: ChildDto & { parent?: { email: string; phone: string; name?: string | null } };
   service?: ServiceDto & { school?: { name: string; location: string | null } };
   billingCycles?: BillingCycleDto[];
   balance?: { totalArrears: number };
