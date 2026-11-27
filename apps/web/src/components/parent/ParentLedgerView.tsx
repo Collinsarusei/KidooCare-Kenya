@@ -44,11 +44,11 @@ export const ParentLedgerView: React.FC<ParentLedgerViewProps> = ({
   onFlagDispute,
 }) => {
   return (
-    <div className="bg-white border border-[#dcf0f8] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-[#dcf0f8] pb-5 gap-4">
+    <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-[#e6eeff] pb-5 gap-4">
         <div>
-          <h3 className="text-xl font-bold text-[#0b6e99] font-display flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#009c84]">payments</span>
+          <h3 className="text-xl font-bold text-[#004ac6] font-display flex items-center gap-2">
+            <span className="material-symbols-outlined text-[#006c49]">payments</span>
             Parent Financial Ledger & Balance Summary
           </h3>
           <p className="text-xs text-[#737686] mt-0.5">
@@ -59,7 +59,7 @@ export const ParentLedgerView: React.FC<ParentLedgerViewProps> = ({
         {parentLedger && (
           <div className={`p-4 rounded-2xl border text-right ${
             parentLedger.isAllChildrenPaid 
-              ? 'bg-[#e1faf4] border-[#4fe8c9]' 
+              ? 'bg-[#e6f7ef] border-[#6cf8bb]' 
               : 'bg-[#fff7ed] border-[#fdba74]'
           }`}>
             <p className="text-[11px] font-bold text-[#737686] uppercase tracking-wider">
@@ -80,15 +80,15 @@ export const ParentLedgerView: React.FC<ParentLedgerViewProps> = ({
       {parentLedger && (
         <div className="space-y-6">
           {parentLedger.childrenLedgers.map((childLedger) => (
-            <div key={childLedger.enrollmentId} className="border border-[#dcf0f8] bg-[#f3fafd] rounded-2xl p-5 space-y-4">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#dcf0f8] pb-3 gap-2">
+            <div key={childLedger.enrollmentId} className="border border-[#e6eeff] bg-[#f8f9ff] rounded-2xl p-5 space-y-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#e6eeff] pb-3 gap-2">
                 <div>
-                  <h4 className="text-base font-bold text-[#0b6e99] font-display flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[#0b6e99]">child_care</span>
+                  <h4 className="text-base font-bold text-[#004ac6] font-display flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[#004ac6]">child_care</span>
                     {childLedger.childName}
                   </h4>
                   <p className="text-xs text-[#737686]">
-                    {childLedger.serviceName} @ <span className="font-semibold text-[#0b2a3c]">{childLedger.schoolName}</span>
+                    {childLedger.serviceName} @ <span className="font-semibold text-[#121c2a]">{childLedger.schoolName}</span>
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-2">
@@ -130,15 +130,15 @@ export const ParentLedgerView: React.FC<ParentLedgerViewProps> = ({
                       key={w.id} 
                       className={`rounded-2xl p-4 border transition-all flex flex-col justify-between space-y-3 ${
                         w.status === 'PAID' 
-                          ? 'bg-[#e1faf4] border-[#4fe8c9]' 
+                          ? 'bg-[#e6f7ef] border-[#6cf8bb]' 
                           : isPartial
                             ? 'bg-[#fefce8] border-[#fde047] shadow-xs'
-                            : 'bg-white border-[#dcf0f8] shadow-xs hover:border-[#a9d6ea]'
+                            : 'bg-white border-[#e6eeff] shadow-xs hover:border-[#b4c5ff]'
                       }`}
                     >
                       <div className="flex justify-between items-center text-xs">
-                        <span className="font-bold text-[#0b2a3c] flex items-center gap-1">
-                          <span className="material-symbols-outlined text-sm text-[#0b6e99]">calendar_today</span>
+                        <span className="font-bold text-[#121c2a] flex items-center gap-1">
+                          <span className="material-symbols-outlined text-sm text-[#004ac6]">calendar_today</span>
                           Week {w.weekNumber}
                         </span>
                         <span className={`badge ${
@@ -155,31 +155,31 @@ export const ParentLedgerView: React.FC<ParentLedgerViewProps> = ({
                       <div className="space-y-1.5">
                         <div className="flex justify-between items-baseline">
                           <p className="text-xs text-[#737686]">Week Fee</p>
-                          <p className="text-xs font-bold text-[#0b2a3c]">KES {w.amountDue.toLocaleString()}</p>
+                          <p className="text-xs font-bold text-[#121c2a]">KES {w.amountDue.toLocaleString()}</p>
                         </div>
 
                         {isPartial ? (
                           <div className="space-y-1 bg-white/70 p-2 rounded-xl border border-[#fde047]">
                             <div className="flex justify-between text-xs font-bold">
-                              <span className="text-[#00876f]">Paid: KES {w.amountPaid.toLocaleString()}</span>
+                              <span className="text-[#00714d]">Paid: KES {w.amountPaid.toLocaleString()}</span>
                               <span className="text-[#ba1a1a]">Bal: KES {remainingDue.toLocaleString()}</span>
                             </div>
                             <div className="w-full bg-[#e5e7eb] h-1.5 rounded-full overflow-hidden">
                               <div 
-                                className="bg-[#00876f] h-full rounded-full transition-all" 
+                                className="bg-[#00714d] h-full rounded-full transition-all" 
                                 style={{ width: `${percentPaid}%` }}
                               />
                             </div>
                           </div>
                         ) : w.status === 'PAID' ? (
-                          <div className="bg-white/70 p-2 rounded-xl border border-[#4fe8c9] text-center">
-                            <p className="text-xs text-[#00876f] font-bold flex items-center justify-center gap-1">
+                          <div className="bg-white/70 p-2 rounded-xl border border-[#6cf8bb] text-center">
+                            <p className="text-xs text-[#00714d] font-bold flex items-center justify-center gap-1">
                               <span className="material-symbols-outlined text-sm">check_circle</span>
                               Paid KES {w.amountPaid.toLocaleString()}
                             </p>
                           </div>
                         ) : (
-                          <p className="text-lg font-extrabold text-[#0b6e99]">
+                          <p className="text-lg font-extrabold text-[#004ac6]">
                             KES {w.amountDue.toLocaleString()}
                           </p>
                         )}
@@ -205,7 +205,7 @@ export const ParentLedgerView: React.FC<ParentLedgerViewProps> = ({
                         </button>
                       ) : (
                       <div className="space-y-2">
-                        <span className="text-[11px] font-bold text-[#00876f] flex items-center gap-1">
+                        <span className="text-[11px] font-bold text-[#00714d] flex items-center gap-1">
                           <span className="material-symbols-outlined text-xs">verified</span>
                           Paid via Safaricom
                         </span>
@@ -253,11 +253,11 @@ export const ParentLedgerView: React.FC<ParentLedgerViewProps> = ({
       )}
 
       {/* TRANSACTION HISTORY & DISPUTE SECTION */}
-      <div className="border-t border-[#dcf0f8] pt-6 space-y-4">
+      <div className="border-t border-[#e6eeff] pt-6 space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <div>
-            <h4 className="text-base font-bold text-[#0b6e99] font-display flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#0b6e99]">receipt_long</span>
+            <h4 className="text-base font-bold text-[#004ac6] font-display flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#004ac6]">receipt_long</span>
               Payment Transactions & Dispute Center ({payments?.length || 0})
             </h4>
             <p className="text-xs text-[#737686]">
@@ -267,9 +267,9 @@ export const ParentLedgerView: React.FC<ParentLedgerViewProps> = ({
         </div>
 
         {payments && payments.length > 0 ? (
-          <div className="overflow-x-auto rounded-2xl border border-[#dcf0f8]">
+          <div className="overflow-x-auto rounded-2xl border border-[#e6eeff]">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#f3fafd] text-[#434655] font-bold uppercase tracking-wider text-[10px] border-b border-[#dcf0f8]">
+              <thead className="bg-[#f8f9ff] text-[#434655] font-bold uppercase tracking-wider text-[10px] border-b border-[#e6eeff]">
                 <tr>
                   <th className="p-3.5">Date</th>
                   <th className="p-3.5">Child & Program</th>
@@ -281,26 +281,26 @@ export const ParentLedgerView: React.FC<ParentLedgerViewProps> = ({
                   <th className="p-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#dcf0f8] text-[#0b2a3c]">
+              <tbody className="divide-y divide-[#e6eeff] text-[#121c2a]">
                 {payments.map((p) => {
                   const dateStr = p.paidAt || p.createdAt ? new Date(p.paidAt || p.createdAt).toLocaleString() : 'N/A';
                   const isCompleted = p.status === 'COMPLETED';
                   const hasDispute = !!p.dispute;
 
                   return (
-                    <tr key={p.id} className="hover:bg-[#f3fafd] transition-colors">
+                    <tr key={p.id} className="hover:bg-[#f8f9ff] transition-colors">
                       <td className="p-3.5 font-medium text-[#737686] whitespace-nowrap">{dateStr}</td>
                       <td className="p-3.5">
-                        <p className="font-bold text-[#0b6e99]">{p.childName}</p>
+                        <p className="font-bold text-[#004ac6]">{p.childName}</p>
                         <p className="text-[11px] text-[#737686]">{p.serviceName} {p.weekNumber ? `(Week ${p.weekNumber})` : ''}</p>
                       </td>
                       <td className="p-3.5 font-medium">{p.schoolName}</td>
                       <td className="p-3.5">
-                        <span className="font-mono font-semibold text-[#0b2a3c] bg-[#e8f6fb] px-2 py-0.5 rounded text-[11px]">
+                        <span className="font-mono font-semibold text-[#121c2a] bg-[#eff4ff] px-2 py-0.5 rounded text-[11px]">
                           {p.mpesaReceiptNumber || p.mpesaCheckoutRequestId?.slice(0, 14) || 'Pending'}
                         </span>
                       </td>
-                      <td className="p-3.5 font-extrabold text-[#00876f] whitespace-nowrap">
+                      <td className="p-3.5 font-extrabold text-[#00714d] whitespace-nowrap">
                         KES {p.amount.toLocaleString()}
                       </td>
                       <td className="p-3.5">
@@ -373,9 +373,9 @@ export const ParentLedgerView: React.FC<ParentLedgerViewProps> = ({
             </table>
           </div>
         ) : (
-          <div className="bg-[#f3fafd] border border-dashed border-[#a9d6ea] rounded-2xl p-6 text-center text-[#737686] space-y-1">
-            <span className="material-symbols-outlined text-3xl text-[#0b6e99]">receipt</span>
-            <p className="font-bold text-xs text-[#0b2a3c]">No Payment Transactions Yet</p>
+          <div className="bg-[#f8f9ff] border border-dashed border-[#c3d7ff] rounded-2xl p-6 text-center text-[#737686] space-y-1">
+            <span className="material-symbols-outlined text-3xl text-[#004ac6]">receipt</span>
+            <p className="font-bold text-xs text-[#121c2a]">No Payment Transactions Yet</p>
             <p className="text-[11px]">Your completed M-Pesa payments and downloadable receipts will appear here.</p>
           </div>
         )}

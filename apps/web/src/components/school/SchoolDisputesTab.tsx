@@ -80,7 +80,7 @@ export const SchoolDisputesTab: React.FC<SchoolDisputesTabProps> = ({
 
       {/* Page Title & Subtitle (Mockup 2 Match) */}
       <div>
-        <h2 className="text-2xl md:text-3xl font-extrabold text-[#0b2a3c] font-display tracking-tight">
+        <h2 className="text-2xl md:text-3xl font-extrabold text-[#121c2a] font-display tracking-tight">
           Dispute Management
         </h2>
         <p className="text-xs text-[#737686] mt-0.5">
@@ -96,14 +96,14 @@ export const SchoolDisputesTab: React.FC<SchoolDisputesTabProps> = ({
             const next = filterStatus === 'ALL' ? 'OPEN' : filterStatus === 'OPEN' ? 'RESOLVED' : 'ALL';
             setFilterStatus(next);
           }}
-          className="btn bg-white border border-[#cbd5e1] text-[#0b2a3c] text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 hover:bg-[#f3fafd]"
+          className="btn bg-white border border-[#cbd5e1] text-[#121c2a] text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 hover:bg-[#f8f9ff]"
         >
           <span className="material-symbols-outlined text-base">tune</span>
           Filter: {filterStatus}
         </button>
         <button
           type="button"
-          className="btn bg-[#e8f6fb] text-[#0b6e99] text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 hover:bg-[#dcf0f8]"
+          className="btn bg-[#eff4ff] text-[#004ac6] text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 hover:bg-[#e6eeff]"
         >
           <span className="material-symbols-outlined text-base">sort</span>
           Sort
@@ -129,7 +129,7 @@ export const SchoolDisputesTab: React.FC<SchoolDisputesTabProps> = ({
           return (
             <div
               key={disp.id}
-              className="bg-white border border-[#dcf0f8] rounded-3xl p-6 shadow-sm space-y-4 hover:border-[#a9d6ea] transition-all"
+              className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm space-y-4 hover:border-[#b4c5ff] transition-all"
             >
               {/* Card Header: Status Tag & ID */}
               <div className="flex justify-between items-center">
@@ -143,7 +143,7 @@ export const SchoolDisputesTab: React.FC<SchoolDisputesTabProps> = ({
 
               {/* Title & Filed Date */}
               <div>
-                <h3 className="text-xl font-extrabold text-[#0b2a3c] font-display">
+                <h3 className="text-xl font-extrabold text-[#121c2a] font-display">
                   {title}
                 </h3>
                 <p className="text-xs text-[#737686] mt-0.5">
@@ -152,7 +152,7 @@ export const SchoolDisputesTab: React.FC<SchoolDisputesTabProps> = ({
               </div>
 
               {/* Parent & School Info Box (Mockup 2 Match) */}
-              <div className="bg-[#e8f6fb] border border-[#dcf0f8] rounded-2xl p-4 space-y-2 text-xs text-[#0b2a3c]">
+              <div className="bg-[#eff4ff] border border-[#e6eeff] rounded-2xl p-4 space-y-2 text-xs text-[#121c2a]">
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-base text-[#737686]">person</span>
                   <span>Parent: <strong className="font-bold">{parentName}</strong></span>
@@ -175,7 +175,7 @@ export const SchoolDisputesTab: React.FC<SchoolDisputesTabProps> = ({
                     <button
                       type="button"
                       onClick={() => handleOpenResolveModal(disp, DisputeStatus.RESOLVED)}
-                      className="btn bg-[#0b6e99] hover:bg-[#085a7e] text-white text-xs font-extrabold py-3 px-4 rounded-xl shadow-sm text-center"
+                      className="btn bg-[#004ac6] hover:bg-[#003ea8] text-white text-xs font-extrabold py-3 px-4 rounded-xl shadow-sm text-center"
                     >
                       Resolve
                     </button>
@@ -191,7 +191,7 @@ export const SchoolDisputesTab: React.FC<SchoolDisputesTabProps> = ({
                   <button
                     type="button"
                     onClick={() => handleOpenResolveModal(disp, DisputeStatus.RESOLVED)}
-                    className="w-full btn bg-[#e8f6fb] hover:bg-[#dcf0f8] text-[#0b6e99] text-xs font-extrabold py-3 px-4 rounded-xl text-center"
+                    className="w-full btn bg-[#eff4ff] hover:bg-[#e6eeff] text-[#004ac6] text-xs font-extrabold py-3 px-4 rounded-xl text-center"
                   >
                     View Details
                   </button>
@@ -205,15 +205,15 @@ export const SchoolDisputesTab: React.FC<SchoolDisputesTabProps> = ({
       {/* RESOLVE / ESCALATE DISPUTE MODAL */}
       {selectedDispute && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl w-[480px] max-w-full p-6 md:p-7 shadow-2xl space-y-5 border border-[#dcf0f8] animate-fadeIn">
-            <div className="flex justify-between items-center border-b border-[#dcf0f8] pb-4">
-              <h3 className="text-lg font-extrabold text-[#0b2a3c] font-display flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#0b6e99]">gavel</span>
+          <div className="bg-white rounded-3xl w-[480px] max-w-full p-6 md:p-7 shadow-2xl space-y-5 border border-[#e6eeff] animate-fadeIn">
+            <div className="flex justify-between items-center border-b border-[#e6eeff] pb-4">
+              <h3 className="text-lg font-extrabold text-[#121c2a] font-display flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#004ac6]">gavel</span>
                 Resolve Dispute Ticket #{selectedDispute.id.slice(0, 6)}
               </h3>
               <button
                 type="button"
-                className="w-8 h-8 rounded-full bg-[#f3fafd] text-[#737686] hover:bg-[#dcf0f8] flex items-center justify-center font-bold"
+                className="w-8 h-8 rounded-full bg-[#f8f9ff] text-[#737686] hover:bg-[#e6eeff] flex items-center justify-center font-bold"
                 onClick={() => setSelectedDispute(null)}
               >
                 ✕
@@ -222,13 +222,13 @@ export const SchoolDisputesTab: React.FC<SchoolDisputesTabProps> = ({
 
             <form onSubmit={handleConfirmResolve} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
                   Resolution Action *
                 </label>
                 <select
                   value={actionType}
                   onChange={(e) => setActionType(e.target.value as DisputeStatus)}
-                  className="w-full px-4 py-3 text-xs rounded-xl border border-[#cbd5e1] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none font-bold text-[#0b6e99]"
+                  className="w-full px-4 py-3 text-xs rounded-xl border border-[#cbd5e1] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none font-bold text-[#004ac6]"
                 >
                   <option value={DisputeStatus.RESOLVED}>RESOLVED (Close Ticket)</option>
                   <option value={DisputeStatus.REFUNDED}>REFUNDED (Process M-Pesa Refund)</option>
@@ -237,7 +237,7 @@ export const SchoolDisputesTab: React.FC<SchoolDisputesTabProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
                   Resolution Note / Official Response *
                 </label>
                 <textarea
@@ -246,14 +246,14 @@ export const SchoolDisputesTab: React.FC<SchoolDisputesTabProps> = ({
                   placeholder="Provide resolution details or feedback for parent and provider..."
                   value={resolutionNote}
                   onChange={(e) => setResolutionNote(e.target.value)}
-                  className="w-full p-3.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none"
+                  className="w-full p-3.5 text-xs rounded-xl border border-[#cbd5e1] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
                 />
               </div>
 
               <div className="flex gap-2 justify-end pt-2">
                 <button
                   type="button"
-                  className="btn bg-[#e8f6fb] text-[#0b6e99] text-xs font-bold py-3 px-5 rounded-full hover:bg-[#dcf0f8]"
+                  className="btn bg-[#eff4ff] text-[#004ac6] text-xs font-bold py-3 px-5 rounded-full hover:bg-[#e6eeff]"
                   onClick={() => setSelectedDispute(null)}
                 >
                   Cancel
@@ -261,7 +261,7 @@ export const SchoolDisputesTab: React.FC<SchoolDisputesTabProps> = ({
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="btn bg-[#0b6e99] hover:bg-[#085a7e] text-white text-xs font-extrabold py-3 px-6 rounded-full shadow-md flex items-center gap-1.5"
+                  className="btn bg-[#004ac6] hover:bg-[#003ea8] text-white text-xs font-extrabold py-3 px-6 rounded-full shadow-md flex items-center gap-1.5"
                 >
                   <span className="material-symbols-outlined text-base">check_circle</span>
                   {submitting ? 'Saving...' : 'Submit Resolution'}

@@ -91,7 +91,7 @@ export const SchoolRosterTab: React.FC<SchoolRosterTabProps> = ({
       {rejecting && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl">
-            <h3 className="text-lg font-extrabold text-[#0b2a3c] font-display">Reject {rejecting.child?.name}'s application</h3>
+            <h3 className="text-lg font-extrabold text-[#121c2a] font-display">Reject {rejecting.child?.name}'s application</h3>
             {(rejecting.totalPaid || 0) > 0 ? (
               <p className="text-xs bg-[#fff7ed] border border-[#fdba74] text-[#9a3412] rounded-xl p-3">
                 The parent has paid <strong>{kes(rejecting.totalPaid)}</strong>. They will be told to collect this refund from you.
@@ -101,14 +101,14 @@ export const SchoolRosterTab: React.FC<SchoolRosterTabProps> = ({
               <p className="text-xs text-[#737686]">Nothing has been paid on this application, so no refund is due.</p>
             )}
             <div>
-              <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5">Reason (sent to the parent) *</label>
+              <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">Reason (sent to the parent) *</label>
               <textarea
                 rows={3}
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 maxLength={500}
                 placeholder="e.g. The program is full for this term / child is outside our age range"
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#c3c6d7] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
               />
             </div>
             <div className="flex justify-end gap-2">
@@ -129,14 +129,14 @@ export const SchoolRosterTab: React.FC<SchoolRosterTabProps> = ({
       {refunding && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl">
-            <h3 className="text-lg font-extrabold text-[#0b2a3c] font-display">Record refund of {kes(refunding.refundAmount)}</h3>
+            <h3 className="text-lg font-extrabold text-[#121c2a] font-display">Record refund of {kes(refunding.refundAmount)}</h3>
             <p className="text-xs text-[#737686]">Confirm you have paid this back to the parent of {refunding.child?.name}.</p>
             <input
               value={refundNote}
               onChange={(e) => setRefundNote(e.target.value)}
               maxLength={300}
               placeholder="Optional note, e.g. M-Pesa code QWE123XYZ / cash at front desk"
-              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#c3c6d7] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
             />
             <div className="flex justify-end gap-2">
               <button onClick={() => { setRefunding(null); setRefundNote(''); }} className="btn btn-secondary text-xs px-4 py-2 rounded-xl">Cancel</button>
@@ -149,9 +149,9 @@ export const SchoolRosterTab: React.FC<SchoolRosterTabProps> = ({
       )}
 
       {/* ADMISSIONS INBOX */}
-      <div className="bg-white border border-[#dcf0f8] rounded-3xl p-4 md:p-5 shadow-sm space-y-4">
-        <div className="border-b border-[#dcf0f8] pb-3">
-          <h3 className="text-xl font-bold text-[#0b6e99] font-display flex items-center gap-2">
+      <div className="bg-white border border-[#e6eeff] rounded-3xl p-4 md:p-5 shadow-sm space-y-4">
+        <div className="border-b border-[#e6eeff] pb-3">
+          <h3 className="text-xl font-bold text-[#004ac6] font-display flex items-center gap-2">
             <span className="material-symbols-outlined">how_to_reg</span>
             Admission Requests ({awaitingApproval.length + awaitingPayment.length})
           </h3>
@@ -161,7 +161,7 @@ export const SchoolRosterTab: React.FC<SchoolRosterTabProps> = ({
         </div>
 
         {awaitingApproval.length + awaitingPayment.length === 0 ? (
-          <p className="text-xs text-[#737686] bg-[#f3fafd] border border-dashed border-[#c3c6d7] rounded-2xl p-4 text-center">
+          <p className="text-xs text-[#737686] bg-[#f8f9ff] border border-dashed border-[#c3c6d7] rounded-2xl p-4 text-center">
             No applications waiting for a decision.
           </p>
         ) : (
@@ -173,12 +173,12 @@ export const SchoolRosterTab: React.FC<SchoolRosterTabProps> = ({
                 <div
                   key={enr.id}
                   className={`rounded-2xl border p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 ${
-                    paid ? 'border-[#fdba74] bg-[#fff7ed]' : 'border-[#dcf0f8] bg-[#f3fafd]'
+                    paid ? 'border-[#fdba74] bg-[#fff7ed]' : 'border-[#e6eeff] bg-[#f8f9ff]'
                   }`}
                 >
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <h4 className="font-bold text-[#0b2a3c] text-sm">{enr.child?.name}</h4>
+                      <h4 className="font-bold text-[#121c2a] text-sm">{enr.child?.name}</h4>
                       <span className={`badge ${st.cls}`}>{st.label}</span>
                       {enr.admissionApprovedAt && <span className="badge badge-green">Pre-approved</span>}
                     </div>
@@ -224,7 +224,7 @@ export const SchoolRosterTab: React.FC<SchoolRosterTabProps> = ({
           {refundsDue.map((enr) => (
             <div key={enr.id} className="rounded-2xl border border-[#fed7aa] bg-[#fff7ed] p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div>
-                <p className="font-bold text-sm text-[#0b2a3c]">
+                <p className="font-bold text-sm text-[#121c2a]">
                   {enr.child?.name} — {kes(enr.refundAmount)}
                 </p>
                 <p className="text-xs text-[#434655]">
@@ -241,19 +241,19 @@ export const SchoolRosterTab: React.FC<SchoolRosterTabProps> = ({
       )}
 
       {/* ROSTER */}
-      <div className="bg-white border border-[#dcf0f8] rounded-3xl p-4 md:p-5 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-[#dcf0f8] pb-4">
+      <div className="bg-white border border-[#e6eeff] rounded-3xl p-4 md:p-5 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-[#e6eeff] pb-4">
           <div>
-            <h3 className="text-xl font-bold text-[#0b6e99] font-display flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#0b6e99]">groups</span>
+            <h3 className="text-xl font-bold text-[#004ac6] font-display flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#004ac6]">groups</span>
               Daycare Roster ({schoolRoster.filter((e) => e.status === 'ACTIVE').length} active)
             </h3>
             <p className="text-xs text-[#737686]">Admitted children, waitlist and history</p>
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex gap-1 bg-[#f3fafd] border border-[#dcf0f8] rounded-full p-1 text-xs font-bold">
+            <div className="flex gap-1 bg-[#f8f9ff] border border-[#e6eeff] rounded-full p-1 text-xs font-bold">
               {(['ALL', 'ACTIVE', 'CLOSED'] as const).map((f) => (
-                <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1 rounded-full ${filter === f ? 'bg-[#0b6e99] text-white' : 'text-[#434655]'}`}>
+                <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1 rounded-full ${filter === f ? 'bg-[#004ac6] text-white' : 'text-[#434655]'}`}>
                   {f === 'ALL' ? 'All' : f === 'ACTIVE' ? 'Current' : 'Ended/Rejected'}
                 </button>
               ))}
@@ -274,17 +274,17 @@ export const SchoolRosterTab: React.FC<SchoolRosterTabProps> = ({
               return (
                 <div
                   key={enr.id}
-                  className="border border-[#dcf0f8] bg-[#f3fafd] rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-[#a9d6ea] transition-all"
+                  className="border border-[#e6eeff] bg-[#f8f9ff] rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-[#b4c5ff] transition-all"
                 >
                   <div>
                     <div className="flex items-center gap-2.5">
-                      <span className="material-symbols-outlined text-lg text-[#0b6e99]">child_care</span>
-                      <h4 className="font-bold text-[#0b2a3c] text-sm font-display">{enr.child?.name}</h4>
+                      <span className="material-symbols-outlined text-lg text-[#004ac6]">child_care</span>
+                      <h4 className="font-bold text-[#121c2a] text-sm font-display">{enr.child?.name}</h4>
                       <span className={`badge ${st.cls}`}>{st.label}</span>
                       {enr.status === 'REJECTED' && enr.refundStatus === 'REFUNDED' && <span className="badge badge-green">Refunded</span>}
                     </div>
                     <p className="text-xs text-[#737686] mt-1">
-                      Program: <span className="font-semibold text-[#0b2a3c]">{enr.service?.name}</span> | Start: {new Date(enr.startDate).toLocaleDateString()}
+                      Program: <span className="font-semibold text-[#121c2a]">{enr.service?.name}</span> | Start: {new Date(enr.startDate).toLocaleDateString()}
                     </p>
                     {enr.status === 'REJECTED' && enr.rejectionReason && (
                       <p className="text-[11px] text-[#737686] mt-0.5">Reason: {enr.rejectionReason}</p>

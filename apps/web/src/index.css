@@ -4,28 +4,18 @@
 
 :root {
   /* Stitch Design System Color Tokens */
-  --color-primary: #0b6e99;
-  --color-primary-container: #1188c2;
-  --color-secondary: #009c84;
-  --color-secondary-container: #4fe8c9;
-  --color-surface: #f3fafd;
-  --color-surface-container: #dcf0f8;
-  --color-surface-container-low: #e8f6fb;
+  --color-primary: #004ac6;
+  --color-primary-container: #2563eb;
+  --color-secondary: #006c49;
+  --color-secondary-container: #6cf8bb;
+  --color-surface: #f8f9ff;
+  --color-surface-container: #e6eeff;
+  --color-surface-container-low: #eff4ff;
   --color-surface-container-lowest: #ffffff;
-  --color-on-surface: #0b2a3c;
+  --color-on-surface: #121c2a;
   --color-on-surface-variant: #434655;
   --color-outline: #737686;
   --color-outline-variant: #c3c6d7;
-
-  /* KiddoCare palette: ice blue + ocean, aqua green accent */
-  --color-ocean: #0b6e99;
-  --color-ocean-deep: #073b55;
-  --color-ice: #e8f6fb;
-  --color-aqua: #2ee6c0;
-  --color-aqua-deep: #009c84;
-  --color-sunset: #ff7a1a;
-  --color-sunset-deep: #e5600a;
-  --color-sunset-light: #fff1e6;
 
   --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-family-display: 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -83,9 +73,9 @@ body {
 }
 
 .badge-green {
-  background-color: #e1faf4;
-  color: #00876f;
-  border: 1px solid #4fe8c9;
+  background-color: #e6f7ef;
+  color: #00714d;
+  border: 1px solid #6cf8bb;
 }
 
 .badge-orange {
@@ -95,9 +85,9 @@ body {
 }
 
 .badge-blue {
-  background-color: #dcf0f8;
-  color: #0b6e99;
-  border: 1px solid #a9d6ea;
+  background-color: #e6eeff;
+  color: #004ac6;
+  border: 1px solid #b4c5ff;
 }
 
 .badge-gray {
@@ -124,14 +114,11 @@ body {
 
 .btn-primary {
   background-color: var(--color-primary);
-  background-image: linear-gradient(135deg, #0b6e99 0%, #0a8fa8 60%, #12b3a0 100%);
   color: white;
-  box-shadow: 0 6px 16px -6px rgb(11 110 153 / 0.45);
 }
 
 .btn-primary:hover {
-  background-image: linear-gradient(135deg, #085a7e 0%, #0b6e99 50%, #00a389 100%);
-  box-shadow: 0 8px 20px -6px rgb(0 163 137 / 0.45);
+  background-color: var(--color-primary-container);
 }
 
 .btn-secondary {
@@ -150,70 +137,6 @@ body {
 }
 
 .btn-success:hover {
-  background-color: #007a67;
+  background-color: #005236;
 }
 
-
-
-/* ── Aqua accents ─────────────────────────────────────────── */
-::selection {
-  background: #4fe8c9;
-  color: #0b2a3c;
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-aqua);
-  outline-offset: 2px;
-}
-
-body {
-  background-image: radial-gradient(circle at 100% 0%, rgb(46 230 192 / 0.08), transparent 35%),
-    radial-gradient(circle at 0% 100%, rgb(11 110 153 / 0.06), transparent 40%);
-  background-attachment: fixed;
-}
-
-.accent-bar {
-  background-image: linear-gradient(90deg, #0b6e99 0%, #12b3a0 50%, #2ee6c0 75%, #ff9a3d 100%);
-}
-
-/* ── Sunset orange: warm call-to-action colour ─────────────── */
-.btn-orange {
-  background-color: #ff7a1a;
-  background-image: linear-gradient(135deg, #ffa24c 0%, #ff7a1a 55%, #f2600c 100%);
-  color: #ffffff;
-  box-shadow: 0 6px 16px -6px rgb(255 122 26 / 0.55);
-}
-
-.btn-orange:hover {
-  background-image: linear-gradient(135deg, #ff8f2e 0%, #f26b0f 55%, #d9540a 100%);
-  box-shadow: 0 8px 22px -6px rgb(242 96 12 / 0.6);
-}
-
-.text-sunset-gradient {
-  background-image: linear-gradient(90deg, #ff9a3d, #f2600c);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.badge-sunset {
-  background-color: #fff1e6;
-  color: #c2510a;
-  border: 1px solid #ffc79a;
-}
-
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: #e8f6fb;
-}
-::-webkit-scrollbar-thumb {
-  background: #a9d6ea;
-  border-radius: 999px;
-  border: 2px solid #e8f6fb;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #2ee6c0;
-}

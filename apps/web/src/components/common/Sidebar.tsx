@@ -60,14 +60,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const links = currentUser.role === UserRole.PARENT ? parentLinks : currentUser.role === UserRole.SCHOOL ? schoolLinks : currentUser.role === UserRole.ADMIN ? adminLinks : [];
 
   return (
-    <div className="w-full md:w-64 shrink-0 bg-[#e4f3f9] border-r border-[#c3e3f1] flex flex-col pt-6 px-4 pb-8 min-h-[500px]">
+    <div className="w-full md:w-64 shrink-0 bg-[#ebf0fa] border-r border-[#d3e0fc] flex flex-col pt-6 px-4 pb-8 min-h-[500px]">
       <div className="space-y-2">
         {links.map(link => (
           <button
             key={link.id}
             onClick={() => setActiveTab(link.id)}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-              activeTab === link.id ? 'bg-[#0b6e99] text-white shadow-md' : 'text-[#434655] hover:bg-[#c3e3f1] hover:text-[#0b2a3c]'
+              activeTab === link.id ? 'bg-[#004ac6] text-white shadow-md' : 'text-[#434655] hover:bg-[#d3e0fc] hover:text-[#121c2a]'
             }`}
           >
             <span className="material-symbols-outlined text-[20px]">{link.icon}</span>

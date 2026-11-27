@@ -37,11 +37,11 @@ export const SchoolProfileTab: React.FC<SchoolProfileTabProps> = ({
   };
 
   return (
-    <div className="w-full bg-white border border-[#dcf0f8] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#dcf0f8] pb-5 gap-3">
+    <div className="w-full bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#e6eeff] pb-5 gap-3">
         <div>
-          <h3 className="text-xl font-extrabold text-[#0b6e99] font-display flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#0b6e99]">storefront</span>
+          <h3 className="text-xl font-extrabold text-[#004ac6] font-display flex items-center gap-2">
+            <span className="material-symbols-outlined text-[#004ac6]">storefront</span>
             Daycare Center Profile & Onboarding
           </h3>
           <p className="text-xs text-[#737686]">Manage public daycare listing details & overview</p>
@@ -50,7 +50,7 @@ export const SchoolProfileTab: React.FC<SchoolProfileTabProps> = ({
           type="button"
           disabled={isGeneratingAi}
           onClick={handleAiDraft}
-          className="btn btn-secondary text-xs py-2 px-3.5 rounded-xl border-[#a9d6ea] text-[#0b6e99] hover:bg-[#dcf0f8] flex items-center gap-1.5 shadow-2xs"
+          className="btn btn-secondary text-xs py-2 px-3.5 rounded-xl border-[#b4c5ff] text-[#004ac6] hover:bg-[#e6eeff] flex items-center gap-1.5 shadow-2xs"
         >
           <span className="material-symbols-outlined text-base">auto_awesome</span>
           {isGeneratingAi ? 'Drafting...' : 'AI Auto-Draft'}
@@ -59,7 +59,7 @@ export const SchoolProfileTab: React.FC<SchoolProfileTabProps> = ({
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
             Daycare Center Name *
           </label>
           <div className="relative">
@@ -72,13 +72,13 @@ export const SchoolProfileTab: React.FC<SchoolProfileTabProps> = ({
               placeholder="e.g. Sunshine Little Scholars Daycare"
               value={profileName}
               onChange={(e) => setProfileName(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none"
+              className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
             Location / Sub-County / City
           </label>
           <div className="relative">
@@ -90,13 +90,13 @@ export const SchoolProfileTab: React.FC<SchoolProfileTabProps> = ({
               placeholder="e.g. Westlands, Nairobi"
               value={profileLocation}
               onChange={(e) => setProfileLocation(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none"
+              className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5">
             About Daycare & Overview
           </label>
           <textarea
@@ -104,7 +104,7 @@ export const SchoolProfileTab: React.FC<SchoolProfileTabProps> = ({
             placeholder="Describe your caregiving standards, age groups served, operating hours, and meal options (or use AI auto-draft above)..."
             value={profileAbout}
             onChange={(e) => setProfileAbout(e.target.value)}
-            className="w-full p-3.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none leading-relaxed"
+            className="w-full p-3.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none leading-relaxed"
           />
         </div>
 

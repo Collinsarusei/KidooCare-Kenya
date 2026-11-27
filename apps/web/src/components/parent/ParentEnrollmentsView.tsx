@@ -32,11 +32,11 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
   onRateSchool,
 }) => {
   return (
-    <div className="bg-white border border-[#dcf0f8] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
-      <div className="flex justify-between items-center border-b border-[#dcf0f8] pb-4">
+    <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+      <div className="flex justify-between items-center border-b border-[#e6eeff] pb-4">
         <div>
-          <h3 className="text-xl font-bold text-[#0b6e99] font-display flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#0b6e99]">assignment_turned_in</span>
+          <h3 className="text-xl font-bold text-[#004ac6] font-display flex items-center gap-2">
+            <span className="material-symbols-outlined text-[#004ac6]">assignment_turned_in</span>
             My Program Enrollments ({myEnrollments.length})
           </h3>
           <p className="text-xs text-[#737686]">Daycare placements & weekly billing schedules</p>
@@ -57,9 +57,9 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
       </div>
 
       {myEnrollments.length === 0 ? (
-        <div className="text-center py-10 bg-[#f3fafd] rounded-2xl border border-dashed border-[#c3c6d7] space-y-2">
+        <div className="text-center py-10 bg-[#f8f9ff] rounded-2xl border border-dashed border-[#c3c6d7] space-y-2">
           <span className="material-symbols-outlined text-4xl text-[#737686]">school</span>
-          <p className="text-sm font-semibold text-[#0b2a3c]">No Active Program Enrollments</p>
+          <p className="text-sm font-semibold text-[#121c2a]">No Active Program Enrollments</p>
           <p className="text-xs text-[#737686]">
             Browse available daycare centers on the marketplace to enroll your child.
           </p>
@@ -74,16 +74,16 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
           {myEnrollments.map((enr) => (
             <div 
               key={enr.id} 
-              className="border border-[#dcf0f8] bg-[#f3fafd] rounded-2xl p-5 hover:border-[#a9d6ea] transition-all space-y-4"
+              className="border border-[#e6eeff] bg-[#f8f9ff] rounded-2xl p-5 hover:border-[#b4c5ff] transition-all space-y-4"
             >
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#dcf0f8] pb-3">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#e6eeff] pb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#dcf0f8] text-[#0b6e99] flex items-center justify-center font-bold">
+                  <div className="w-10 h-10 rounded-xl bg-[#e6eeff] text-[#004ac6] flex items-center justify-center font-bold">
                     <span className="material-symbols-outlined text-xl">child_care</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="text-base font-bold text-[#0b6e99] font-display">
+                      <h4 className="text-base font-bold text-[#004ac6] font-display">
                         {enr.child?.name}
                       </h4>
                       <span className={`badge ${
@@ -98,8 +98,8 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
                         {STATUS_LABEL[enr.status] || enr.status}
                       </span>
                     </div>
-                    <p className="text-xs font-semibold text-[#0b2a3c] mt-0.5">
-                      {enr.service?.name} @ <span className="text-[#0b6e99]">{enr.service?.school?.name}</span>
+                    <p className="text-xs font-semibold text-[#121c2a] mt-0.5">
+                      {enr.service?.name} @ <span className="text-[#004ac6]">{enr.service?.school?.name}</span>
                     </p>
                   </div>
                 </div>
@@ -108,7 +108,7 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
                   <p className="text-[11px] font-bold text-[#737686] uppercase tracking-wider">
                     Agreed Monthly Fee
                   </p>
-                  <div className="text-base font-extrabold text-[#009c84]">
+                  <div className="text-base font-extrabold text-[#006c49]">
                     KES {enr.agreedMonthlyPrice.toLocaleString()} / mo
                   </div>
                   {canDelete(enr) && onCancelEnrollment && (
@@ -124,7 +124,7 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
  {(enr.status === 'ACTIVE' || enr.status === 'ENDED') && onRateSchool && enr.service?.schoolId && (
                     <button
                       onClick={() => onRateSchool(enr.service!.schoolId)}
-                      className="mt-2 text-xs font-bold flex items-center justify-end gap-1 ml-auto text-[#0b6e99] hover:underline"
+                      className="mt-2 text-xs font-bold flex items-center justify-end gap-1 ml-auto text-[#004ac6] hover:underline"
                     >
                       <span className="material-symbols-outlined text-sm fill text-amber-400">star</span>
                       Rate this daycare
@@ -150,7 +150,7 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
 
               {/* Admission status notices */}
               {enr.status === 'PENDING_PAYMENT' && (
-                <p className="text-xs bg-white border border-[#dcf0f8] rounded-xl p-3 text-[#434655]">
+                <p className="text-xs bg-white border border-[#e6eeff] rounded-xl p-3 text-[#434655]">
                   {enr.admissionApprovedAt
                     ? '✓ The school has approved this admission. Pay the first installment in the Financial Ledger to activate it.'
                     : 'Pay the first installment in the Financial Ledger. The school will then review and approve the admission.'}
@@ -183,7 +183,7 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
               {/* Weekly Installments Grid */}
               {enr.status !== 'REJECTED' && enr.billingCycles && enr.billingCycles.length > 0 && (
                 <div className="space-y-2">
-                  <h5 className="text-xs font-bold text-[#0b6e99] uppercase tracking-wider flex items-center gap-1">
+                  <h5 className="text-xs font-bold text-[#004ac6] uppercase tracking-wider flex items-center gap-1">
                     <span className="material-symbols-outlined text-sm">calendar_month</span>
                     Current Month Weekly Installment Breakdown
                   </h5>
@@ -196,7 +196,7 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
                           key={w.id} 
                           className={`p-3 rounded-xl border text-xs space-y-1 ${
                             w.status === 'PAID' 
-                              ? 'bg-[#e1faf4] border-[#4fe8c9]' 
+                              ? 'bg-[#e6f7ef] border-[#6cf8bb]' 
                               : isPartial
                                 ? 'bg-[#fefce8] border-[#fde047]'
                                 : 'bg-[#fff7ed] border-[#fdba74]'
@@ -214,11 +214,11 @@ export const ParentEnrollmentsView: React.FC<ParentEnrollmentsViewProps> = ({
                               {w.status === 'PAID' ? 'PAID' : isPartial ? 'PARTIAL' : w.status}
                             </span>
                           </div>
-                          <p className={`font-extrabold ${w.status === 'PAID' ? 'text-[#00876f]' : 'text-[#c2410c]'}`}>
+                          <p className={`font-extrabold ${w.status === 'PAID' ? 'text-[#00714d]' : 'text-[#c2410c]'}`}>
                             KES {w.amountDue.toLocaleString()}
                           </p>
                           {isPartial && (
-                            <p className="text-[10px] text-[#00876f] font-semibold">
+                            <p className="text-[10px] text-[#00714d] font-semibold">
                               Paid: KES {w.amountPaid.toLocaleString()} (Bal: {remaining.toLocaleString()})
                             </p>
                           )}

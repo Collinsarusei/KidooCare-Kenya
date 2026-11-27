@@ -36,8 +36,8 @@ interface SchoolProfileWizardProps {
 
 const MAX_PHOTOS = 8;
 const inputCls =
-  'w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#cbd5e1] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none';
-const labelCls = 'block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider mb-1.5';
+  'w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#cbd5e1] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none';
+const labelCls = 'block text-xs font-bold text-[#121c2a] uppercase tracking-wider mb-1.5';
 
 export const SchoolProfileWizard: React.FC<SchoolProfileWizardProps> = ({
   mySchool,
@@ -139,7 +139,7 @@ export const SchoolProfileWizard: React.FC<SchoolProfileWizardProps> = ({
   return (
     <div className="max-w-3xl mx-auto space-y-6 font-sans pb-12 animate-fadeIn">
       <div className="flex justify-between items-center px-1">
-        <h1 className="text-xl font-extrabold text-[#0b6e99] font-display flex items-center gap-2">
+        <h1 className="text-xl font-extrabold text-[#004ac6] font-display flex items-center gap-2">
           <span className="material-symbols-outlined">auto_awesome</span>
           {isFirstSetup ? 'Set up your daycare profile' : 'Edit daycare profile'}
         </h1>
@@ -158,8 +158,8 @@ export const SchoolProfileWizard: React.FC<SchoolProfileWizardProps> = ({
       )}
 
       {/* BASIC DETAILS */}
-      <div className="bg-white border border-[#dcf0f8] rounded-3xl p-6 shadow-sm space-y-4">
-        <h2 className="text-lg font-extrabold text-[#0b2a3c] font-display">Basic details</h2>
+      <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm space-y-4">
+        <h2 className="text-lg font-extrabold text-[#121c2a] font-display">Basic details</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className={labelCls}>Daycare name *</label>
@@ -190,9 +190,9 @@ export const SchoolProfileWizard: React.FC<SchoolProfileWizardProps> = ({
       </div>
 
       {/* PHOTOS */}
-      <div className="bg-white border border-[#dcf0f8] rounded-3xl p-6 shadow-sm space-y-4">
+      <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm space-y-4">
         <div>
-          <h2 className="text-lg font-extrabold text-[#0b2a3c] font-display">Photos parents will see *</h2>
+          <h2 className="text-lg font-extrabold text-[#121c2a] font-display">Photos parents will see *</h2>
           <p className="text-xs text-[#737686]">
             The first photo is the cover shown in the marketplace. Up to {MAX_PHOTOS} photos.
           </p>
@@ -201,10 +201,10 @@ export const SchoolProfileWizard: React.FC<SchoolProfileWizardProps> = ({
         {photos.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {photos.map((url, i) => (
-              <div key={url + i} className="relative group rounded-2xl overflow-hidden h-28 bg-slate-100 border border-[#dcf0f8]">
+              <div key={url + i} className="relative group rounded-2xl overflow-hidden h-28 bg-slate-100 border border-[#e6eeff]">
                 <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
                 {i === 0 && (
-                  <span className="absolute top-1.5 left-1.5 text-[10px] font-bold bg-[#0b6e99] text-white px-2 py-0.5 rounded-full">Cover</span>
+                  <span className="absolute top-1.5 left-1.5 text-[10px] font-bold bg-[#004ac6] text-white px-2 py-0.5 rounded-full">Cover</span>
                 )}
                 <div className="absolute inset-x-0 bottom-0 flex justify-between p-1.5 bg-gradient-to-t from-black/60 to-transparent">
                   {i !== 0 ? (
@@ -231,8 +231,8 @@ export const SchoolProfileWizard: React.FC<SchoolProfileWizardProps> = ({
           />
         )}
 
-        <div className="pt-2 border-t border-[#dcf0f8] grid grid-cols-1 sm:grid-cols-[96px_1fr] gap-4 items-center">
-          <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 border border-[#dcf0f8] flex items-center justify-center">
+        <div className="pt-2 border-t border-[#e6eeff] grid grid-cols-1 sm:grid-cols-[96px_1fr] gap-4 items-center">
+          <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 border border-[#e6eeff] flex items-center justify-center">
             {logoUrl ? (
               <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
             ) : (
@@ -247,8 +247,8 @@ export const SchoolProfileWizard: React.FC<SchoolProfileWizardProps> = ({
       </div>
 
       {/* DESCRIPTION + AI */}
-      <div className="bg-white border border-[#dcf0f8] rounded-3xl p-6 shadow-sm space-y-4">
-        <h2 className="text-lg font-extrabold text-[#0b2a3c] font-display">Description</h2>
+      <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 shadow-sm space-y-4">
+        <h2 className="text-lg font-extrabold text-[#121c2a] font-display">Description</h2>
         <div>
           <label className={labelCls}>Tell the AI about your daycare</label>
           <textarea
@@ -262,7 +262,7 @@ export const SchoolProfileWizard: React.FC<SchoolProfileWizardProps> = ({
             type="button"
             onClick={handleAiDraft}
             disabled={isGeneratingAi}
-            className="mt-2 btn btn-secondary text-xs py-2 px-4 rounded-xl border-[#a9d6ea] text-[#0b6e99] flex items-center gap-1.5 disabled:opacity-50"
+            className="mt-2 btn btn-secondary text-xs py-2 px-4 rounded-xl border-[#b4c5ff] text-[#004ac6] flex items-center gap-1.5 disabled:opacity-50"
           >
             <span className="material-symbols-outlined text-base">magic_button</span>
             {isGeneratingAi ? 'AI is writing...' : 'Generate description with AI'}
@@ -278,7 +278,7 @@ export const SchoolProfileWizard: React.FC<SchoolProfileWizardProps> = ({
       <button
         onClick={handleSave}
         disabled={saving || isGeneratingAi}
-        className="btn bg-[#0b6e99] hover:bg-[#085a7e] text-white text-sm font-extrabold py-3.5 px-8 rounded-full shadow-lg w-full flex items-center justify-center gap-2 disabled:opacity-50"
+        className="btn bg-[#004ac6] hover:bg-[#003ea8] text-white text-sm font-extrabold py-3.5 px-8 rounded-full shadow-lg w-full flex items-center justify-center gap-2 disabled:opacity-50"
       >
         <span className="material-symbols-outlined text-lg">save</span>
         {saving ? 'Saving...' : isFirstSetup ? 'Save & publish profile' : 'Save profile'}

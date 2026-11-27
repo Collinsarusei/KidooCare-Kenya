@@ -61,7 +61,7 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
       <div className="bg-white rounded-3xl w-[500px] max-w-full shadow-2xl overflow-hidden">
 
         {/* Header */}
-        <div className="bg-gradient-to-br from-[#00876f] to-[#0b6e99] p-6 text-white relative">
+        <div className="bg-gradient-to-br from-[#00714d] to-[#004ac6] p-6 text-white relative">
           <button type="button" onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
             <span className="material-symbols-outlined text-lg">close</span>
           </button>
@@ -80,35 +80,35 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
           {/* Info card */}
           <div className="bg-[#f0fdf4] border border-[#86efac] rounded-2xl p-4 space-y-1">
             <p className="text-xs text-[#166534] font-bold uppercase tracking-wider">Paying for</p>
-            <p className="font-bold text-[#0b2a3c]">{stkInstallment.childName}</p>
-            <p className="text-xs text-[#737686]">Week {stkInstallment.weekNumber} — <span className="font-semibold text-[#0b2a3c]">{stkInstallment.schoolName}</span></p>
+            <p className="font-bold text-[#121c2a]">{stkInstallment.childName}</p>
+            <p className="text-xs text-[#737686]">Week {stkInstallment.weekNumber} — <span className="font-semibold text-[#121c2a]">{stkInstallment.schoolName}</span></p>
           </div>
 
           {stkResult ? (
             <div className="space-y-4">
-              <div className="bg-[#e8f6fb] border border-[#a9d6ea] rounded-2xl p-5 text-center space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-[#0b6e99] text-white flex items-center justify-center mx-auto">
+              <div className="bg-[#eff4ff] border border-[#c3d7ff] rounded-2xl p-5 text-center space-y-3">
+                <div className="w-14 h-14 rounded-2xl bg-[#004ac6] text-white flex items-center justify-center mx-auto">
                   <span className="material-symbols-outlined text-3xl">phone_forwarded</span>
                 </div>
-                <p className="font-bold text-[#0b6e99] text-base">STK Push Sent!</p>
+                <p className="font-bold text-[#004ac6] text-base">STK Push Sent!</p>
                 <p className="text-sm text-[#434655]">A payment prompt has been sent to <strong>{stkPhone}</strong>.</p>
                 <p className="text-xs text-[#737686]">
                   Open <strong>M-Pesa</strong> on your phone and enter your <strong>PIN</strong> to pay{' '}
-                  <strong className="text-[#00876f]">KES {selectedAmount.toLocaleString()}</strong>.
+                  <strong className="text-[#00714d]">KES {selectedAmount.toLocaleString()}</strong>.
                 </p>
               </div>
               <div className="flex items-center justify-center gap-3 py-2 text-sm text-[#737686]">
                 <div className="flex gap-1.5">
-                  <span className="w-2.5 h-2.5 bg-[#0b6e99] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-2.5 h-2.5 bg-[#0b6e99] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-2.5 h-2.5 bg-[#0b6e99] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <span className="w-2.5 h-2.5 bg-[#004ac6] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2.5 h-2.5 bg-[#004ac6] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2.5 h-2.5 bg-[#004ac6] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
                 <span>Waiting for payment confirmation...</span>
               </div>
               <p className="text-[10px] text-[#b0b3c0] text-center font-mono break-all">Ref: {stkResult.checkoutRequestId}</p>
-              <div className="border-t border-[#dcf0f8] pt-4">
+              <div className="border-t border-[#e6eeff] pt-4">
                 <p className="text-[10px] text-[#b0b3c0] text-center mb-2 uppercase tracking-wide font-bold">Sandbox Mode</p>
-                <button type="button" onClick={onSimulateCallback} className="w-full py-2.5 rounded-xl border-2 border-dashed border-[#a9d6ea] text-[#0b6e99] text-xs font-bold hover:bg-[#e8f6fb] transition-colors flex items-center justify-center gap-2">
+                <button type="button" onClick={onSimulateCallback} className="w-full py-2.5 rounded-xl border-2 border-dashed border-[#c3d7ff] text-[#004ac6] text-xs font-bold hover:bg-[#eff4ff] transition-colors flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined text-base">bolt</span>
                   Simulate Successful M-Pesa Callback
                 </button>
@@ -119,47 +119,47 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
 
               {/* Payment mode: 3 options */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-[#0b2a3c] uppercase tracking-wider">Choose Payment Amount</label>
+                <label className="text-xs font-bold text-[#121c2a] uppercase tracking-wider">Choose Payment Amount</label>
                 <div className="grid grid-cols-3 gap-2">
 
                   {/* Lipa Mdogo Mdogo */}
                   <div
                     role="button"
                     onClick={() => setPayMode('WEEK')}
-                    className={`p-3 rounded-xl border-2 cursor-pointer transition-all space-y-1 ${payMode === 'WEEK' ? 'border-[#0b6e99] bg-[#e8f6fb]' : 'border-[#dcf0f8] hover:border-[#c3c6d7]'}`}
+                    className={`p-3 rounded-xl border-2 cursor-pointer transition-all space-y-1 ${payMode === 'WEEK' ? 'border-[#004ac6] bg-[#eff4ff]' : 'border-[#e6eeff] hover:border-[#c3c6d7]'}`}
                   >
-                    <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${payMode === 'WEEK' ? 'border-[#0b6e99]' : 'border-[#c3c6d7]'}`}>
-                      {payMode === 'WEEK' && <div className="w-2 h-2 rounded-full bg-[#0b6e99]" />}
+                    <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${payMode === 'WEEK' ? 'border-[#004ac6]' : 'border-[#c3c6d7]'}`}>
+                      {payMode === 'WEEK' && <div className="w-2 h-2 rounded-full bg-[#004ac6]" />}
                     </div>
-                    <p className="text-[11px] font-bold text-[#0b2a3c] leading-tight">Lipa Mdogo Mdogo</p>
+                    <p className="text-[11px] font-bold text-[#121c2a] leading-tight">Lipa Mdogo Mdogo</p>
                     <p className="text-[10px] text-[#737686]">1 week</p>
-                    <p className="text-xs font-extrabold text-[#0b6e99]">KES {weeklyAmount.toLocaleString()}</p>
+                    <p className="text-xs font-extrabold text-[#004ac6]">KES {weeklyAmount.toLocaleString()}</p>
                   </div>
 
                   {/* Full Month */}
                   <div
                     role="button"
                     onClick={() => setPayMode('FULL')}
-                    className={`p-3 rounded-xl border-2 cursor-pointer transition-all space-y-1 ${payMode === 'FULL' ? 'border-[#009c84] bg-[#f0fdf4]' : 'border-[#dcf0f8] hover:border-[#c3c6d7]'}`}
+                    className={`p-3 rounded-xl border-2 cursor-pointer transition-all space-y-1 ${payMode === 'FULL' ? 'border-[#006c49] bg-[#f0fdf4]' : 'border-[#e6eeff] hover:border-[#c3c6d7]'}`}
                   >
-                    <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${payMode === 'FULL' ? 'border-[#009c84]' : 'border-[#c3c6d7]'}`}>
-                      {payMode === 'FULL' && <div className="w-2 h-2 rounded-full bg-[#009c84]" />}
+                    <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${payMode === 'FULL' ? 'border-[#006c49]' : 'border-[#c3c6d7]'}`}>
+                      {payMode === 'FULL' && <div className="w-2 h-2 rounded-full bg-[#006c49]" />}
                     </div>
-                    <p className="text-[11px] font-bold text-[#0b2a3c] leading-tight">Full Month</p>
+                    <p className="text-[11px] font-bold text-[#121c2a] leading-tight">Full Month</p>
                     <p className="text-[10px] text-[#737686]">4 weeks</p>
-                    <p className="text-xs font-extrabold text-[#009c84]">KES {fullAmount.toLocaleString()}</p>
+                    <p className="text-xs font-extrabold text-[#006c49]">KES {fullAmount.toLocaleString()}</p>
                   </div>
 
                   {/* Custom */}
                   <div
                     role="button"
                     onClick={() => setPayMode('CUSTOM')}
-                    className={`p-3 rounded-xl border-2 cursor-pointer transition-all space-y-1 ${payMode === 'CUSTOM' ? 'border-[#7c3aed] bg-[#f5f3ff]' : 'border-[#dcf0f8] hover:border-[#c3c6d7]'}`}
+                    className={`p-3 rounded-xl border-2 cursor-pointer transition-all space-y-1 ${payMode === 'CUSTOM' ? 'border-[#7c3aed] bg-[#f5f3ff]' : 'border-[#e6eeff] hover:border-[#c3c6d7]'}`}
                   >
                     <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${payMode === 'CUSTOM' ? 'border-[#7c3aed]' : 'border-[#c3c6d7]'}`}>
                       {payMode === 'CUSTOM' && <div className="w-2 h-2 rounded-full bg-[#7c3aed]" />}
                     </div>
-                    <p className="text-[11px] font-bold text-[#0b2a3c] leading-tight">Custom</p>
+                    <p className="text-[11px] font-bold text-[#121c2a] leading-tight">Custom</p>
                     <p className="text-[10px] text-[#737686]">Any amount</p>
                     <p className="text-xs font-extrabold text-[#7c3aed]">KES ?</p>
                   </div>
@@ -186,7 +186,7 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
 
               {/* Phone input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#0b2a3c] uppercase tracking-wider">M-Pesa Phone Number *</label>
+                <label className="text-xs font-bold text-[#121c2a] uppercase tracking-wider">M-Pesa Phone Number *</label>
                 <div className="relative">
                   <span className="material-symbols-outlined absolute left-3.5 top-3 text-[#737686] text-lg select-none">smartphone</span>
                   <input
@@ -195,7 +195,7 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
                     placeholder="e.g. 0712345678"
                     value={stkPhone}
                     onChange={(e) => setStkPhone(e.target.value)}
-                    className={`w-full pl-11 pr-4 py-3 text-sm rounded-xl border outline-none transition-all ${stkPhone && !isValidPhone ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-300' : 'border-[#cbd5e1] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99]'}`}
+                    className={`w-full pl-11 pr-4 py-3 text-sm rounded-xl border outline-none transition-all ${stkPhone && !isValidPhone ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-300' : 'border-[#cbd5e1] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6]'}`}
                   />
                 </div>
                 {stkPhone && !isValidPhone ? (
@@ -210,9 +210,9 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
 
               {/* Amount summary */}
               {isAmountValid && selectedAmount > 0 && (
-                <div className="bg-[#f3fafd] rounded-xl p-3.5 flex justify-between items-center border border-[#dcf0f8]">
+                <div className="bg-[#f8f9ff] rounded-xl p-3.5 flex justify-between items-center border border-[#e6eeff]">
                   <span className="text-xs font-semibold text-[#737686]">Amount to be charged:</span>
-                  <span className="font-extrabold text-[#0b2a3c] text-lg">KES {selectedAmount.toLocaleString()}</span>
+                  <span className="font-extrabold text-[#121c2a] text-lg">KES {selectedAmount.toLocaleString()}</span>
                 </div>
               )}
 
@@ -224,7 +224,7 @@ export const StkPushModal: React.FC<StkPushModalProps> = ({
                 <button
                   type="submit"
                   disabled={loading || !isValidPhone || !stkPhone.trim() || !isAmountValid || selectedAmount < 1}
-                  className="flex-1 py-3 rounded-xl bg-[#00876f] hover:bg-[#005a3c] text-white text-xs font-bold shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="flex-1 py-3 rounded-xl bg-[#00714d] hover:bg-[#005a3c] text-white text-xs font-bold shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   {loading ? (
                     <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Sending...</>

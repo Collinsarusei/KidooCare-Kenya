@@ -25,8 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="bg-[#e4f3f9] border-b border-[#c3e3f1] px-4 md:px-8 py-3.5 shadow-sm sticky top-0 z-50 w-full text-left">
-      <div className="accent-bar absolute inset-x-0 bottom-0 h-[3px]" />
+    <header className="bg-[#ebf0fa] border-b border-[#d3e0fc] px-4 md:px-8 py-3.5 shadow-sm sticky top-0 z-50 w-full text-left">
       <div className="flex items-center justify-between">
         
         {/* Brand Logo (Left) */}
@@ -34,12 +33,12 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={onNavigateHome}
           className="flex items-center gap-3 text-left focus:outline-none group"
         >
-          <div className="w-11 h-11 rounded-2xl bg-[#0b6e99] text-white flex items-center justify-center font-bold shadow-md group-hover:bg-[#085a7e] transition-colors">
+          <div className="w-11 h-11 rounded-2xl bg-[#004ac6] text-white flex items-center justify-center font-bold shadow-md group-hover:bg-[#003ea8] transition-colors">
             <span className="material-symbols-outlined text-2xl">child_care</span>
           </div>
           <div>
-            <h1 className="text-xl font-extrabold text-[#0b6e99] tracking-tight font-display flex items-center gap-1">
-              KiddoCare <span className="text-[#009c84]">Kenya</span>
+            <h1 className="text-xl font-extrabold text-[#004ac6] tracking-tight font-display flex items-center gap-1">
+              KiddoCare <span className="text-[#006c49]">Kenya</span>
             </h1>
             <p className="text-[11px] text-[#737686] font-medium hidden sm:block">
               Verified Daycares • Lipa Mdogo Mdogo
@@ -48,11 +47,11 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
 
         {/* Desktop Navigation Links (Center) */}
-        <nav className={`hidden ${currentUser ? 'lg:hidden' : 'lg:flex'} items-center gap-1 bg-white px-3 py-1.5 rounded-full border border-[#c3e3f1] text-xs font-bold text-[#434655]`}>
+        <nav className={`hidden ${currentUser ? 'lg:hidden' : 'lg:flex'} items-center gap-1 bg-white px-3 py-1.5 rounded-full border border-[#d3e0fc] text-xs font-bold text-[#434655]`}>
           <button
             onClick={onNavigateHome}
             className={`px-4 py-2 rounded-full transition-all ${
-              activeView === 'landing' ? 'bg-[#0b6e99] text-white shadow-xs' : 'hover:text-[#0b6e99]'
+              activeView === 'landing' ? 'bg-[#004ac6] text-white shadow-xs' : 'hover:text-[#004ac6]'
             }`}
           >
             Home
@@ -60,20 +59,20 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onNavigateMarketplace}
             className={`px-4 py-2 rounded-full transition-all ${
-              activeView === 'marketplace' ? 'bg-[#0b6e99] text-white shadow-xs' : 'hover:text-[#0b6e99]'
+              activeView === 'marketplace' ? 'bg-[#004ac6] text-white shadow-xs' : 'hover:text-[#004ac6]'
             }`}
           >
             Browse Daycares
           </button>
           <button
             onClick={onNavigateAbout}
-            className="px-4 py-2 rounded-full hover:text-[#0b6e99] transition-all"
+            className="px-4 py-2 rounded-full hover:text-[#004ac6] transition-all"
           >
             About KiddoCare
           </button>
           <button
             onClick={() => (onNavigateContact ? onNavigateContact('DAYCARE') : onNavigateAbout())}
-            className="px-4 py-2 rounded-full hover:text-[#0b6e99] transition-all text-[#009c84]"
+            className="px-4 py-2 rounded-full hover:text-[#004ac6] transition-all text-[#006c49]"
           >
             For Daycares
           </button>
@@ -81,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => onNavigateContact()}
               className={`px-4 py-2 rounded-full transition-all ${
-                activeView === 'contact' ? 'bg-[#0b6e99] text-white shadow-xs' : 'hover:text-[#0b6e99]'
+                activeView === 'contact' ? 'bg-[#004ac6] text-white shadow-xs' : 'hover:text-[#004ac6]'
               }`}
             >
               Contact Us
@@ -94,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
           {currentUser ? (
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="font-bold text-xs text-[#0b2a3c]">{currentUser.name || currentUser.email}</p>
+                <p className="font-bold text-xs text-[#121c2a]">{currentUser.name || currentUser.email}</p>
                 <span className={`badge text-[10px] py-0.5 px-2 ${
                   currentUser.role === UserRole.ADMIN 
                     ? 'badge-orange' 
@@ -108,7 +107,7 @@ export const Header: React.FC<HeaderProps> = ({
               {onNavigateContact && (
                 <button
                   onClick={() => (activeView === 'contact' ? onNavigateHome() : onNavigateContact())}
-                  className="btn text-xs px-3.5 py-2 rounded-xl text-[#0b6e99] hover:bg-[#e8f6fb] flex items-center gap-1.5"
+                  className="btn text-xs px-3.5 py-2 rounded-xl text-[#004ac6] hover:bg-[#eff4ff] flex items-center gap-1.5"
                 >
                   <span className="material-symbols-outlined text-base">{activeView === 'contact' ? 'dashboard' : 'support_agent'}</span>
                   {activeView === 'contact' ? 'Dashboard' : 'Help'}
@@ -116,7 +115,7 @@ export const Header: React.FC<HeaderProps> = ({
               )}
               <button 
                 onClick={onLogout}
-                className="btn btn-secondary text-xs px-3.5 py-2 rounded-xl hover:bg-[#e8f6fb] flex items-center gap-1.5"
+                className="btn btn-secondary text-xs px-3.5 py-2 rounded-xl hover:bg-[#eff4ff] flex items-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-base">logout</span>
                 Logout
@@ -126,13 +125,13 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => onOpenAuth(UserRole.PARENT, false)}
-                className="btn text-xs font-bold text-[#0b6e99] hover:bg-[#e8f6fb] px-4 py-2.5 rounded-full transition-all"
+                className="btn text-xs font-bold text-[#004ac6] hover:bg-[#eff4ff] px-4 py-2.5 rounded-full transition-all"
               >
                 Sign In
               </button>
               <button 
                 onClick={() => onOpenAuth(UserRole.PARENT, true)}
-                className="btn btn-orange text-xs font-bold px-5 py-2.5 rounded-full flex items-center gap-1.5"
+                className="btn btn-primary text-xs font-bold px-5 py-2.5 rounded-full shadow-md flex items-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-base">person_add</span>
                 Register
@@ -144,7 +143,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Mobile Hamburger Toggle (Right - Small Screens) */}
         <button 
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden w-10 h-10 rounded-xl bg-[#f3fafd] border border-[#dcf0f8] flex items-center justify-center text-[#0b2a3c]"
+          className="lg:hidden w-10 h-10 rounded-xl bg-[#f8f9ff] border border-[#e6eeff] flex items-center justify-center text-[#121c2a]"
           aria-label="Toggle Navigation Menu"
         >
           <span className="material-symbols-outlined text-2xl">
@@ -155,28 +154,28 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Slide-down Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden mt-4 pt-4 border-t border-[#dcf0f8] space-y-3 pb-2 animate-fadeIn">
+        <div className="lg:hidden mt-4 pt-4 border-t border-[#e6eeff] space-y-3 pb-2 animate-fadeIn">
           <div className="flex flex-col space-y-1 text-xs font-bold">
             <button
               onClick={() => { onNavigateHome(); setMobileMenuOpen(false); }}
-              className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f3fafd] text-[#0b2a3c] flex items-center gap-2"
+              className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f8f9ff] text-[#121c2a] flex items-center gap-2"
             >
-              <span className="material-symbols-outlined text-lg text-[#0b6e99]">home</span>
+              <span className="material-symbols-outlined text-lg text-[#004ac6]">home</span>
               Home Page
             </button>
             <button
               onClick={() => { onNavigateMarketplace(); setMobileMenuOpen(false); }}
-              className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f3fafd] text-[#0b2a3c] flex items-center gap-2"
+              className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f8f9ff] text-[#121c2a] flex items-center gap-2"
             >
-              <span className="material-symbols-outlined text-lg text-[#0b6e99]">storefront</span>
+              <span className="material-symbols-outlined text-lg text-[#004ac6]">storefront</span>
               Browse Daycares
             </button>
             {!currentUser && (
               <button
                 onClick={() => { onNavigateAbout(); setMobileMenuOpen(false); }}
-                className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f3fafd] text-[#0b2a3c] flex items-center gap-2"
+                className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f8f9ff] text-[#121c2a] flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-lg text-[#0b6e99]">info</span>
+                <span className="material-symbols-outlined text-lg text-[#004ac6]">info</span>
                 About KiddoCare
               </button>
             )}
@@ -184,16 +183,16 @@ export const Header: React.FC<HeaderProps> = ({
               <>
                 <button
                   onClick={() => { onNavigateContact('DAYCARE'); setMobileMenuOpen(false); }}
-                  className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f3fafd] text-[#009c84] flex items-center gap-2"
+                  className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f8f9ff] text-[#006c49] flex items-center gap-2"
                 >
-                  <span className="material-symbols-outlined text-lg text-[#009c84]">domain_add</span>
+                  <span className="material-symbols-outlined text-lg text-[#006c49]">domain_add</span>
                   For Daycares
                 </button>
                 <button
                   onClick={() => { onNavigateContact(); setMobileMenuOpen(false); }}
-                  className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f3fafd] text-[#0b2a3c] flex items-center gap-2"
+                  className="text-left px-4 py-2.5 rounded-xl hover:bg-[#f8f9ff] text-[#121c2a] flex items-center gap-2"
                 >
-                  <span className="material-symbols-outlined text-lg text-[#0b6e99]">support_agent</span>
+                  <span className="material-symbols-outlined text-lg text-[#004ac6]">support_agent</span>
                   Contact Us
                 </button>
               </>
@@ -201,7 +200,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {!currentUser && (
-            <div className="pt-2 border-t border-[#dcf0f8] flex flex-col gap-2">
+            <div className="pt-2 border-t border-[#e6eeff] flex flex-col gap-2">
               <button 
                 onClick={() => { onOpenAuth(UserRole.PARENT, false); setMobileMenuOpen(false); }}
                 className="w-full btn btn-secondary text-xs py-2.5 rounded-xl justify-center"
@@ -210,7 +209,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
               <button 
                 onClick={() => { onOpenAuth(UserRole.PARENT, true); setMobileMenuOpen(false); }}
-                className="w-full btn btn-orange text-xs py-2.5 rounded-xl justify-center"
+                className="w-full btn btn-primary text-xs py-2.5 rounded-xl justify-center shadow-md"
               >
                 Register Account
               </button>

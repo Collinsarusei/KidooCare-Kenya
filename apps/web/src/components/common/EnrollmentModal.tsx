@@ -42,29 +42,29 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
       <div className="bg-white rounded-3xl w-[520px] max-w-full p-6 md:p-8 shadow-2xl space-y-6">
 
         {/* Header */}
-        <div className="flex justify-between items-start border-b border-[#dcf0f8] pb-4">
+        <div className="flex justify-between items-start border-b border-[#e6eeff] pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#0b6e99] text-white flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-[#004ac6] text-white flex items-center justify-center font-bold">
               <span className="material-symbols-outlined text-xl">assignment_add</span>
             </div>
             <div>
-              <h3 className="text-xl font-extrabold text-[#0b6e99] font-display">Daycare Enrollment</h3>
+              <h3 className="text-xl font-extrabold text-[#004ac6] font-display">Daycare Enrollment</h3>
               <p className="text-xs text-[#737686]">Select the child you want to enroll</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-[#f3fafd] text-[#737686] hover:bg-[#dcf0f8] flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-[#f8f9ff] text-[#737686] hover:bg-[#e6eeff] flex items-center justify-center"
           >
             <span className="material-symbols-outlined text-lg">close</span>
           </button>
         </div>
 
         {/* Service Summary */}
-        <div className="bg-[#f3fafd] border border-[#dcf0f8] p-4 rounded-2xl space-y-2">
+        <div className="bg-[#f8f9ff] border border-[#e6eeff] p-4 rounded-2xl space-y-2">
           <div className="flex justify-between items-start">
             <div>
-              <h4 className="font-bold text-[#0b6e99] text-base font-display">{enrollingService.serviceName}</h4>
+              <h4 className="font-bold text-[#004ac6] text-base font-display">{enrollingService.serviceName}</h4>
               <p className="text-xs text-[#737686] flex items-center gap-1 mt-0.5">
                 <span className="material-symbols-outlined text-xs">domain</span>
                 {enrollingService.schoolName}
@@ -74,15 +74,15 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
               {isFull ? 'Waitlist' : 'Active Intake'}
             </span>
           </div>
-          <div className="pt-2 border-t border-[#dcf0f8] flex justify-between items-center text-xs">
+          <div className="pt-2 border-t border-[#e6eeff] flex justify-between items-center text-xs">
             <span className="text-[#737686]">Monthly Rate:</span>
-            <span className="font-extrabold text-[#009c84] text-sm">
+            <span className="font-extrabold text-[#006c49] text-sm">
               KES {enrollingService.price.toLocaleString()} / mo
             </span>
           </div>
           <div className="flex justify-between items-center text-xs">
             <span className="text-[#737686]">Weekly (Lipa Mdogo Mdogo):</span>
-            <span className="font-bold text-[#0b6e99]">
+            <span className="font-bold text-[#004ac6]">
               KES {(enrollingService.price / 4).toLocaleString()} / week
             </span>
           </div>
@@ -113,13 +113,13 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <label className="block text-xs font-bold text-[#0b2a3c] uppercase tracking-wider">
+                <label className="block text-xs font-bold text-[#121c2a] uppercase tracking-wider">
                   Select Child to Enroll *
                 </label>
                 <button
                   type="button"
                   onClick={onAddChildClick}
-                  className="text-xs font-bold text-[#0b6e99] hover:underline flex items-center gap-1"
+                  className="text-xs font-bold text-[#004ac6] hover:underline flex items-center gap-1"
                 >
                   <span className="material-symbols-outlined text-sm">person_add</span>
                   Add Child
@@ -129,7 +129,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                 required
                 value={selectedChildId}
                 onChange={(e) => setSelectedChildId(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f3fafd] focus:ring-2 focus:ring-[#0b6e99] outline-none font-medium"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#c3c6d7] bg-[#f8f9ff] focus:ring-2 focus:ring-[#004ac6] outline-none font-medium"
               >
                 {myChildren.map((child) => (
                   <option key={child.id} value={child.id}>
@@ -140,8 +140,8 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
             </div>
 
             {!isFull && (
-              <div className="bg-[#e8f6fb] border border-[#a9d6ea] rounded-xl p-3 flex items-start gap-2 text-xs">
-                <span className="material-symbols-outlined text-[#0b6e99] text-base shrink-0 mt-0.5">info</span>
+              <div className="bg-[#eff4ff] border border-[#c3d7ff] rounded-xl p-3 flex items-start gap-2 text-xs">
+                <span className="material-symbols-outlined text-[#004ac6] text-base shrink-0 mt-0.5">info</span>
                 <p className="text-[#434655]">
                   After confirming your child, you will be prompted to pay via <strong>M-Pesa</strong>. Choose to pay weekly (Lipa Mdogo Mdogo) or the full month upfront.
                 </p>

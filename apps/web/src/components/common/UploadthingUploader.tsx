@@ -116,12 +116,12 @@ export const UploadthingUploader: React.FC<UploadthingUploaderProps> = ({
         onDrop={handleDrop}
         className={`relative border-2 border-dashed rounded-2xl p-6 text-center transition-all cursor-pointer ${
           isDragging
-            ? 'border-[#0b6e99] bg-[#e8f6fb]'
+            ? 'border-[#004ac6] bg-[#eff4ff]'
             : uploading
             ? 'border-amber-400 bg-amber-50/50'
             : uploadedUrl
             ? 'border-emerald-400 bg-emerald-50/40'
-            : 'border-[#cbd5e1] bg-[#f3fafd] hover:bg-[#e8f6fb]/60'
+            : 'border-[#cbd5e1] bg-[#f8f9ff] hover:bg-[#eff4ff]/60'
         }`}
       >
         <input
@@ -136,7 +136,7 @@ export const UploadthingUploader: React.FC<UploadthingUploaderProps> = ({
 
         <div className="flex flex-col items-center justify-center space-y-2 pointer-events-none">
           <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
-            uploadedUrl ? 'bg-emerald-100 text-emerald-700' : 'bg-[#dcf0f8] text-[#0b6e99]'
+            uploadedUrl ? 'bg-emerald-100 text-emerald-700' : 'bg-[#e6eeff] text-[#004ac6]'
           }`}>
             <span className="material-symbols-outlined text-2xl">
               {uploading ? 'cloud_upload' : uploadedUrl ? 'task_alt' : 'cloud_upload'}
@@ -145,9 +145,9 @@ export const UploadthingUploader: React.FC<UploadthingUploaderProps> = ({
 
           {uploading ? (
             <div className="space-y-2 w-full max-w-xs mx-auto">
-              <p className="text-xs font-bold text-[#0b2a3c]">Uploading file...</p>
-              <div className="w-full h-2 bg-[#dcf0f8] rounded-full overflow-hidden">
-                <div className="bg-[#0b6e99] h-full transition-all duration-300" style={{ width: `${progress}%` }} />
+              <p className="text-xs font-bold text-[#121c2a]">Uploading file...</p>
+              <div className="w-full h-2 bg-[#e6eeff] rounded-full overflow-hidden">
+                <div className="bg-[#004ac6] h-full transition-all duration-300" style={{ width: `${progress}%` }} />
               </div>
               <p className="text-[10px] text-[#737686]">{fileName}</p>
             </div>
@@ -160,14 +160,14 @@ export const UploadthingUploader: React.FC<UploadthingUploaderProps> = ({
               <p className="text-[11px] text-emerald-700 truncate max-w-xs font-mono">
                 {fileName || uploadedUrl}
               </p>
-              <p className="text-[10px] text-[#0b6e99] underline pt-1 font-bold">
+              <p className="text-[10px] text-[#004ac6] underline pt-1 font-bold">
                 Click or drag to replace file
               </p>
             </div>
           ) : (
             <div>
-              <p className="text-xs md:text-sm font-bold text-[#0b2a3c]">
-                {label} <span className="text-[#0b6e99] underline font-bold">{buttonText}</span>
+              <p className="text-xs md:text-sm font-bold text-[#121c2a]">
+                {label} <span className="text-[#004ac6] underline font-bold">{buttonText}</span>
               </p>
               <p className="text-[11px] text-[#737686] mt-1">{sublabel}</p>
             </div>

@@ -41,11 +41,11 @@ export const TutorInvitationAccept: React.FC<TutorInvitationAcceptProps> = ({ to
   };
 
   return (
-    <div className="min-h-screen bg-[#f3fafd] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
       <form onSubmit={handleSubmit} className="w-full max-w-md bg-white border border-[#c3c6d7] rounded-3xl shadow-sm p-8 space-y-5">
         <div className="text-center space-y-2">
-          <span className="material-symbols-outlined text-5xl text-[#0b6e99]">mark_email_read</span>
-          <h1 className="text-2xl font-bold text-[#0b2a3c]">Accept Tutor Invitation</h1>
+          <span className="material-symbols-outlined text-5xl text-[#004ac6]">mark_email_read</span>
+          <h1 className="text-2xl font-bold text-[#121c2a]">Accept Tutor Invitation</h1>
           <p className="text-sm text-[#737686]">Create your password to join the daycare team.</p>
         </div>
         {error && <p className="rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm p-3">{error}</p>}
