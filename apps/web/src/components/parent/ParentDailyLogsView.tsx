@@ -28,6 +28,21 @@ export const ParentDailyLogsView: React.FC<ParentDailyLogsViewProps> = ({
     }
   }, [selectedChildId]);
 
+  // Assessments are recorded separately by tutors (tests, evaluations)
+  const [assessments, setAssessments] = React.useState<any[]>([]);
+  React.useEffect(() => {
+    setAssessments([]);
+    if (!selectedChildId) return;
+    const token = localStorage.getItem('token');
+    fetch(`/api/assessments/child/${selectedChildId}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d) => setAssessments(Array.isArray(d) ? d : []))
+      .catch(() => setAssessments([]));
+  }, [selectedChildId]);
+
+  const presentDays = dailyLogs.filter((l) => l.isPresent).length;
+  const allMilestones = dailyLogs.flatMap((l) => (l.milestones || []).map((m) => ({ m, d: l.createdAt })));
+
   return (
     <div className="bg-white border border-[#e6eeff] rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
       <div className="flex justify-between items-center border-b border-[#e6eeff] pb-4">
@@ -69,7 +84,48 @@ export const ParentDailyLogsView: React.FC<ParentDailyLogsViewProps> = ({
         <div className="text-center py-10 text-sm text-[#737686]" role="status">
           Loading daily activity...
         </div>
-      ) : dailyLogs.length === 0 ? (
+      ) : (
+        <>
+          {/* Progress summary + assessments */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-4">
+            <div className="grid grid-cols-3 gap-2">
+              <div className="bg-[#f8f9ff] border border-[#e6eeff] rounded-2xl p-3 text-center">
+                <p className="text-xl font-extrabold text-[#004ac6]">{dailyLogs.length ? Math.round((presentDays / dailyLogs.length) * 100) : 0}%</p>
+                <p className="text-[10px] font-bold text-[#737686] uppercase">Attendance</p>
+              </div>
+              <div className="bg-[#f8f9ff] border border-[#e6eeff] rounded-2xl p-3 text-center">
+                <p className="text-xl font-extrabold text-[#006c49]">{allMilestones.length}</p>
+                <p className="text-[10px] font-bold text-[#737686] uppercase">Milestones</p>
+              </div>
+              <div className="bg-[#f8f9ff] border border-[#e6eeff] rounded-2xl p-3 text-center">
+                <p className="text-xl font-extrabold text-[#7c3aed]">{assessments.length}</p>
+                <p className="text-[10px] font-bold text-[#737686] uppercase">Assessments</p>
+              </div>
+            </div>
+            <div className="border border-[#e6eeff] rounded-2xl p-3">
+              <h4 className="text-sm font-extrabold text-[#121c2a] flex items-center gap-1 mb-2">
+                <span className="material-symbols-outlined text-base text-[#7c3aed]">quiz</span> Assessments
+              </h4>
+              {assessments.length === 0 ? (
+                <p className="text-xs text-[#737686]">No assessments recorded yet.</p>
+              ) : (
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                  {assessments.map((a) => (
+                    <div key={a.id} className="flex justify-between gap-2 text-xs border-b border-[#f1f5f9] pb-1.5">
+                      <div className="min-w-0">
+                        <p className="font-bold text-[#121c2a] truncate">{a.title}{a.subject ? ` • ${a.subject}` : ''}</p>
+                        <p className="text-[10px] text-[#737686]">{new Date(a.assessedOn).toLocaleDateString()}{a.remarks ? ` — ${a.remarks}` : ''}</p>
+                      </div>
+                      <p className="font-extrabold text-[#004ac6] shrink-0">
+                        {a.score != null ? `${a.score}${a.maxScore ? `/${a.maxScore}` : ''}` : ''} {a.grade || ''}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+      {dailyLogs.length === 0 ? (
         <div className="text-center py-10 bg-[#f8f9ff] rounded-2xl border border-dashed border-[#c3c6d7] space-y-2">
           <span className="material-symbols-outlined text-4xl text-[#737686]">history</span>
           <p className="text-sm font-semibold text-[#121c2a]">No Logs Found</p>
@@ -185,6 +241,8 @@ export const ParentDailyLogsView: React.FC<ParentDailyLogsViewProps> = ({
             </div>
           ))}
         </div>
+      )}
+        </>
       )}
     </div>
   );

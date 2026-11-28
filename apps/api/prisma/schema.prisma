@@ -109,6 +109,7 @@ model User {
   reviews        Review[]
   disputes       Dispute[]
   tutorDailyLogs DailyLog[]
+  tutorAssessments Assessment[] @relation("TutorAssessments")
   tutorInvitation TutorInvitation?
 }
 
@@ -138,6 +139,7 @@ model School {
   aiReports   AIReport[]
   employees   User[]       @relation("SchoolEmployees")
   tutorInvitations TutorInvitation[]
+  assessments Assessment[]
 }
 
 model TutorInvitation {
@@ -207,6 +209,7 @@ model Child {
 
   enrollments Enrollment[]
   dailyLogs   DailyLog[]
+  assessments Assessment[]
 }
 
 model Enrollment {
@@ -355,4 +358,26 @@ model DailyLog {
   pickedUpAt       DateTime?
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @default(now()) @updatedAt
+}
+
+/// Standalone assessments (tests, evaluations) — recorded by tutors when they happen, not daily
+model Assessment {
+  id          String   @id @default(uuid())
+  childId     String
+  child       Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  tutorId     String
+  tutor       User     @relation("TutorAssessments", fields: [tutorId], references: [id], onDelete: Cascade)
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  title       String
+  subject     String?
+  score       Float?
+  maxScore    Float?
+  grade       String?
+  remarks     String?
+  assessedOn  DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@index([schoolId, assessedOn])
+  @@index([childId, assessedOn])
 }

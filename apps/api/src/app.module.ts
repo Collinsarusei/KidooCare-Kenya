@@ -23,6 +23,9 @@ import { UploadthingModule } from './uploadthing/uploadthing.module';
 import { DailyLogsModule } from './daily-logs/daily-logs.module';
 import { AdminAnalyticsModule } from './admin-analytics/admin-analytics.module';
 import { ContactModule } from './contact/contact.module';
+import { AssessmentsModule } from './assessments/assessments.module';
+import { ReportsModule } from './reports/reports.module';
+import { ArrearsModule } from './arrears/arrears.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 
@@ -69,6 +72,9 @@ import { RolesGuard } from './auth/guards/roles.guard';
     DailyLogsModule,
     AdminAnalyticsModule,
     ContactModule,
+    AssessmentsModule,
+    ReportsModule,
+    ArrearsModule,
   ],
   providers: [
     {

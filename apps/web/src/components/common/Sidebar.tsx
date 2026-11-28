@@ -44,6 +44,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'roster', icon: 'groups', label: `Roster (${counts.roster || 0})` },
     { id: 'tutors', icon: 'co_present', label: `Tutors (${counts.tutors || 0})` },
     { id: 'documents', icon: 'description', label: `Documents (${counts.documents || 0})` },
+    { id: 'reports', icon: 'summarize', label: 'Daily Reports' },
+    { id: 'arrears', icon: 'account_balance_wallet', label: 'Arrears & Reminders' },
     { id: 'financials', icon: 'analytics', label: 'Financials' },
     { id: 'disputes', icon: 'gavel', label: `Disputes (${counts.schoolDisputes || 0})` },
     { id: 'profile', icon: 'edit', label: 'Edit Profile' },

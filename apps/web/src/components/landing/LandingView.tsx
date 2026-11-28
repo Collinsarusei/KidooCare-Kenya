@@ -1,4 +1,5 @@
 import React from 'react';
+import { Reveal, CountUp, useScrollProgress } from '../common/Reveal';
 
 interface LandingViewProps {
   onBrowseMarketplace: () => void;
@@ -13,30 +14,43 @@ export const LandingView: React.FC<LandingViewProps> = ({
   onOpenRegister,
   onContact,
 }) => {
+  const { progress, offset } = useScrollProgress();
+
   return (
     <div className="space-y-16 py-4">
+      {/* Scroll progress bar */}
+      <div
+        className="fixed top-0 left-0 h-1 z-[60] bg-gradient-to-r from-[#004ac6] via-[#2563eb] to-[#6cf8bb] transition-[width] duration-150"
+        style={{ width: `${progress * 100}%` }}
+        aria-hidden="true"
+      />
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#eff4ff] via-white to-[#e6eeff] rounded-3xl border border-[#b4c5ff] p-6 sm:p-12 md:p-16 shadow-lg">
         {/* Decorative background glows */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#b4c5ff]/40 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#6cf8bb]/30 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -top-24 -left-24 pointer-events-none" style={{ transform: `translateY(${offset * 0.25}px)` }}>
+          <div className="w-96 h-96 bg-[#b4c5ff]/40 rounded-full blur-3xl float-slow"></div>
+        </div>
+        <div className="absolute -bottom-24 -right-24 pointer-events-none" style={{ transform: `translateY(${offset * -0.15}px)` }}>
+          <div className="w-96 h-96 bg-[#6cf8bb]/30 rounded-full blur-3xl float-slow" style={{ animationDelay: '-4s' }}></div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center relative z-10">
           <div className="space-y-6 text-center lg:text-left">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#004ac6]/10 text-[#004ac6] font-bold text-xs border border-[#004ac6]/20">
+            <span style={{ animationDelay: '0.05s' }} className="hero-anim inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#004ac6]/10 text-[#004ac6] font-bold text-xs border border-[#004ac6]/20">
               <span className="material-symbols-outlined text-base">verified</span>
               Kenya's #1 Verified Daycare Marketplace
             </span>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#121c2a] tracking-tight font-display leading-tight">
+            <h1 style={{ animationDelay: '0.15s' }} className="hero-anim text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#121c2a] tracking-tight font-display leading-tight">
               Trusted Daycare for your Child with <span className="text-[#004ac6]">Lipa Mdogo Mdogo</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-[#434655] leading-relaxed max-w-xl mx-auto lg:mx-0">
+            <p style={{ animationDelay: '0.3s' }} className="hero-anim text-sm sm:text-base text-[#434655] leading-relaxed max-w-xl mx-auto lg:mx-0">
               Connect with county-licensed daycares, track daily learning & attendance, and pay affordable weekly fees via M-Pesa.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-2">
+            <div style={{ animationDelay: '0.45s' }} className="hero-anim flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-2">
               <button
                 onClick={onBrowseMarketplace}
                 className="w-full sm:w-auto btn btn-primary py-3.5 px-8 rounded-full shadow-lg text-sm font-bold flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform"
@@ -54,9 +68,11 @@ export const LandingView: React.FC<LandingViewProps> = ({
             </div>
 
             {/* Quick Stats Banner */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-[#c3c6d7]/40 max-w-md mx-auto lg:mx-0">
+            <div style={{ animationDelay: '0.6s' }} className="hero-anim grid grid-cols-3 gap-4 pt-6 border-t border-[#c3c6d7]/40 max-w-md mx-auto lg:mx-0">
               <div>
-                <p className="text-xl sm:text-2xl font-extrabold text-[#004ac6] font-display">100%</p>
+                <p className="text-xl sm:text-2xl font-extrabold text-[#004ac6] font-display">
+                  <CountUp to={100} suffix="%" />
+                </p>
                 <p className="text-[11px] text-[#737686] font-medium">Verified Licenses</p>
               </div>
               <div>
@@ -64,14 +80,16 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 <p className="text-[11px] text-[#737686] font-medium">Weekly Installments</p>
               </div>
               <div>
-                <p className="text-xl sm:text-2xl font-extrabold text-[#004ac6] font-display">4.9 ★</p>
+                <p className="text-xl sm:text-2xl font-extrabold text-[#004ac6] font-display">
+                  <CountUp to={4.9} decimals={1} suffix=" ★" />
+                </p>
                 <p className="text-[11px] text-[#737686] font-medium">Parent Rating</p>
               </div>
             </div>
           </div>
 
           {/* Hero Image with Glass Card (Screen 02 style) */}
-          <div className="relative mx-auto w-full max-w-md lg:max-w-none">
+          <div className="hero-anim-image relative mx-auto w-full max-w-md lg:max-w-none">
             <div className="relative aspect-[4/3] sm:aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
               <img
                 src="/hero_image.jpg"
@@ -81,7 +99,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
 
               {/* Glassmorphic Badge Overlay */}
-              <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-md p-4 rounded-2xl border border-white/60 shadow-lg space-y-1">
+              <div className="float-card absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-md p-4 rounded-2xl border border-white/60 shadow-lg space-y-1">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-[#6cf8bb] text-[#00714d] flex items-center justify-center font-bold">
                     <span className="material-symbols-outlined text-sm">star</span>
@@ -99,17 +117,18 @@ export const LandingView: React.FC<LandingViewProps> = ({
 
       {/* Feature Highlights Grid */}
       <section id="about-kiddocare" className="space-y-8 scroll-mt-24">
-        <div className="text-center max-w-2xl mx-auto space-y-2">
+        <Reveal variant="up" className="text-center max-w-2xl mx-auto space-y-2">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-[#004ac6] font-display">
             About KiddoCare Kenya
           </h2>
           <p className="text-xs sm:text-sm text-[#737686]">
             Designed specifically for Kenyan working families with flexible payment plans and verified safety standards.
           </p>
-        </div>
+        </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white border border-[#e6eeff] p-6 rounded-3xl shadow-sm space-y-3 hover:border-[#b4c5ff] transition-all">
+          <Reveal variant="up" delay={0}>
+          <div className="lift-card h-full bg-white border border-[#e6eeff] p-6 rounded-3xl shadow-sm space-y-3 hover:border-[#b4c5ff]">
             <div className="w-12 h-12 rounded-2xl bg-[#e6eeff] text-[#004ac6] flex items-center justify-center font-bold">
               <span className="material-symbols-outlined text-2xl">verified_user</span>
             </div>
@@ -120,8 +139,10 @@ export const LandingView: React.FC<LandingViewProps> = ({
               Every daycare undergoes strict admin document checks for county operating licenses and caregiver certifications before earning a Verified Badge.
             </p>
           </div>
+          </Reveal>
 
-          <div className="bg-white border border-[#e6eeff] p-6 rounded-3xl shadow-sm space-y-3 hover:border-[#b4c5ff] transition-all">
+          <Reveal variant="up" delay={150}>
+          <div className="lift-card h-full bg-white border border-[#e6eeff] p-6 rounded-3xl shadow-sm space-y-3 hover:border-[#b4c5ff]">
             <div className="w-12 h-12 rounded-2xl bg-[#e6f7ef] text-[#006c49] flex items-center justify-center font-bold">
               <span className="material-symbols-outlined text-2xl">payments</span>
             </div>
@@ -132,8 +153,10 @@ export const LandingView: React.FC<LandingViewProps> = ({
               No need to pay full month fees upfront. Pay weekly installments effortlessly via automated M-Pesa STK push with instant digital receipts.
             </p>
           </div>
+          </Reveal>
 
-          <div className="bg-white border border-[#e6eeff] p-6 rounded-3xl shadow-sm space-y-3 hover:border-[#b4c5ff] transition-all">
+          <Reveal variant="up" delay={300}>
+          <div className="lift-card h-full bg-white border border-[#e6eeff] p-6 rounded-3xl shadow-sm space-y-3 hover:border-[#b4c5ff]">
             <div className="w-12 h-12 rounded-2xl bg-[#eff4ff] text-[#2563eb] flex items-center justify-center font-bold">
               <span className="material-symbols-outlined text-2xl">auto_awesome</span>
             </div>
@@ -144,13 +167,15 @@ export const LandingView: React.FC<LandingViewProps> = ({
               Daycare managers get automated AI profile generators, occupancy predictions, and executive financial health reports powered by advanced AI.
             </p>
           </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Call to Action for Daycare Providers */}
-      <section className="bg-[#004ac6] text-white rounded-3xl p-8 sm:p-12 shadow-xl">
+      <Reveal variant="zoom" duration={900}>
+      <section className="bg-[#004ac6] text-white rounded-3xl p-8 sm:p-12 shadow-xl overflow-hidden">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="space-y-3 max-w-xl text-center md:text-left">
+          <Reveal variant="left" delay={200} className="space-y-3 max-w-xl text-center md:text-left">
             <span className="badge bg-[#2563eb] text-white border-0 font-bold text-xs uppercase tracking-wider">
               For Daycare Managers
             </span>
@@ -180,15 +205,16 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 WhatsApp Us
               </a>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="bg-white/10 rounded-2xl border border-white/20 p-6 text-center min-w-[200px]">
-            <span className="material-symbols-outlined text-5xl text-[#6cf8bb] mb-2 block">domain_add</span>
+          <Reveal variant="right" delay={350} className="bg-white/10 rounded-2xl border border-white/20 p-6 text-center min-w-[200px]">
+            <span className="material-symbols-outlined text-5xl text-[#6cf8bb] mb-2 block icon-pop">domain_add</span>
             <p className="text-sm font-bold">Get Verified</p>
             <p className="text-xs text-white/70 mt-1">Admin onboarding in 24–48 hrs</p>
-          </div>
+          </Reveal>
         </div>
       </section>
+      </Reveal>
     </div>
   );
 };

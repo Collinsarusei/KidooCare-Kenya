@@ -140,3 +140,60 @@ body {
   background-color: #005236;
 }
 
+
+/* ── Scroll reveal animations (landing page) ───────────────── */
+.reveal {
+  opacity: 0;
+  transition-property: opacity, transform, filter;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal-up { transform: translateY(40px); }
+.reveal-down { transform: translateY(-40px); }
+.reveal-left { transform: translateX(-60px); }
+.reveal-right { transform: translateX(60px); }
+.reveal-zoom { transform: scale(0.92); filter: blur(4px); }
+.reveal-fade { transform: none; }
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* Hero entrance on page load */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hero-slide-in {
+  from { opacity: 0; transform: translateX(60px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+.hero-anim { opacity: 0; animation: hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.hero-anim-image { opacity: 0; animation: hero-slide-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.35s forwards; }
+
+/* Gentle floating for decorative blobs, the hero image card and icons */
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(14px, -18px); }
+}
+@keyframes float-card {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes icon-pop {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(-4deg); }
+}
+.float-slow { animation: float-slow 9s ease-in-out infinite; }
+.float-card { animation: float-card 5s ease-in-out infinite; }
+.icon-pop { animation: icon-pop 3s ease-in-out infinite; }
+
+/* Feature cards lift on hover */
+.lift-card { transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s, border-color 0.35s; }
+.lift-card:hover { transform: translateY(-6px); box-shadow: 0 18px 36px -18px rgb(0 74 198 / 0.35); }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .hero-anim, .hero-anim-image { opacity: 1 !important; transform: none !important; filter: none !important; animation: none !important; transition: none !important; }
+  .float-slow, .float-card, .icon-pop { animation: none !important; }
+}

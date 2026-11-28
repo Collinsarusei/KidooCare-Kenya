@@ -51,6 +51,8 @@ import { WalkinEnrollmentModal } from './components/school/WalkinEnrollmentModal
 import { ChangePasswordModal } from './components/auth/ChangePasswordModal';
 
 import { TutorDashboard, TutorLogInput } from './components/tutor/TutorDashboard';
+import { DailyReportPanel } from './components/reports/DailyReportPanel';
+import { SchoolArrearsTab } from './components/school/SchoolArrearsTab';
 
 import { AdminDirectoryTab } from './components/admin/AdminDirectoryTab';
 import { DocumentVerifyTab } from './components/admin/DocumentVerifyTab';
@@ -150,7 +152,7 @@ export default function App() {
   const [myServices, setMyServices] = useState<ServiceDto[]>([]);
   const [schoolRoster, setSchoolRoster] = useState<EnrollmentDto[]>([]);
   const [schoolFinancials, setSchoolFinancials] = useState<SchoolFinancialSummaryDto | null>(null);
-  const [schoolTab, setSchoolTab] = useState<'overview' | 'services' | 'roster' | 'documents' | 'financials' | 'disputes' | 'profile' | 'tutors'>('overview');
+  const [schoolTab, setSchoolTab] = useState<'overview' | 'services' | 'roster' | 'documents' | 'financials' | 'disputes' | 'profile' | 'tutors' | 'reports' | 'arrears'>('overview');
   const [aiReport, setAiReport] = useState<ExecutiveSummaryReportDto | null>(null);
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
   const [schoolDocuments, setSchoolDocuments] = useState<SchoolDocumentDto[]>([]);
@@ -1570,6 +1572,8 @@ export default function App() {
 
   const [activeView, setActiveView] = useState<'landing' | 'marketplace' | 'auth' | 'contact'>('landing');
   const [contactTopic, setContactTopic] = useState<ContactTopic>('PARENT');
+  // Deep link from payment-reminder emails: /?tab=ledger
+  const pendingDeepLink = useRef<string | null>(new URLSearchParams(window.location.search).get('tab'));
   const handleNavigateContact = (topic?: ContactTopic) => {
     setSelectedSchool(null);
     setContactTopic(topic || (currentUser?.role === UserRole.SCHOOL ? 'TECHNICAL' : 'PARENT'));
@@ -1587,6 +1591,24 @@ export default function App() {
       document.getElementById('about-kiddocare')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   };
+
+  useEffect(() => {
+    const target = pendingDeepLink.current;
+    if (!target) return;
+    if (!currentUser) {
+      if (!localStorage.getItem('token')) handleOpenAuth(UserRole.PARENT, false);
+      return;
+    }
+    if (currentUser.role === UserRole.PARENT && target === 'ledger') {
+      setParentTab('ledger');
+      fetchParentLedger();
+      fetchMyPayments();
+      toast('Here are your outstanding fees — tap Pay to clear them with M-Pesa.', { icon: '💳' });
+    }
+    pendingDeepLink.current = null;
+    window.history.replaceState({}, '', window.location.pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   const handleOpenAuth = (role: UserRole = UserRole.PARENT, isRegistering: boolean = false) => {
     setSelectedSchool(null);
@@ -1937,7 +1959,7 @@ export default function App() {
                   if (tab === 'overview') fetchSchoolFinancials(mySchool.id);
                   if (tab === 'services') fetchSchoolServices(mySchool.id);
                   if (tab === 'roster') fetchSchoolRoster(mySchool.id);
-                  if (tab === 'tutors') fetchSchoolTutors(mySchool.id); 
+                  if (tab === 'tutors' || tab === 'reports') fetchSchoolTutors(mySchool.id); 
                   if (tab === 'documents') fetchSchoolDocuments(mySchool.id);
                   if (tab === 'financials') fetchSchoolFinancials(mySchool.id);
                   if (tab === 'disputes') fetchSchoolDisputes();
@@ -2009,6 +2031,8 @@ export default function App() {
             />
           )}
           {schoolTab === 'documents' && <SchoolDocumentsTab schoolDocuments={schoolDocuments} onUploadDocument={handleUploadDocument} submittingDoc={submittingDoc} schoolName={mySchool?.name} verifiedBadge={(mySchool as any)?.verifiedBadge} />}
+          {schoolTab === 'reports' && <DailyReportPanel tutors={schoolTutors} title="Daily Reports" subtitle="All children or one tutor's class — attendance, wellbeing, milestones and 30-day progress. Download as PDF." />}
+          {schoolTab === 'arrears' && mySchool && <SchoolArrearsTab schoolId={mySchool.id} />}
           {schoolTab === 'financials' && <SchoolFinancialsTab schoolFinancials={schoolFinancials} aiReport={aiReport} isGeneratingAi={isGeneratingAi} onGenerateAiReport={handleGenerateExecutiveSummary} />}
           {schoolTab === 'disputes' && <SchoolDisputesTab disputes={schoolDisputes} onResolveDispute={handleResolveDispute} />}
           {schoolTab === 'profile' && (
@@ -2030,6 +2054,7 @@ export default function App() {
       {currentUser && currentUser.role === UserRole.TUTOR && (
         <div className="space-y-6">
           <TutorDashboard
+            tutorName={currentUser?.name}
             schoolRoster={schoolRoster}
             todayLogs={tutorTodayLogs}
             submittingLog={submittingLog}
